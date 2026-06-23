@@ -30,7 +30,7 @@ namespace Nexus.Infrastructure.Seeders
             return realSponsors.Select((s, i) => new Sponsor(s.Name, s.Industry)
             {
                 ContractValue = s.Value,
-                LogoUrl = $"https://logo.clearbit.com/{s.Name.ToLower().Replace(" ", "").Replace("'", "")}.com"
+                LogoUrl = $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(s.Name)}&background=random&size=128"
             }).ToList();
         }
     }

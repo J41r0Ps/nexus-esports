@@ -20,7 +20,7 @@ namespace Nexus.Infrastructure.Seeders
                 .RuleFor(p => p.Salary, f => f.Random.Decimal(30000, 500000))
                 .RuleFor(p => p.TeamId, f => f.PickRandom(teamIds))
                 .RuleFor(p => p.CountryId, f => f.PickRandom(countryIds))
-                .RuleFor(p => p.PhotoUrl, (f, p) => $"https://i.pravatar.cc/150?img={p.Id}");
+                .RuleFor(p => p.PhotoUrl, f => $"https://i.pravatar.cc/150?img={f.Random.Int(1, 70)}");
 
             return faker.Generate(100);
         }

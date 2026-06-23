@@ -75,6 +75,12 @@ namespace Nexus.API.Controllers
             _context.Matches.AddRange(matches);
             await _context.SaveChangesAsync();
 
+            // Step 6: Tournament Registrations 
+            var registrations = new TournamentRegistrationSeeder()
+                .Generate(teamIds, tournamentIds);
+            _context.TournamentRegistrations.AddRange(registrations);
+            await _context.SaveChangesAsync();
+
             return Ok(new
             {
                 message = "Database seeded successfully!",
@@ -87,7 +93,8 @@ namespace Nexus.API.Controllers
                 teamSponsors = teamSponsors.Count,
                 tournaments = tournaments.Count,
                 stages = stages.Count,
-                matches = matches.Count
+                matches = matches.Count,
+                tournamentRegistrations = registrations.Count
             });
         }
 
@@ -109,6 +116,7 @@ namespace Nexus.API.Controllers
             _context.Organizations.RemoveRange(_context.Organizations);
             _context.Games.RemoveRange(_context.Games);
             _context.Countries.RemoveRange(_context.Countries);
+            _context.TournamentRegistrations.RemoveRange(_context.TournamentRegistrations);
 
             await _context.SaveChangesAsync();
 

@@ -18,13 +18,19 @@ namespace Nexus.Infrastructure.Seeders
                     var team1 = shuffled[0];
                     var team2 = shuffled[1];
 
+                    var streamers = new List<string>
+                    {
+                        "esl_csgo", "riotgames", "eslcs", "faceit_csgo",
+                        "blastanesports", "pgl_esports", "valorant", "dota2ti"
+                    };
+
                     matches.Add(new Match(f.Date.Between(DateTime.Now.AddMonths(-3), DateTime.Now.AddMonths(3)))
                     {
                         StageId = stageId,
                         Team1Id = team1,
                         Team2Id = team2,
                         WinnerId = f.Random.Bool() ? team1 : team2,
-                        StreamUrl = $"https://twitch.tv/esl_csgo"
+                        StreamUrl = $"https://twitch.tv/{f.PickRandom(streamers)}",
                     });
                 }
             }
