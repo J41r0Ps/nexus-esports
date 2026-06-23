@@ -7,14 +7,12 @@ namespace Nexus.Infrastructure.Seeders
     {
         public List<Organization> Generate()
         {
-            var ids = 1;
             var faker = new Faker<Organization>()
                 .CustomInstantiator(f => new Organization(
                     f.Company.CompanyName()
-                )
-                { Id = ids++ })
-                .RuleFor(o => o.Website, f => f.Internet.Url())
-                .RuleFor(o => o.FoundedYear, f => f.Random.Int(2000, 2020));
+                ))
+                    .RuleFor(o => o.Website, f => f.Internet.Url())
+                    .RuleFor(o => o.FoundedYear, f => f.Random.Int(2000, 2020));
 
             return faker.Generate(20);
         }

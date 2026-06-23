@@ -35,7 +35,6 @@ namespace Nexus.Infrastructure.Seeders
             var f = new Faker();
             return realTeams.Select((t, i) => new Team(t.Name, t.Tag)
             {
-                Id = i + 1,
                 Region = t.Region,
                 FoundedYear = f.Random.Int(2012, 2020),
                 GameId = gameIds[t.GameOffset % gameIds.Count],

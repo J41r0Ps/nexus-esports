@@ -29,7 +29,6 @@ namespace Nexus.Infrastructure.Seeders
 
             return realSponsors.Select((s, i) => new Sponsor(s.Name, s.Industry)
             {
-                Id = i + 1,
                 ContractValue = s.Value,
                 LogoUrl = $"https://logo.clearbit.com/{s.Name.ToLower().Replace(" ", "").Replace("'", "")}.com"
             }).ToList();

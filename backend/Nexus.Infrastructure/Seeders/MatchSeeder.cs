@@ -7,7 +7,6 @@ namespace Nexus.Infrastructure.Seeders
     {
         public List<Match> Generate(List<int> stageIds, List<int> teamIds)
         {
-            var ids = 1;
             var f = new Faker();
             var matches = new List<Match>();
 
@@ -21,7 +20,6 @@ namespace Nexus.Infrastructure.Seeders
 
                     matches.Add(new Match(f.Date.Between(DateTime.Now.AddMonths(-3), DateTime.Now.AddMonths(3)))
                     {
-                        Id = ids++,
                         StageId = stageId,
                         Team1Id = team1,
                         Team2Id = team2,

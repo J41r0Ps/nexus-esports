@@ -24,7 +24,6 @@ namespace Nexus.Infrastructure.Seeders
 
             return realGames.Select((g, i) => new Game(g.Name, g.Genre, g.Publisher)
             {
-                Id = i + 1,
                 CoverImageUrl = g.Cover
             }).ToList();
         }

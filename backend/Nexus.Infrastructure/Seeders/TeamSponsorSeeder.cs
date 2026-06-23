@@ -9,7 +9,6 @@ namespace Nexus.Infrastructure.Seeders
         {
             var f = new Faker();
             var teamSponsors = new List<TeamSponsor>();
-            var id = 1;
 
             foreach (var teamId in teamIds)
             {
@@ -21,7 +20,6 @@ namespace Nexus.Infrastructure.Seeders
                     var start = f.Date.Between(DateTime.Now.AddYears(-3), DateTime.Now.AddYears(-1));
                     teamSponsors.Add(new TeamSponsor
                     {
-                        Id = id++,
                         TeamId = teamId,
                         SponsorId = sponsorId,
                         StartDate = start,

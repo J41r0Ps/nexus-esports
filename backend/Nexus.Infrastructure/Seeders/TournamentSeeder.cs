@@ -28,7 +28,6 @@ namespace Nexus.Infrastructure.Seeders
                 var start = f.Date.Between(DateTime.Now.AddMonths(-6), DateTime.Now.AddMonths(6));
                 return new Tournament(t.Name)
                 {
-                    Id = i + 1,
                     PrizePool = t.Prize,
                     Status = t.Status,
                     Format = t.Format,
