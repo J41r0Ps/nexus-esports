@@ -1,3 +1,6 @@
 <Solution>
   <Project Path="Nexus.API/Nexus.API.csproj" />
+  <Project Path="Nexus.Contracts/Nexus.Contracts.csproj" Id="2a39785f-5187-4e0a-bb8b-f6194efd20d6" />
+  <Project Path="Nexus.Domain/Nexus.Domain.csproj" Id="aecd9fc7-72d1-467f-8322-c346f323f2de" />
+  <Project Path="Nexus.Infrastructure/Nexus.Infrastructure.csproj" Id="20604403-318e-41eb-868e-8b6570c604ac" />
 </Solution>
