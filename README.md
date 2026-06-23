@@ -72,4 +72,4 @@ A full-stack esports management platform built with ASP.NET Core and React.
 
 ## 👨‍💻 Author
 
-Your Name — [LinkedIn](#) — [GitHub](#)
+Jairo Nacurena Tuy — [LinkedIn](https://www.linkedin.com/in/jairo-nacurena) — [GitHub](https://github.com/J41r0Ps)
