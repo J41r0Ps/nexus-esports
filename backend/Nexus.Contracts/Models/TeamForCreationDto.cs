@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Nexus.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nexus.Contracts.Models
 {
@@ -13,7 +14,7 @@ namespace Nexus.Contracts.Models
         public string Tag { get; set; }
 
         [Required]
-        public string Region { get; set; }
+        public Region Region { get; set; }  
 
         public string? LogoUrl { get; set; }
 

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Nexus.Infrastructure.DbContexts;
+using Nexus.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,9 @@ builder.Services.AddDbContext<NexusContext>(options =>
             {
                 sql.MigrationsAssembly(typeof(NexusContext).Assembly.FullName);
             }));
+
+// Register repositories
+builder.Services.AddScoped<ITeamRepository, TeamRepository>();
 
 // CORS
 builder.Services.AddCors(options =>
