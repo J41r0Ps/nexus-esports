@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Nexus.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Nexus.Domain.Entities
@@ -24,11 +25,11 @@ namespace Nexus.Domain.Entities
 
         [Required]
         [MaxLength(50)]
-        public string Status { get; set; } // Upcoming, Ongoing, Completed
+        public TournamentStatus Status { get; set; }
 
         [Required]
         [MaxLength(50)]
-        public string Format { get; set; } // Single Elimination, Double Elimination, Round Robin
+        public TournamentFormat Format { get; set; }
 
         [ForeignKey("GameId")]
         public int GameId { get; set; }

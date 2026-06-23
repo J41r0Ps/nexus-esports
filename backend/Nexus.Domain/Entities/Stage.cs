@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Nexus.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Nexus.Domain.Entities
@@ -11,7 +12,7 @@ namespace Nexus.Domain.Entities
 
         [Required]
         [MaxLength(100)]
-        public string Name { get; set; } // Group Stage, Semifinals, Finals
+        public StageType StageType { get; set; }
 
         [Required]
         public int Order { get; set; }
@@ -22,9 +23,9 @@ namespace Nexus.Domain.Entities
 
         public ICollection<Match> Matches { get; set; } = new List<Match>();
 
-        public Stage(string name)
+        public Stage(StageType stageType)
         {
-            Name = name;
+            StageType = stageType;
         }
     }
 }

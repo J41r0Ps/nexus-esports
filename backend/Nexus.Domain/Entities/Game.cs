@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Nexus.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Nexus.Domain.Entities
@@ -15,8 +16,8 @@ namespace Nexus.Domain.Entities
 
         [Required]
         [MaxLength(50)]
-        public string Genre { get; set; }
-        
+        public GameGenre Genre { get; set; }  
+
         [Required]
         [MaxLength(100)]
         public string Publisher { get; set; }
@@ -27,7 +28,7 @@ namespace Nexus.Domain.Entities
         public ICollection<Tournament> Tournaments { get; set; } = new List<Tournament>();
         public ICollection<Team> Teams { get; set; } = new List<Team>();
 
-        public Game(string name, string genre, string publisher)
+        public Game(string name, GameGenre genre, string publisher)
         {
             Name = name;
             Genre = genre;

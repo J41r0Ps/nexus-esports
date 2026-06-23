@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Nexus.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Nexus.Domain.Entities
@@ -22,7 +23,7 @@ namespace Nexus.Domain.Entities
 
         [Required]
         [MaxLength(50)]
-        public string Region { get; set; } // EU, NA, APAC, etc.
+        public Region Region { get; set; }    
 
         [Required]
         public int FoundedYear { get; set; }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Nexus.Domain.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Nexus.Domain.Entities
@@ -19,7 +20,7 @@ namespace Nexus.Domain.Entities
 
         [Required]
         [MaxLength(50)]
-        public string Role { get; set; } // Fragger, IGL, Support, etc.
+        public PlayerRole Role { get; set; } 
 
         [Required]
         public int YearOfBirth { get; set; }
