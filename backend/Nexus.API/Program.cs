@@ -33,6 +33,8 @@ builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
 builder.Services.AddScoped<ITournamentRepository, TournamentRepository>();
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
+builder.Services.AddScoped<IStageRepository, StageRepository>();
+//builder.Services.AddScoped<IMatchRepository, MatchRepository>();
 
 
 // CORS
