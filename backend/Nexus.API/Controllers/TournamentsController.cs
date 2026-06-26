@@ -1,0 +1,118 @@
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Nexus.Contracts;
+using Nexus.Contracts.Models;
+using Nexus.Domain.Entities;
+using Nexus.Infrastructure.Services;
+using System.Text.Json;
+
+namespace Nexus.API.Controllers
+{
+    [Route("api/tournaments")]
+    [ApiController]
+    public class TournamentsController : ControllerBase
+    {
+        private readonly ITournamentRepository _tournamentRepository;
+        private readonly IMapper _mapper;
+        private const int MaxPageSize = 50;
+
+        public TournamentsController(ITournamentRepository tournamentRepository, IMapper mapper)
+        {
+            _tournamentRepository = tournamentRepository;
+            _mapper = mapper;
+        }
+
+        // GET /api/tournaments
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<TournamentListDto>>> GetTournaments(
+            [FromQuery] string? searchQuery,
+            [FromQuery] string? status,
+            [FromQuery] string? format,
+            [FromQuery] int? gameId,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            if (pageSize > MaxPageSize) pageSize = MaxPageSize;
+
+            var tournaments = await _tournamentRepository.GetTournamentsAsync(
+                searchQuery, status, format, gameId, pageNumber, pageSize);
+
+            var totalCount = await _tournamentRepository.GetTournamentCountAsync(
+                searchQuery, status, format, gameId);
+
+            Response.Headers.Add("X-Pagination",
+                JsonSerializer.Serialize(new PaginationMetadata(totalCount, pageSize, pageNumber)));
+
+            return Ok(_mapper.Map<IEnumerable<TournamentListDto>>(tournaments));
+        }
+
+        // GET /api/tournaments/{id}
+        [HttpGet("{id}")]
+        public async Task<ActionResult<TournamentDetailsDto>> GetTournament(int id)
+        {
+            if (!await _tournamentRepository.TournamentExistsAsync(id))
+                return NotFound();
+
+            var tournament = await _tournamentRepository.GetTournamentAsync(id);
+            return Ok(_mapper.Map<TournamentDetailsDto>(tournament));
+        }
+
+        // POST /api/tournaments
+        [HttpPost]
+        public async Task<ActionResult<TournamentDetailsDto>> CreateTournament(
+            TournamentForCreationDto tournamentForCreation)
+        {
+            if (!await _tournamentRepository.GameExistsAsync(tournamentForCreation.GameId))
+                return BadRequest($"Game with Id {tournamentForCreation.GameId} does not exist.");
+
+            if (tournamentForCreation.EndDate <= tournamentForCreation.StartDate)
+                return BadRequest("EndDate must be after StartDate.");
+
+            var tournament = _mapper.Map<Tournament>(tournamentForCreation);
+            _tournamentRepository.AddTournament(tournament);
+            await _tournamentRepository.SaveChangesAsync();
+
+            var tournamentToReturn = _mapper.Map<TournamentDetailsDto>(tournament);
+            return CreatedAtAction(nameof(GetTournament),
+                new { id = tournament.Id }, tournamentToReturn);
+        }
+
+        // PUT /api/tournaments/{id}
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateTournament(
+            int id, TournamentForUpdateDto tournamentForUpdate)
+        {
+            if (!await _tournamentRepository.TournamentExistsAsync(id))
+                return NotFound();
+
+            if (!await _tournamentRepository.GameExistsAsync(tournamentForUpdate.GameId))
+                return BadRequest($"Game with Id {tournamentForUpdate.GameId} does not exist.");
+
+            if (tournamentForUpdate.EndDate <= tournamentForUpdate.StartDate)
+                return BadRequest("EndDate must be after StartDate.");
+
+            var tournament = await _tournamentRepository.GetTournamentAsync(id);
+            _mapper.Map(tournamentForUpdate, tournament);
+            await _tournamentRepository.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        // DELETE /api/tournaments/{id}
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteTournament(int id)
+        {
+            if (!await _tournamentRepository.TournamentExistsAsync(id))
+                return NotFound();
+
+            if (await _tournamentRepository.HasRegistrationsAsync(id))
+                return BadRequest("Cannot delete tournament with registered teams.");
+
+            var tournament = await _tournamentRepository.GetTournamentAsync(id);
+            _tournamentRepository.DeleteTournament(tournament!);
+            await _tournamentRepository.SaveChangesAsync();
+
+            return NoContent();
+        }
+    }
+}
