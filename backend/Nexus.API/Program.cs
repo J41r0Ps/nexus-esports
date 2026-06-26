@@ -29,6 +29,7 @@ builder.Services.AddDbContext<NexusContext>(options =>
 
 // Register repositories
 builder.Services.AddScoped<ITeamRepository, TeamRepository>();
+builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
 
 // CORS
 builder.Services.AddCors(options =>
