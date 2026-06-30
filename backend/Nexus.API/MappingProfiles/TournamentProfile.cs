@@ -65,6 +65,12 @@ namespace Nexus.API.MappingProfiles
             // Update DTO → Entity
             CreateMap<TournamentForUpdateDto, Tournament>()
                 .ConstructUsing(src => new Tournament(src.Name));
+
+            // Creation DTO tournamentRegistration → Entity
+            CreateMap<TournamentRegistration, TournamentRegistrationDto>()
+                .ForMember(dest => dest.TeamName, opt => opt.MapFrom(src => src.Team.Name))
+                .ForMember(dest => dest.TeamTag, opt => opt.MapFrom(src => src.Team.Tag))
+                .ForMember(dest => dest.RegisteredAt, opt => opt.MapFrom(src => src.RegisteredAt.ToString("dd/MM/yyyy")));
         }
     }
 }

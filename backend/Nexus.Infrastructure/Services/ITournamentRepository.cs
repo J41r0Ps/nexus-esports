@@ -25,5 +25,13 @@ namespace Nexus.Infrastructure.Services
         void AddTournament(Tournament tournament);
         void DeleteTournament(Tournament tournament);
         Task SaveChangesAsync();
+
+        // Tournament Registration
+        Task<bool> TeamExistsAsync(int teamId);
+        Task<bool> IsTeamRegisteredAsync(int tournamentId, int teamId);
+        Task<IEnumerable<TournamentRegistration>> GetRegistrationsAsync(int tournamentId);
+        void AddRegistration(TournamentRegistration registration);
+        Task<TournamentRegistration?> GetRegistrationAsync(int tournamentId, int teamId);
+        void RemoveRegistration(TournamentRegistration registration);
     }
 }

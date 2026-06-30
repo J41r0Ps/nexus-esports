@@ -108,5 +108,30 @@ namespace Nexus.Infrastructure.Services
 
         public async Task SaveChangesAsync()
             => await _context.SaveChangesAsync();
+
+        // Tournament Registration
+        public async Task<bool> TeamExistsAsync(int teamId)
+            => await _context.Teams.AnyAsync(t => t.Id == teamId);
+
+        public async Task<bool> IsTeamRegisteredAsync(int tournamentId, int teamId)
+            => await _context.TournamentRegistrations
+                .AnyAsync(tr => tr.TournamentId == tournamentId && tr.TeamId == teamId);
+
+        public async Task<IEnumerable<TournamentRegistration>> GetRegistrationsAsync(int tournamentId)
+            => await _context.TournamentRegistrations
+                .Include(tr => tr.Team)
+                .Where(tr => tr.TournamentId == tournamentId)
+                .OrderBy(tr => tr.SeedNumber)
+                .ToListAsync();
+
+        public void AddRegistration(TournamentRegistration registration)
+            => _context.TournamentRegistrations.Add(registration);
+
+        public async Task<TournamentRegistration?> GetRegistrationAsync(int tournamentId, int teamId)
+            => await _context.TournamentRegistrations
+                .FirstOrDefaultAsync(tr => tr.TournamentId == tournamentId && tr.TeamId == teamId);
+
+        public void RemoveRegistration(TournamentRegistration registration)
+            => _context.TournamentRegistrations.Remove(registration);
     }
 }

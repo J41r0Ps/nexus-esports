@@ -118,5 +118,61 @@ namespace Nexus.API.Controllers
 
             return NoContent();
         }
+
+        // Tournament Registration Endpoints
+        // GET /api/tournaments/{tournamentId}/registrations
+        [HttpGet("{tournamentId}/registrations")]
+        public async Task<ActionResult<IEnumerable<TournamentRegistrationDto>>> GetRegistrations(int tournamentId)
+        {
+            if (!await _tournamentRepository.TournamentExistsAsync(tournamentId))
+                return NotFound();
+
+            var registrations = await _tournamentRepository.GetRegistrationsAsync(tournamentId);
+            return Ok(_mapper.Map<IEnumerable<TournamentRegistrationDto>>(registrations));
+        }
+
+        // POST /api/tournaments/{tournamentId}/registrations
+        [HttpPost("{tournamentId}/registrations")]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<ActionResult> RegisterTeam(
+            int tournamentId, TournamentRegistrationForCreationDto dto)
+        {
+            if (!await _tournamentRepository.TournamentExistsAsync(tournamentId))
+                return NotFound($"Tournament with Id {tournamentId} not found.");
+
+            if (!await _tournamentRepository.TeamExistsAsync(dto.TeamId))
+                return NotFound($"Team with Id {dto.TeamId} not found.");
+
+            if (await _tournamentRepository.IsTeamRegisteredAsync(tournamentId, dto.TeamId))
+                return BadRequest("This team is already registered for this tournament.");
+
+            var registration = new TournamentRegistration
+            {
+                TournamentId = tournamentId,
+                TeamId = dto.TeamId,
+                SeedNumber = dto.SeedNumber,
+                RegisteredAt = DateTime.Now
+            };
+
+            _tournamentRepository.AddRegistration(registration);
+            await _tournamentRepository.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetRegistrations), new { tournamentId }, null);
+        }
+
+        // DELETE /api/tournaments/{tournamentId}/registrations/{teamId}
+        [HttpDelete("{tournamentId}/registrations/{teamId}")]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<ActionResult> UnregisterTeam(int tournamentId, int teamId)
+        {
+            var registration = await _tournamentRepository.GetRegistrationAsync(tournamentId, teamId);
+            if (registration == null)
+                return NotFound("This team is not registered for this tournament.");
+
+            _tournamentRepository.RemoveRegistration(registration);
+            await _tournamentRepository.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
