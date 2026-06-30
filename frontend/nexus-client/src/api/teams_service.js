@@ -1,15 +1,12 @@
 import apiClient from './api_client';
 
 const TeamsService = {
-    // Public
     getAllTeams(params) {
         return apiClient.get('/teams', { params });
     },
     getTeamById(id) {
         return apiClient.get(`/teams/${id}`);
     },
-
-    // Protected — admin only
     async createTeam(teamData, token) {
         return apiClient.post('/teams', teamData, {
             headers: { Authorization: `Bearer ${token}` }
