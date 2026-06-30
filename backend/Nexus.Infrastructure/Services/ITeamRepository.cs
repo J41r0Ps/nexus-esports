@@ -25,5 +25,12 @@ namespace Nexus.Infrastructure.Services
         void AddTeam(Team team);
         void DeleteTeam(Team team);
         Task SaveChangesAsync();
+
+        // Team Sponsors
+        Task<bool> SponsorExistsAsync(int sponsorId);
+        Task<bool> TeamSponsorExistsAsync(int teamId, int sponsorId);
+        void AddTeamSponsor(TeamSponsor teamSponsor);
+        Task<TeamSponsor?> GetTeamSponsorAsync(int teamId, int sponsorId);
+        void RemoveTeamSponsor(TeamSponsor teamSponsor);
     }
 }

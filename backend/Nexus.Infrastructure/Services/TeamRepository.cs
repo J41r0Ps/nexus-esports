@@ -111,5 +111,22 @@ namespace Nexus.Infrastructure.Services
         public void DeleteTeam(Team team) => _context.Teams.Remove(team);
 
         public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
+
+        // Team Sponsors
+        public async Task<bool> SponsorExistsAsync(int sponsorId)
+            => await _context.Sponsors.AnyAsync(s => s.Id == sponsorId);
+
+        public async Task<bool> TeamSponsorExistsAsync(int teamId, int sponsorId)
+            => await _context.TeamSponsors.AnyAsync(ts => ts.TeamId == teamId && ts.SponsorId == sponsorId);
+
+        public void AddTeamSponsor(TeamSponsor teamSponsor)
+            => _context.TeamSponsors.Add(teamSponsor);
+
+        public async Task<TeamSponsor?> GetTeamSponsorAsync(int teamId, int sponsorId)
+            => await _context.TeamSponsors
+                .FirstOrDefaultAsync(ts => ts.TeamId == teamId && ts.SponsorId == sponsorId);
+
+        public void RemoveTeamSponsor(TeamSponsor teamSponsor)
+            => _context.TeamSponsors.Remove(teamSponsor);
     }
 }

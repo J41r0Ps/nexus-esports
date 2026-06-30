@@ -120,5 +120,51 @@ namespace Nexus.API.Controllers
 
             return NoContent();
         }
+
+        // Teams Sponsors Endpoints
+
+        // POST /api/teams/{teamId}/sponsors/{sponsorId}
+        [HttpPost("{teamId}/sponsors/{sponsorId}")]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<ActionResult> AddSponsorToTeam(
+            int teamId, int sponsorId, TeamSponsorForCreationDto dto)
+        {
+            if (!await _teamRepository.TeamExistsAsync(teamId))
+                return NotFound($"Team with Id {teamId} not found.");
+
+            if (!await _teamRepository.SponsorExistsAsync(sponsorId))
+                return NotFound($"Sponsor with Id {sponsorId} not found.");
+
+            if (await _teamRepository.TeamSponsorExistsAsync(teamId, sponsorId))
+                return BadRequest("This sponsor is already linked to this team.");
+
+            var teamSponsor = new TeamSponsor
+            {
+                TeamId = teamId,
+                SponsorId = sponsorId,
+                StartDate = dto.StartDate,
+                EndDate = dto.EndDate
+            };
+
+            _teamRepository.AddTeamSponsor(teamSponsor);
+            await _teamRepository.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetTeam), new { id = teamId }, null);
+        }
+
+        // DELETE /api/teams/{teamId}/sponsors/{sponsorId}
+        [HttpDelete("{teamId}/sponsors/{sponsorId}")]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<ActionResult> RemoveSponsorFromTeam(int teamId, int sponsorId)
+        {
+            var teamSponsor = await _teamRepository.GetTeamSponsorAsync(teamId, sponsorId);
+            if (teamSponsor == null)
+                return NotFound("This sponsor is not linked to this team.");
+
+            _teamRepository.RemoveTeamSponsor(teamSponsor);
+            await _teamRepository.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
