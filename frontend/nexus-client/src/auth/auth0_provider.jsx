@@ -1,9 +1,23 @@
-import React from 'react'
+import { Auth0Provider } from "@auth0/auth0-react";
 
-function auth0_provider() {
+const domain = "dev-y8mqy4tj2mf7amxy.us.auth0.com";         // Domain in the aplication
+const clientId = "O1NMUslST3tU2Sc0y9inW0Qfi6Bu4e3x";                          // Client ID in the aplication
+const audience = "https://localhost:7059/api";              // API identifier in the API
+
+function AuthProvider({ children }) {
     return (
-        <div>auth0_provider</div>
-    )
+        <Auth0Provider
+            domain={domain}
+            clientId={clientId}
+            authorizationParams={{
+                redirect_uri: window.location.origin,
+                audience: audience,
+                prompt: "login"
+            }}
+        >
+            {children}
+        </Auth0Provider>
+    );
 }
 
-export default auth0_provider
+export default AuthProvider;
