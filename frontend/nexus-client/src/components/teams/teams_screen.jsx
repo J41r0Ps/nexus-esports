@@ -1,9 +1,11 @@
-import React from 'react'
+import Layout from '../../layout_template';
 
-function teams_screen() {
+function TeamsScreen() {
     return (
-        <div>teams_screen</div>
-    )
+        <Layout title="Teams">
+            <p>Teams will go here</p>
+        </Layout>
+    );
 }
 
-export default teams_screen
+export default TeamsScreen;
