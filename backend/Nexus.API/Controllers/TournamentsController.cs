@@ -5,6 +5,7 @@ using Nexus.Contracts;
 using Nexus.Contracts.Models;
 using Nexus.Domain.Entities;
 using Nexus.Infrastructure.Services;
+using Nexus.Infrastructure.Strategies;
 using System.Text.Json;
 
 namespace Nexus.API.Controllers
@@ -15,12 +16,14 @@ namespace Nexus.API.Controllers
     {
         private readonly ITournamentRepository _tournamentRepository;
         private readonly IMapper _mapper;
+        private readonly IEmailService _emailService;
         private const int MaxPageSize = 50;
 
-        public TournamentsController(ITournamentRepository tournamentRepository, IMapper mapper)
+        public TournamentsController(ITournamentRepository tournamentRepository, IMapper mapper, IEmailService emailService)
         {
             _tournamentRepository = tournamentRepository;
             _mapper = mapper;
+            _emailService = emailService;
         }
 
         // GET /api/tournaments
@@ -133,7 +136,7 @@ namespace Nexus.API.Controllers
 
         // POST /api/tournaments/{tournamentId}/registrations
         [HttpPost("{tournamentId}/registrations")]
-        [Authorize(Policy = "AdminOnly")]
+        //[Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult> RegisterTeam(
             int tournamentId, TournamentRegistrationForCreationDto dto)
         {
@@ -156,6 +159,14 @@ namespace Nexus.API.Controllers
 
             _tournamentRepository.AddRegistration(registration);
             await _tournamentRepository.SaveChangesAsync();
+
+            // send confirmation email
+            var tournament = await _tournamentRepository.GetTournamentAsync(tournamentId);
+            await _emailService.SendEmailAsync(
+                dto.ContactEmail,
+                $"Registration Confirmed - {tournament!.Name}",
+                $"Your team has been registered with seed number {dto.SeedNumber} for {tournament.Name}. Good luck!"
+            );
 
             return CreatedAtAction(nameof(GetRegistrations), new { tournamentId }, null);
         }

@@ -1,5 +1,6 @@
 ﻿#if DEBUG
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Nexus.Infrastructure.DbContexts;
 using Nexus.Infrastructure.Seeders;
 
@@ -116,11 +117,23 @@ namespace Nexus.API.Controllers
             _context.Organizations.RemoveRange(_context.Organizations);
             _context.Games.RemoveRange(_context.Games);
             _context.Countries.RemoveRange(_context.Countries);
-            _context.TournamentRegistrations.RemoveRange(_context.TournamentRegistrations);
 
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Database reset successfully!" });
+            var tables = new[]
+            {
+                "PlayerStats", "Achievements", "TournamentRegistrations", "Matches",
+                "TeamSponsors", "Players", "Stages", "Tournaments",
+                "Teams", "Sponsors", "Organizations", "Games", "Countries"
+            };
+
+            foreach (var table in tables)
+            {
+                await _context.Database.ExecuteSqlRawAsync(
+                    $"DBCC CHECKIDENT ('{table}', RESEED, 0)");
+            }
+
+            return Ok(new { message = "Database reset successfully! IDs reset to start from 1." });
         }
     }
 }

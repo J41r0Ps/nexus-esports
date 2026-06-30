@@ -9,5 +9,9 @@ namespace Nexus.Contracts.Models
 
         [Required]
         public int SeedNumber { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string ContactEmail { get; set; }
     }
 }

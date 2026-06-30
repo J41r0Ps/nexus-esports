@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Nexus.Infrastructure.DbContexts;
 using Nexus.Infrastructure.Services;
+using Nexus.Infrastructure.Strategies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +60,15 @@ builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 builder.Services.AddScoped<IStageRepository, StageRepository>();
 builder.Services.AddScoped<IMatchRepository, MatchRepository>();
 
+// Mail service
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddScoped<IEmailService, ConsoleEmailService>();
+}
+else
+{
+    builder.Services.AddScoped<IEmailService, MailtrapEmailService>();
+}
 
 // CORS
 builder.Services.AddCors(options =>
