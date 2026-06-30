@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Nexus.Infrastructure.DbContexts;
 using Nexus.Infrastructure.Services;
@@ -17,6 +18,14 @@ builder.Services.AddSwaggerGen();
 // AutoMapper
 builder.Services.AddAutoMapper(cfg => cfg.LicenseKey = builder.Configuration["AutoMapperKey"],
     AppDomain.CurrentDomain.GetAssemblies());
+
+// Authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = builder.Configuration["Auth0:Authority"];
+        options.Audience = builder.Configuration["Auth0:Audience"];
+    });
 
 // DbContext
 builder.Services.AddDbContext<NexusContext>(options =>
@@ -55,6 +64,7 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseCors();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
