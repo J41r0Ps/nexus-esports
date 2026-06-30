@@ -5,6 +5,7 @@ using Nexus.Contracts;
 using Nexus.Infrastructure.Services;
 using Nexus.Domain.Entities;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Nexus.API.Controllers
 {
@@ -58,6 +59,7 @@ namespace Nexus.API.Controllers
 
         // POST /api/teams
         [HttpPost]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<TeamDetailsDto>> CreateTeam(TeamForCreationDto teamForCreation)
         {
             if (!await _teamRepository.GameExistsAsync(teamForCreation.GameId))
@@ -79,6 +81,7 @@ namespace Nexus.API.Controllers
 
         // PUT /api/teams/{id}
         [HttpPut("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult> UpdateTeam(int id, TeamForUpdateDto teamForUpdate)
         {
             if (!await _teamRepository.TeamExistsAsync(id))
@@ -102,6 +105,7 @@ namespace Nexus.API.Controllers
 
         // DELETE /api/teams/{id}
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult> DeleteTeam(int id)
         {
             if (!await _teamRepository.TeamExistsAsync(id))

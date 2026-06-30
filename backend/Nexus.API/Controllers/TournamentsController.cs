@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nexus.Contracts;
 using Nexus.Contracts.Models;
@@ -59,6 +60,7 @@ namespace Nexus.API.Controllers
 
         // POST /api/tournaments
         [HttpPost]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<TournamentDetailsDto>> CreateTournament(
             TournamentForCreationDto tournamentForCreation)
         {
@@ -79,6 +81,7 @@ namespace Nexus.API.Controllers
 
         // PUT /api/tournaments/{id}
         [HttpPut("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult> UpdateTournament(
             int id, TournamentForUpdateDto tournamentForUpdate)
         {
@@ -100,6 +103,7 @@ namespace Nexus.API.Controllers
 
         // DELETE /api/tournaments/{id}
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult> DeleteTournament(int id)
         {
             if (!await _tournamentRepository.TournamentExistsAsync(id))

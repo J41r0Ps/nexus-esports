@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nexus.Contracts;
 using Nexus.Contracts.Models;
@@ -59,6 +60,7 @@ namespace Nexus.API.Controllers
 
         // POST /api/players
         [HttpPost]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult<PlayerDetailsDto>> CreatePlayer(
             PlayerForCreationDto playerForCreation)
         {
@@ -78,6 +80,7 @@ namespace Nexus.API.Controllers
 
         // PUT /api/players/{id}
         [HttpPut("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult> UpdatePlayer(int id, PlayerForUpdateDto playerForUpdate)
         {
             if (!await _playerRepository.PlayerExistsAsync(id))
@@ -98,6 +101,7 @@ namespace Nexus.API.Controllers
 
         // DELETE /api/players/{id}
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<ActionResult> DeletePlayer(int id)
         {
             if (!await _playerRepository.PlayerExistsAsync(id))

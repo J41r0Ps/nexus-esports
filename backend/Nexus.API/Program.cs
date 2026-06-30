@@ -7,8 +7,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Controllers + JSON cycle fix
 builder.Services.AddControllers()
-    .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler =
-        System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler =
+            System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+
+        // Json to send " " instead of needing the numeric value for enums 
+        options.JsonSerializerOptions.Converters.Add(
+            new System.Text.Json.Serialization.JsonStringEnumConverter());
+    } );
 
 builder.Services.AddOpenApi();
 
@@ -26,6 +33,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.Authority = builder.Configuration["Auth0:Authority"];
         options.Audience = builder.Configuration["Auth0:Audience"];
     });
+
+// Authorization
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireClaim("https://nexus-esports.com/roles", "admin"));
+});
 
 // DbContext
 builder.Services.AddDbContext<NexusContext>(options =>
