@@ -648,3 +648,330 @@ a:hover {
   color: var(--text-muted);
   font-size: 0.85rem;
 }
+
+/* ============================================
+    HERO SECTION
+   ============================================ */
+
+.hero {
+  position: relative;
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 1rem;
+  overflow: hidden;
+}
+
+/* Animated grid background */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  100% {
+    transform: translate(50px, 50px);
+  }
+}
+
+/* Floating glow orbs */
+.hero-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+  pointer-events: none;
+  animation: float 8s ease-in-out infinite;
+}
+
+.hero-glow-1 {
+  width: 400px;
+  height: 400px;
+  background: var(--neon-cyan);
+  top: -100px;
+  left: -100px;
+}
+
+.hero-glow-2 {
+  width: 500px;
+  height: 500px;
+  background: var(--neon-violet);
+  bottom: -150px;
+  right: -100px;
+  animation-delay: -4s;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+
+  50% {
+    transform: translateY(-30px) translateX(20px);
+  }
+}
+
+/* Hero content */
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  background: rgba(0, 240, 255, 0.08);
+  border: 1px solid var(--border-glow);
+  border-radius: 999px;
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--neon-cyan);
+  margin-bottom: 2rem;
+}
+
+.hero-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--neon-cyan);
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.04em;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 2.5rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.hero-welcome {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-top: 1.5rem;
+}
+
+.hero-welcome i {
+  color: var(--neon-yellow);
+  margin-right: 0.5rem;
+}
+
+.hero-welcome strong {
+  color: var(--neon-cyan);
+  font-weight: 600;
+}
+
+/* Stagger fade-in animations */
+.hero-content .fade-in-up:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.hero-content .fade-in-up:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.hero-content .fade-in-up:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.hero-content .fade-in-up:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.hero-content .fade-in-up:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+/* ============================================
+    STATS SECTION
+   ============================================ */
+
+.stats-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin: 4rem 0;
+}
+
+.stat-card {
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.stat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.stat-icon-cyan {
+  background: rgba(0, 240, 255, 0.1);
+  color: var(--neon-cyan);
+}
+
+.stat-icon-violet {
+  background: rgba(176, 38, 255, 0.1);
+  color: var(--neon-violet);
+}
+
+.stat-icon-pink {
+  background: rgba(255, 46, 136, 0.1);
+  color: var(--neon-pink);
+}
+
+.stat-icon-green {
+  background: rgba(0, 255, 148, 0.1);
+  color: var(--neon-green);
+}
+
+.stat-value {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* ============================================
+    FEATURES SECTION
+   ============================================ */
+
+.features-section {
+  text-align: center;
+  margin: 6rem 0;
+}
+
+.features-title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.03em;
+}
+
+.features-subtitle {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 3rem;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  text-align: left;
+}
+
+.feature-card {
+  padding: 2rem;
+}
+
+.feature-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-sm);
+  background: var(--gradient-primary);
+  color: var(--bg-primary);
+  font-size: 1.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.feature-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+}
+
+.feature-desc {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ============================================
+    CTA SECTION
+   ============================================ */
+
+.cta-section {
+  margin: 6rem 0 2rem;
+}
+
+.cta-card {
+  padding: 4rem 2rem;
+  text-align: center;
+  background: linear-gradient(135deg,
+      rgba(0, 240, 255, 0.05) 0%,
+      rgba(176, 38, 255, 0.05) 100%);
+  border-color: var(--border-glow);
+}
+
+.cta-title {
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-weight: 700;
+  margin-bottom: 1rem;
+  letter-spacing: -0.03em;
+}
+
+.cta-desc {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
