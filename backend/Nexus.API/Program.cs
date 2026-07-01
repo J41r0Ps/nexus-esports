@@ -60,6 +60,9 @@ builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 builder.Services.AddScoped<IStageRepository, StageRepository>();
 builder.Services.AddScoped<IMatchRepository, MatchRepository>();
 
+// External APIs — HttpClient
+builder.Services.AddHttpClient();
+
 // Mail service
 if (builder.Environment.IsDevelopment())
 {
