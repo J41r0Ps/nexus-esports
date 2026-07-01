@@ -40,5 +40,10 @@ namespace Nexus.Infrastructure.Services
 
         public async Task<bool> TournamentExistsAsync(int tournamentId)
             => await _context.Tournaments.AnyAsync(t => t.Id == tournamentId);
+        public async Task<Match?> GetMatchByIdAsync(int matchId)
+            => await _context.Matches.FirstOrDefaultAsync(m => m.Id == matchId);
+
+        public async Task SaveChangesAsync()
+            => await _context.SaveChangesAsync();
     }
 }

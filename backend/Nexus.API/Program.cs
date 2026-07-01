@@ -70,6 +70,9 @@ else
     builder.Services.AddScoped<IEmailService, MailtrapEmailService>();
 }
 
+// Add near the other builder.Services lines
+builder.Services.AddSignalR();
+
 // CORS
 builder.Services.AddCors(options =>
 {
@@ -77,6 +80,7 @@ builder.Services.AddCors(options =>
         policy.WithOrigins("http://localhost:5173")
               .WithHeaders("Content-Type", "Authorization")
               .AllowAnyMethod()
+              .AllowCredentials()           // Allow credentials for SignalR
               .WithExposedHeaders("X-Pagination")
     );
 });
@@ -85,11 +89,11 @@ var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
-
 app.UseHttpsRedirection();
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<Nexus.API.Hubs.MatchHub>("/hubs/matches");   
 
 app.Run();

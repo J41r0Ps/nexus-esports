@@ -8,5 +8,7 @@ namespace Nexus.Infrastructure.Services
         Task<Match?> GetMatchAsync(int matchId);
         Task<bool> MatchExistsAsync(int matchId);
         Task<bool> TournamentExistsAsync(int tournamentId);
+        Task<Match?> GetMatchByIdAsync(int matchId);
+        Task SaveChangesAsync();
     }
 }
