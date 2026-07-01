@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth0 } from "@auth0/auth0-react";
 import { useTheme } from '@/context/theme_context';
+import ScrollToTop from '@/components/ui/scroll_to_top';
 
 function Layout({ children, title, subtitle }) {
     const { loginWithRedirect, logout, isAuthenticated, user, error } = useAuth0();
@@ -175,6 +176,7 @@ function Layout({ children, title, subtitle }) {
                     </div>
                 </div>
             </footer>
+            <ScrollToTop />
         </>
     );
 }

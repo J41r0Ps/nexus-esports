@@ -2854,3 +2854,44 @@ a:hover {
     transform: translateX(100%);
   }
 }
+
+/* ============================================
+    SCROLL TO TOP
+   ============================================ */
+
+.scroll-top-btn {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  color: var(--bg-primary);
+  border: none;
+  cursor: pointer;
+  box-shadow: var(--glow-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  z-index: 1000;
+  animation: scrollBtnIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform var(--transition-fast);
+}
+
+.scroll-top-btn:hover {
+  transform: translateY(-4px);
+}
+
+@keyframes scrollBtnIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
