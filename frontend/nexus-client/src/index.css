@@ -2621,3 +2621,148 @@ a:hover {
 .nexus-toast-close:hover {
   color: var(--text-primary);
 }
+
+/* ============================================
+    LIVE INDICATOR + ADMIN MATCH ACTIONS
+   ============================================ */
+
+.live-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  background: rgba(0, 255, 148, 0.1);
+  border: 1px solid rgba(0, 255, 148, 0.3);
+  border-radius: 999px;
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--neon-green);
+  margin-bottom: 1rem;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--neon-green);
+  box-shadow: 0 0 10px var(--neon-green);
+  animation: livePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(1.4);
+  }
+}
+
+.admin-match-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--border-default);
+}
+
+.admin-match-btn {
+  flex: 1;
+  padding: 0.4rem 0.6rem;
+  background: rgba(176, 38, 255, 0.08);
+  border: 1px solid rgba(176, 38, 255, 0.3);
+  color: var(--neon-violet);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+.admin-match-btn:hover {
+  background: rgba(176, 38, 255, 0.2);
+  box-shadow: 0 0 10px rgba(176, 38, 255, 0.4);
+}
+
+/* ============================================
+    WINNER HIGHLIGHT — VISUAL FEEDBACK
+   ============================================ */
+
+.bracket-team.is-winner {
+  background: linear-gradient(135deg,
+      rgba(0, 255, 148, 0.15) 0%,
+      rgba(0, 240, 255, 0.08) 100%);
+  border: 1px solid rgba(0, 255, 148, 0.4);
+  box-shadow: 0 0 15px rgba(0, 255, 148, 0.2);
+  position: relative;
+  animation: winnerReveal 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes winnerReveal {
+  0% {
+    background: rgba(0, 255, 148, 0.5);
+    box-shadow: 0 0 30px rgba(0, 255, 148, 0.8);
+    transform: scale(1.02);
+  }
+
+  100% {
+    background: linear-gradient(135deg, rgba(0, 255, 148, 0.15) 0%, rgba(0, 240, 255, 0.08) 100%);
+    box-shadow: 0 0 15px rgba(0, 255, 148, 0.2);
+    transform: scale(1);
+  }
+}
+
+.bracket-team.is-winner .bracket-team-name {
+  color: var(--neon-green);
+  font-weight: 700;
+}
+
+.bracket-team.is-winner::after {
+  content: '\F586';
+  /* Bootstrap trophy-fill icon */
+  font-family: "bootstrap-icons";
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--neon-yellow);
+  font-size: 1.2rem;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+  animation: trophyPop 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes trophyPop {
+  0% {
+    transform: translateY(-50%) scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(-50%) scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+.bracket-team.is-loser {
+  opacity: 0.55;
+  filter: grayscale(0.3);
+}
+
+.bracket-team.is-loser .bracket-team-name {
+  text-decoration: line-through;
+  text-decoration-color: rgba(255, 46, 136, 0.5);
+}

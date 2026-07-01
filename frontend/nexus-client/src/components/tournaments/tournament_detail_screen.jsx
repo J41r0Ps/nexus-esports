@@ -3,7 +3,9 @@ import { useParams, Link } from 'react-router-dom';
 import Layout from '@/layout_template';
 import TournamentBracket from './tournament_bracket';
 import TournamentTeams from './tournament_teams';
+import Toast from '@/components/ui/toast';
 import TournamentsService from '@/api/tournaments_service';
+import { useMatchHub } from '@/hooks/use_match_hub';
 
 function TournamentDetailScreen() {
     const { id } = useParams();
@@ -11,6 +13,7 @@ function TournamentDetailScreen() {
     const [matches, setMatches] = useState([]);
     const [activeTab, setActiveTab] = useState('bracket');
     const [loading, setLoading] = useState(true);
+    const [toast, setToast] = useState(null);
 
     const getTournament = async () => {
         try {
@@ -38,6 +41,24 @@ function TournamentDetailScreen() {
         getMatches();
     }, [id]);
 
+    // SignalR — live match updates
+    useMatchHub(id, (updatedMatch) => {
+        setMatches(prev => prev.map(m =>
+            m.id === updatedMatch.id
+                ? {
+                    ...m,
+                    winnerId: updatedMatch.winnerId,
+                    team1Name: updatedMatch.team1?.name,
+                    team2Name: updatedMatch.team2?.name
+                }
+                : m
+        ));
+        setToast({
+            message: `Live update: ${updatedMatch.team1?.name} vs ${updatedMatch.team2?.name} — winner updated!`,
+            type: 'info'
+        });
+    });
+
     if (loading) {
         return (
             <Layout>
@@ -55,9 +76,7 @@ function TournamentDetailScreen() {
                 <div className="empty-state glass-card">
                     <i className="bi bi-trophy empty-icon"></i>
                     <h3>Tournament not found</h3>
-                    <Link to="/tournaments" className="btn-neon mt-3">
-                        Back to Tournaments
-                    </Link>
+                    <Link to="/tournaments" className="btn-neon mt-3">Back to Tournaments</Link>
                 </div>
             </Layout>
         );
@@ -79,7 +98,12 @@ function TournamentDetailScreen() {
 
     return (
         <Layout>
-            {/* ─────── Hero Banner ─────── */}
+            {/* Live indicator */}
+            <div className="live-indicator">
+                <span className="live-dot"></span>
+                <span>LIVE UPDATES ENABLED</span>
+            </div>
+
             <section className="tournament-hero fade-in-up">
                 <Link to="/tournaments" className="back-link">
                     <i className="bi bi-arrow-left"></i> All Tournaments
@@ -131,7 +155,6 @@ function TournamentDetailScreen() {
                 </div>
             </section>
 
-            {/* ─────── Tabs ─────── */}
             <div className="tournament-tabs">
                 <button
                     className={`tournament-tab ${activeTab === 'bracket' ? 'active' : ''}`}
@@ -148,13 +171,24 @@ function TournamentDetailScreen() {
                 </button>
             </div>
 
-            {/* ─────── Tab Content ─────── */}
             {activeTab === 'bracket' && (
-                <TournamentBracket stages={tournament.stages} matches={matches} />
+                <TournamentBracket
+                    stages={tournament.stages}
+                    matches={matches}
+                    tournamentId={id}
+                />
             )}
 
             {activeTab === 'teams' && (
                 <TournamentTeams teams={tournament.registeredTeams} />
+            )}
+
+            {toast && (
+                <Toast
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={() => setToast(null)}
+                />
             )}
         </Layout>
     );
