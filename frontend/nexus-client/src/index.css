@@ -356,7 +356,7 @@ a:hover {
 }
 
 .nexus-navbar.scrolled {
-  background: rgba(10, 14, 26, 0.85);
+  background: var(--bg-overlay);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-default);
@@ -641,7 +641,7 @@ a:hover {
   border-top: 1px solid var(--border-default);
   padding: 2rem 0;
   margin-top: 4rem;
-  background: rgba(10, 14, 26, 0.6);
+  background: var(--bg-overlay);
 }
 
 .nexus-footer-inner {
@@ -2894,4 +2894,96 @@ a:hover {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* ============================================
+    PAGE TRANSITIONS
+   ============================================ */
+
+.nexus-main {
+  animation: pageFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+    404 NOT FOUND
+   ============================================ */
+
+.not-found {
+  text-align: center;
+  padding: 4rem 1rem;
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.not-found-code {
+  font-family: var(--font-heading);
+  font-size: clamp(6rem, 20vw, 12rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  animation: glitch 3s infinite;
+}
+
+@keyframes glitch {
+
+  0%,
+  92%,
+  100% {
+    transform: translate(0);
+  }
+
+  93% {
+    transform: translate(-2px, 2px);
+  }
+
+  94% {
+    transform: translate(2px, -2px);
+  }
+
+  95% {
+    transform: translate(-2px, 0);
+  }
+
+  96% {
+    transform: translate(2px, 0);
+  }
+
+  97% {
+    transform: translate(0, 2px);
+  }
+}
+
+.not-found-title {
+  font-size: 2rem;
+  margin: 1rem 0 0.5rem;
+  color: var(--text-primary);
+}
+
+.not-found-message {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  max-width: 500px;
+}
+
+.not-found-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }

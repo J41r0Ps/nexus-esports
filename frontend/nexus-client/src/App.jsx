@@ -5,6 +5,7 @@ import PlayersScreen from './components/players/players_screen';
 import TournamentsScreen from './components/tournaments/tournaments_screen';
 import TournamentDetailScreen from './components/tournaments/tournament_detail_screen';
 import PlayerDetailScreen from './components/players/player_detail_screen';
+import NotFoundScreen from './components/not_found_screen';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <Route path="/tournaments" element={<TournamentsScreen />} />
       <Route path="/tournaments/:id" element={<TournamentDetailScreen />} />
       <Route path="/players/:id" element={<PlayerDetailScreen />} />
+      <Route path="*" element={<NotFoundScreen />} />
     </Routes>
   );
 }
