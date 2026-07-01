@@ -1111,12 +1111,16 @@ a:hover {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--neon-cyan);
+  flex-shrink: 0;
 }
 
 .team-logo img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  padding: 4px;
+  background: white;
+  border-radius: var(--radius-sm);
 }
 
 .team-card-body {
@@ -2790,7 +2794,7 @@ a:hover {
 }
 
 /* ============================================
-   THEME TOGGLE
+    THEME TOGGLE
    ============================================ */
 
 .theme-toggle {
@@ -2991,6 +2995,15 @@ a:hover {
 .registered-team-flag {
   width: 28px;
   height: 20px;
+  object-fit: cover;
+  border-radius: 3px;
+  border: 1px solid var(--border-default);
+  flex-shrink: 0;
+}
+
+.country-flag-inline {
+  width: 24px;
+  height: 18px;
   object-fit: cover;
   border-radius: 3px;
   border: 1px solid var(--border-default);
