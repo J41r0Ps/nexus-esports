@@ -1,23 +1,27 @@
-function TeamCard({ team }) {
+import { Link } from 'react-router-dom';
+
+function TeamCard({ team, isAdmin, onEdit, onDelete }) {
     const regionColors = {
-        EU: 'badge-neon',
-        NA: 'badge-violet',
-        APAC: 'badge-pink',
-        LATAM: 'badge-green',
-        ME: 'badge-yellow',
-        CIS: 'badge-neon',
-        OCE: 'badge-violet'
+        EU: 'badge-neon', NA: 'badge-violet', APAC: 'badge-pink',
+        LATAM: 'badge-green', ME: 'badge-yellow', CIS: 'badge-neon', OCE: 'badge-violet'
     };
 
     return (
         <div className="team-card glass-card fade-in-up">
+            {isAdmin && (
+                <div className="admin-actions">
+                    <button className="admin-btn admin-btn-edit" onClick={(e) => { e.preventDefault(); onEdit(team); }}>
+                        <i className="bi bi-pencil-fill"></i>
+                    </button>
+                    <button className="admin-btn admin-btn-delete" onClick={(e) => { e.preventDefault(); onDelete(team); }}>
+                        <i className="bi bi-trash-fill"></i>
+                    </button>
+                </div>
+            )}
+
             <div className="team-card-header">
                 <div className="team-logo">
-                    {team.logoUrl ? (
-                        <img src={team.logoUrl} alt={team.name} />
-                    ) : (
-                        <span>{team.tag?.charAt(0)}</span>
-                    )}
+                    {team.logoUrl ? <img src={team.logoUrl} alt={team.name} /> : <span>{team.tag?.charAt(0)}</span>}
                 </div>
                 <span className={`badge-neon ${regionColors[team.region] || 'badge-neon'}`}>
                     {team.region}
@@ -30,12 +34,10 @@ function TeamCard({ team }) {
 
                 <div className="team-meta">
                     <div className="team-meta-item">
-                        <i className="bi bi-controller"></i>
-                        <span>{team.gameName}</span>
+                        <i className="bi bi-controller"></i><span>{team.gameName}</span>
                     </div>
                     <div className="team-meta-item">
-                        <i className="bi bi-calendar3"></i>
-                        <span>Est. {team.foundedYear}</span>
+                        <i className="bi bi-calendar3"></i><span>Est. {team.foundedYear}</span>
                     </div>
                 </div>
             </div>
@@ -43,7 +45,7 @@ function TeamCard({ team }) {
     );
 }
 
-function TeamsList({ teams, loading }) {
+function TeamsList({ teams, loading, isAdmin, onEdit, onDelete }) {
     if (loading) {
         return (
             <div className="loading-state">
@@ -66,7 +68,13 @@ function TeamsList({ teams, loading }) {
     return (
         <div className="teams-grid">
             {teams.map(team => (
-                <TeamCard key={team.id} team={team} />
+                <TeamCard
+                    key={team.id}
+                    team={team}
+                    isAdmin={isAdmin}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                />
             ))}
         </div>
     );
