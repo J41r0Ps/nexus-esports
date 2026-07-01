@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function PlayerCard({ player }) {
     const roleColors = {
         Fragger: 'badge-pink',
@@ -16,40 +18,42 @@ function PlayerCard({ player }) {
     };
 
     return (
-        <div className="player-card glass-card fade-in-up">
-            <div className="player-card-image">
-                {player.photoUrl ? (
-                    <img src={player.photoUrl} alt={player.gamertag} />
-                ) : (
-                    <div className="player-card-placeholder">
-                        <i className="bi bi-person-fill"></i>
-                    </div>
-                )}
-                <span className={`badge-neon player-role-badge ${roleColors[player.role] || 'badge-neon'}`}>
-                    {player.role}
-                </span>
-            </div>
+        <Link to={`/players/${player.id}`} className="player-card-link">
+            <div className="player-card glass-card fade-in-up">
+                <div className="player-card-image">
+                    {player.photoUrl ? (
+                        <img src={player.photoUrl} alt={player.gamertag} />
+                    ) : (
+                        <div className="player-card-placeholder">
+                            <i className="bi bi-person-fill"></i>
+                        </div>
+                    )}
+                    <span className={`badge-neon player-role-badge ${roleColors[player.role] || 'badge-neon'}`}>
+                        {player.role}
+                    </span>
+                </div>
 
-            <div className="player-card-body">
-                <h3 className="player-gamertag">{player.gamertag}</h3>
-                <p className="player-realname">{player.realName}</p>
+                <div className="player-card-body">
+                    <h3 className="player-gamertag">{player.gamertag}</h3>
+                    <p className="player-realname">{player.realName}</p>
 
-                <div className="player-meta">
-                    <div className="player-meta-item">
-                        <i className="bi bi-shield-fill"></i>
-                        <span>{player.teamName}</span>
-                    </div>
-                    <div className="player-meta-item">
-                        <i className="bi bi-geo-alt-fill"></i>
-                        <span>{player.countryName}</span>
-                    </div>
-                    <div className="player-meta-item player-salary">
-                        <i className="bi bi-cash-stack"></i>
-                        <span>{formatSalary(player.salary)}</span>
+                    <div className="player-meta">
+                        <div className="player-meta-item">
+                            <i className="bi bi-shield-fill"></i>
+                            <span>{player.teamName}</span>
+                        </div>
+                        <div className="player-meta-item">
+                            <i className="bi bi-geo-alt-fill"></i>
+                            <span>{player.countryName}</span>
+                        </div>
+                        <div className="player-meta-item player-salary">
+                            <i className="bi bi-cash-stack"></i>
+                            <span>{formatSalary(player.salary)}</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 }
 
