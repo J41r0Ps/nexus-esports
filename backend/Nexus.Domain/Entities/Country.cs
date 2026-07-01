@@ -16,6 +16,9 @@ namespace Nexus.Domain.Entities
         [Required]
         [MaxLength(10)]
         public string Code { get; set; }    // e.g. "US", "DE", "KR"
+        
+        [MaxLength(300)]
+        public string? FlagUrl { get; set; }  
 
         public ICollection<Player> Players { get; set; } = new List<Player>();
         public ICollection<Team> Teams { get; set; } = new List<Team>();

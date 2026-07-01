@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <Folder Include="ExternalServices\PandaScore\Models\" />
-    <Folder Include="ExternalServices\RestCountries\Models\" />
   </ItemGroup>
 
 </Project>
