@@ -2766,3 +2766,10 @@ a:hover {
   text-decoration: line-through;
   text-decoration-color: rgba(255, 46, 136, 0.5);
 }
+
+.admin-match-btn.active {
+  background: rgba(0, 255, 148, 0.2);
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+  box-shadow: 0 0 10px rgba(0, 255, 148, 0.4);
+}

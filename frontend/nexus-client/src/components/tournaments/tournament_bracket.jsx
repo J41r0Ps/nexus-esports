@@ -3,31 +3,22 @@ import { useIsAdmin } from '@/hooks/use_is_admin';
 import TournamentsService from '@/api/tournaments_service';
 
 function MatchCard({ match, tournamentId, isAdmin, onWinnerSet }) {
-    const { getAccessTokenSilently } = useAuth0();
     const hasWinner = match.winnerId != null;
 
-    const setWinner = async (teamName) => {
-        try {
-            // We need actual team IDs — the current match list DTO has team names only.
-            // For admin actions, we'll fetch the full match detail to get IDs.
-            const detail = await TournamentsService.getAllTournaments; // placeholder
-            // Simpler: derive from currently selected side
-            const token = await getAccessTokenSilently();
+    // Determine which team is the winner
+    const isTeam1Winner = hasWinner && match.team1Id === match.winnerId;
+    const isTeam2Winner = hasWinner && match.team2Id === match.winnerId;
 
-            // team1 name matches → use match.team1Id (need to expose it)
-            // For now: let's assume winner is passed as 1 or 2 (index)
-            // We'll call the API with the team ID based on match data
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    // Simplified: since we have match.winnerId, but not team1Id/team2Id
-    // in list DTO, we'll use dropdown approach via match detail
+    const team1Class = hasWinner
+        ? (isTeam1Winner ? 'is-winner' : 'is-loser')
+        : '';
+    const team2Class = hasWinner
+        ? (isTeam2Winner ? 'is-winner' : 'is-loser')
+        : '';
 
     return (
         <div className={`bracket-match ${hasWinner ? 'played' : 'pending'}`}>
-            <div className={`bracket-team ${match.winnerId && match.winnerId === match.team1IdActual ? 'winner' : ''}`}>
+            <div className={`bracket-team ${team1Class}`}>
                 <div className="bracket-team-info">
                     {match.team1Logo && (
                         <img src={match.team1Logo} alt={match.team1Name} className="bracket-team-logo" />
@@ -38,7 +29,7 @@ function MatchCard({ match, tournamentId, isAdmin, onWinnerSet }) {
 
             <div className="bracket-vs">VS</div>
 
-            <div className="bracket-team">
+            <div className={`bracket-team ${team2Class}`}>
                 <div className="bracket-team-info">
                     {match.team2Logo && (
                         <img src={match.team2Logo} alt={match.team2Name} className="bracket-team-logo" />
@@ -53,10 +44,16 @@ function MatchCard({ match, tournamentId, isAdmin, onWinnerSet }) {
 
             {isAdmin && (
                 <div className="admin-match-actions">
-                    <button className="admin-match-btn" onClick={() => onWinnerSet(match, 'team1')}>
+                    <button
+                        className={`admin-match-btn ${isTeam1Winner ? 'active' : ''}`}
+                        onClick={() => onWinnerSet(match, 'team1')}
+                    >
                         <i className="bi bi-trophy-fill"></i> {match.team1Name}
                     </button>
-                    <button className="admin-match-btn" onClick={() => onWinnerSet(match, 'team2')}>
+                    <button
+                        className={`admin-match-btn ${isTeam2Winner ? 'active' : ''}`}
+                        onClick={() => onWinnerSet(match, 'team2')}
+                    >
                         <i className="bi bi-trophy-fill"></i> {match.team2Name}
                     </button>
                 </div>
