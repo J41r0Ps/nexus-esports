@@ -48,5 +48,33 @@ namespace Nexus.Infrastructure.ExternalServices.PandaScore
                 return new List<PandaScoreTeam>();
             }
         }
+
+        public async Task<List<PandaScorePlayer>> GetPlayersByTeamAsync(string gameSlug, int teamPandaScoreId)
+        {
+            var url = $"{_baseUrl}/{gameSlug}/teams/{teamPandaScoreId}/players?page[size]=100";
+
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, url);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+
+                var response = await _http.SendAsync(request);
+                var body = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine($"[PandaScore /{gameSlug}/teams/{teamPandaScoreId}/players] {response.StatusCode}: {body}");
+                    return new List<PandaScorePlayer>();
+                }
+
+                var players = JsonSerializer.Deserialize<List<PandaScorePlayer>>(body);
+                return players ?? new List<PandaScorePlayer>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[PandaScore Players] Exception: {ex.Message}");
+                return new List<PandaScorePlayer>();
+            }
+        }
     }
 }
