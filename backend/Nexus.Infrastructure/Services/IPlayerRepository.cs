@@ -25,5 +25,7 @@ namespace Nexus.Infrastructure.Services
         void AddPlayer(Player player);
         void DeletePlayer(Player player);
         Task SaveChangesAsync();
+        Task<bool> HasStatsAsync(int playerId);
+        Task<bool> HasAchievementsAsync(int playerId);
     }
 }

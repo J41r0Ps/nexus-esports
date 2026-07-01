@@ -113,5 +113,11 @@ namespace Nexus.Infrastructure.Services
         public void DeletePlayer(Player player) => _context.Players.Remove(player);
 
         public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
+
+        public async Task<bool> HasStatsAsync(int playerId)
+            => await _context.PlayerStats.AnyAsync(ps => ps.PlayerId == playerId);
+
+        public async Task<bool> HasAchievementsAsync(int playerId)
+            => await _context.Achievements.AnyAsync(a => a.PlayerId == playerId);
     }
 }

@@ -107,6 +107,12 @@ namespace Nexus.API.Controllers
             if (!await _playerRepository.PlayerExistsAsync(id))
                 return NotFound();
 
+            if (await _playerRepository.HasStatsAsync(id))
+                return BadRequest("Cannot delete player with match statistics.");
+
+            if (await _playerRepository.HasAchievementsAsync(id))
+                return BadRequest("Cannot delete player with achievements.");
+
             var player = await _playerRepository.GetPlayerAsync(id);
             _playerRepository.DeletePlayer(player!);
             await _playerRepository.SaveChangesAsync();
