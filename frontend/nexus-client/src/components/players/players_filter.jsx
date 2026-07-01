@@ -70,9 +70,10 @@ function PlayersFilter({ filters, onFilterChange, teams, countries }) {
                         value={filters.countryId || ''}
                         onChange={handleChange}
                     >
-                        <option value="">All Countries</option>
                         {countries.map(c => (
-                            <option key={c.id} value={c.id}>{c.name}</option>
+                            <option key={c.id} value={c.id}>
+                                {c.code} — {c.name}
+                            </option>
                         ))}
                     </select>
                 </div>

@@ -97,7 +97,12 @@ function PlayerDetailScreen() {
                             <i className="bi bi-geo-alt-fill"></i>
                             <div>
                                 <span className="detail-label">Country</span>
-                                <span className="detail-value">{player.countryName}</span>
+                                {player.countryFlag ? (
+                                    <img src={player.countryFlag} alt={player.countryName} className="country-flag-inline" />
+                                ) : (
+                                    <i className="bi bi-geo-alt-fill"></i>
+                                )}
+                                <span>{player.countryName}</span>
                             </div>
                         </div>
                         <div className="player-detail-item">

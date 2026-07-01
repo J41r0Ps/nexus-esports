@@ -16,6 +16,15 @@ function TournamentTeams({ teams }) {
             {sorted.map(team => (
                 <div key={team.teamId} className="registered-team-card glass-card">
                     <div className="seed-number">#{team.seedNumber}</div>
+
+                    {team.teamFlag && (
+                        <img
+                            src={team.teamFlag}
+                            alt={team.teamName}
+                            className="registered-team-flag"
+                        />
+                    )}
+
                     <div className="registered-team-info">
                         <h4>{team.teamName}</h4>
                         <span className="registered-team-tag">[{team.teamTag}]</span>

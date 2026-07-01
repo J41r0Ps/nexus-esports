@@ -52,7 +52,11 @@ function PlayerCard({ player, isAdmin, onEdit, onDelete }) {
                             <span>{player.teamName}</span>
                         </div>
                         <div className="player-meta-item">
-                            <i className="bi bi-geo-alt-fill"></i>
+                            {player.countryFlag ? (
+                                <img src={player.countryFlag} alt={player.countryName} className="country-flag-inline" />
+                            ) : (
+                                <i className="bi bi-geo-alt-fill"></i>
+                            )}
                             <span>{player.countryName}</span>
                         </div>
                         <div className="player-meta-item player-salary">

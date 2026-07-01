@@ -2987,3 +2987,12 @@ a:hover {
   flex-wrap: wrap;
   justify-content: center;
 }
+
+.registered-team-flag {
+  width: 28px;
+  height: 20px;
+  object-fit: cover;
+  border-radius: 3px;
+  border: 1px solid var(--border-default);
+  flex-shrink: 0;
+}

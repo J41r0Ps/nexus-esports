@@ -33,13 +33,22 @@ function TeamCard({ team, isAdmin, onEdit, onDelete }) {
             <div className="team-card-body">
                 <h3 className="team-name">{team.name}</h3>
                 <span className="team-tag">[{team.tag}]</span>
-
                 <div className="team-meta">
                     <div className="team-meta-item">
-                        <i className="bi bi-controller"></i><span>{team.gameName}</span>
+                        <i className="bi bi-controller"></i>
+                        <span>{team.gameName}</span>
                     </div>
                     <div className="team-meta-item">
-                        <i className="bi bi-calendar3"></i><span>Est. {team.foundedYear}</span>
+                        <i className="bi bi-calendar3"></i>
+                        <span>Est. {team.foundedYear}</span>
+                    </div>
+                    <div className="team-meta-item">
+                        {team.countryFlag ? (
+                            <img src={team.countryFlag} alt={team.countryName} className="country-flag-inline" />
+                        ) : (
+                            <i className="bi bi-geo-alt-fill"></i>
+                        )}
+                        <span>{team.countryName}</span>
                     </div>
                 </div>
             </div>
