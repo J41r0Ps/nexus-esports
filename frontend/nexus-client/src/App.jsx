@@ -3,6 +3,7 @@ import HomeScreen from './components/home/home_screen';
 import TeamsScreen from './components/teams/teams_screen';
 import PlayersScreen from './components/players/players_screen';
 import TournamentsScreen from './components/tournaments/tournaments_screen';
+import TournamentDetailScreen from './components/tournaments/tournament_detail_screen';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Route path="/teams" element={<TeamsScreen />} />
       <Route path="/players" element={<PlayersScreen />} />
       <Route path="/tournaments" element={<TournamentsScreen />} />
+      <Route path="/tournaments/:id" element={<TournamentDetailScreen />} />
     </Routes>
   );
 }
