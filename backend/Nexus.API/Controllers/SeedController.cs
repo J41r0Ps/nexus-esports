@@ -1,7 +1,9 @@
 ﻿#if DEBUG
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Nexus.Domain.Entities;
 using Nexus.Infrastructure.DbContexts;
+using Nexus.Infrastructure.ExternalServices.PandaScore;
 using Nexus.Infrastructure.ExternalServices.Rawg;
 using Nexus.Infrastructure.ExternalServices.RestCountries;
 using Nexus.Infrastructure.Seeders;
@@ -16,13 +18,15 @@ namespace Nexus.API.Controllers
         private readonly IWebHostEnvironment _env;
         private readonly IRawgService _rawg;
         private readonly ICountryDataService _countryApi;
+        private readonly IPandaScoreService _pandaScore;
 
-        public SeedController(NexusContext context, IWebHostEnvironment env, IRawgService rawg, ICountryDataService countryApi)
+        public SeedController(NexusContext context, IWebHostEnvironment env, IRawgService rawg, ICountryDataService countryApi, IPandaScoreService pandaScore)
         {
             _context = context;
             _env = env;
             _rawg = rawg;
             _countryApi = countryApi;
+            _pandaScore = pandaScore;
         }
 
         // Bogus "not more used"
@@ -206,6 +210,59 @@ namespace Nexus.API.Controllers
             {
                 message = "Countries seeded successfully with real data + flags!",
                 count = countries.Count
+            });
+        }
+
+        [HttpPost("teams")]
+        public async Task<IActionResult> SeedTeams()
+        {
+            if (!_env.IsDevelopment()) return Forbid();
+
+            if (!_context.Games.Any())
+                return BadRequest("Seed games first!");
+            if (!_context.Countries.Any())
+                return BadRequest("Seed countries first!");
+            if (_context.Teams.Any())
+                return BadRequest("Teams already seeded.");
+
+            // Seed organizations if needed (simple placeholder orgs)
+            if (!_context.Organizations.Any())
+            {
+                var orgs = new List<Organization>();
+                for (int i = 1; i <= 15; i++)
+                {
+                    orgs.Add(new Organization($"Esports Org {i}")
+                    {
+                        Website = $"https://esports-org-{i}.com",
+                        FoundedYear = Random.Shared.Next(2005, 2020)
+                    });
+                }
+                _context.Organizations.AddRange(orgs);
+                await _context.SaveChangesAsync();
+            }
+
+            var games = await _context.Games.ToListAsync();
+            var countries = await _context.Countries.ToListAsync();
+            var orgIds = await _context.Organizations.Select(o => o.Id).ToListAsync();
+
+            var seeder = new TeamSeeder(_pandaScore);
+            var teams = await seeder.GenerateAsync(games, countries, orgIds);
+
+            _context.Teams.AddRange(teams);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Teams seeded successfully with real data from PandaScore!",
+                count = teams.Count,
+                teams = teams.Take(10).Select(t => new
+                {
+                    t.Id,
+                    t.Name,
+                    t.Tag,
+                    Region = t.Region.ToString(),
+                    t.LogoUrl
+                })
             });
         }
 
