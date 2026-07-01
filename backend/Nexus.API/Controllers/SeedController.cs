@@ -82,6 +82,46 @@ namespace Nexus.API.Controllers
             _context.TournamentRegistrations.AddRange(registrations);
             await _context.SaveChangesAsync();
 
+            // Step 7: Player Stats
+            var matchIds = matches.Select(m => m.Id).ToList();
+            var playerIds = players.Select(p => p.Id).ToList();
+            var f = new Bogus.Faker();
+            var playerStats = new List<Nexus.Domain.Entities.PlayerStat>();
+
+            foreach (var match in matches.Take(50))
+            {
+                var picked = playerIds.OrderBy(_ => f.Random.Int()).Take(10).ToList();
+                foreach (var pid in picked)
+                {
+                    playerStats.Add(new Nexus.Domain.Entities.PlayerStat
+                    {
+                        PlayerId = pid,
+                        MatchId = match.Id,
+                        Kills = f.Random.Int(0, 35),
+                        Deaths = f.Random.Int(0, 25),
+                        Assists = f.Random.Int(0, 20),
+                        Score = f.Random.Decimal(50, 250)
+                    });
+                }
+            }
+            _context.PlayerStats.AddRange(playerStats);
+            await _context.SaveChangesAsync();
+
+            // Step 8: Achievements
+            var achievements = new List<Nexus.Domain.Entities.Achievement>();
+            var titles = new[] { "MVP", "Tournament Winner", "Best Player", "Rookie of the Year", "Clutch Master" };
+            foreach (var pid in playerIds.OrderBy(_ => f.Random.Int()).Take(40))
+            {
+                achievements.Add(new Nexus.Domain.Entities.Achievement(f.PickRandom(titles))
+                {
+                    PlayerId = pid,
+                    TournamentId = f.PickRandom(tournamentIds),
+                    Date = f.Date.Between(DateTime.Now.AddYears(-2), DateTime.Now)
+                });
+            }
+            _context.Achievements.AddRange(achievements);
+            await _context.SaveChangesAsync();
+
             return Ok(new
             {
                 message = "Database seeded successfully!",
@@ -95,7 +135,9 @@ namespace Nexus.API.Controllers
                 tournaments = tournaments.Count,
                 stages = stages.Count,
                 matches = matches.Count,
-                tournamentRegistrations = registrations.Count
+                tournamentRegistrations = registrations.Count,
+                playerStats = playerStats.Count,
+                achievements = achievements.Count,
             });
         }
 
