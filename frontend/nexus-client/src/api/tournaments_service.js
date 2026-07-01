@@ -35,7 +35,14 @@ const TournamentsService = {
         return apiClient.post(`/tournaments/${tournamentId}/registrations`, data, {
             headers: { Authorization: `Bearer ${token}` }
         });
-    }
+    },
+    async updateMatchWinner(tournamentId, matchId, winnerId, token) {
+        return apiClient.patch(
+            `/tournaments/${tournamentId}/matches/${matchId}`,
+            { winnerId },
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+    },
 };
 
 export default TournamentsService;
