@@ -88,6 +88,7 @@ namespace Nexus.Infrastructure.Services
                     .ThenInclude(s => s.Matches)
                 .Include(t => t.TournamentRegistrations)
                     .ThenInclude(tr => tr.Team)
+                        .ThenInclude(t => t.Country)
                 .FirstOrDefaultAsync(t => t.Id == tournamentId);
         }
 

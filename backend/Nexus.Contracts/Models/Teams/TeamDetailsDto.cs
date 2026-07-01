@@ -11,6 +11,7 @@
         public string GameName { get; set; }
         public string OrganizationName { get; set; }
         public string CountryName { get; set; }
+        public string? CountryFlag { get; set; }
         public ICollection<TeamPlayerDto> Players { get; set; } = new List<TeamPlayerDto>();
         public ICollection<TeamSponsorDto> Sponsors { get; set; } = new List<TeamSponsorDto>();
     }

@@ -55,6 +55,8 @@ namespace Nexus.API.MappingProfiles
                     opt => opt.MapFrom(src => src.Team.Name))
                 .ForMember(dest => dest.TeamTag,
                     opt => opt.MapFrom(src => src.Team.Tag))
+                .ForMember(dest => dest.TeamFlag,
+                    opt => opt.MapFrom(src => src.Team.Country.FlagUrl))
                 .ForMember(dest => dest.RegisteredAt,
                     opt => opt.MapFrom(src => src.RegisteredAt.ToString("dd/MM/yyyy")));
 

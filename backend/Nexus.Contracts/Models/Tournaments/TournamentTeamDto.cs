@@ -7,5 +7,6 @@
         public string TeamTag { get; set; }
         public int SeedNumber { get; set; }
         public string RegisteredAt { get; set; }
+        public string? TeamFlag { get; set; }
     }
 }

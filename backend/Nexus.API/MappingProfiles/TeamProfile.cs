@@ -12,6 +12,10 @@ namespace Nexus.API.MappingProfiles
             CreateMap<Team, TeamListDto>()
                 .ForMember(dest => dest.GameName,
                     opt => opt.MapFrom(src => src.Game.Name))
+                .ForMember(dest => dest.CountryName,
+                    opt => opt.MapFrom(src => src.Country.Name))
+                .ForMember(dest => dest.CountryFlag,
+                    opt => opt.MapFrom(src => src.Country.FlagUrl))
                 .ForMember(dest => dest.Region,
                     opt => opt.MapFrom(src => src.Region.ToString()));
 
@@ -23,6 +27,8 @@ namespace Nexus.API.MappingProfiles
                     opt => opt.MapFrom(src => src.Organization.Name))
                 .ForMember(dest => dest.CountryName,
                     opt => opt.MapFrom(src => src.Country.Name))
+                .ForMember(dest => dest.CountryFlag,
+                    opt => opt.MapFrom(src => src.Country.FlagUrl))
                 .ForMember(dest => dest.Region,
                     opt => opt.MapFrom(src => src.Region.ToString()));
 
