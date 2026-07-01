@@ -2,36 +2,60 @@
 
 namespace Nexus.Infrastructure.ExternalServices.RestCountries.Models
 {
-    public class RestCountry
+    public class CountriesResponseV5
     {
-        [JsonPropertyName("name")]
-        public CountryName? Name { get; set; }
-
-        [JsonPropertyName("cca2")]
-        public string? Cca2 { get; set; }   // 2-letter code (e.g. "US")
-
-        [JsonPropertyName("cca3")]
-        public string? Cca3 { get; set; }   // 3-letter code (e.g. "USA")
-
-        [JsonPropertyName("flags")]
-        public CountryFlags? Flags { get; set; }
+        [JsonPropertyName("data")]
+        public CountriesDataV5? Data { get; set; }
     }
 
-    public class CountryName
+    public class CountriesDataV5
+    {
+        [JsonPropertyName("objects")]
+        public List<CountryV5> Objects { get; set; } = new();
+
+        [JsonPropertyName("meta")]
+        public CountriesMetaV5? Meta { get; set; }
+    }
+
+    public class CountriesMetaV5
+    {
+        [JsonPropertyName("total")]
+        public int Total { get; set; }
+
+        [JsonPropertyName("returned")]
+        public int Returned { get; set; }
+    }
+
+    public class CountryV5
+    {
+        [JsonPropertyName("names")]
+        public CountryNamesV5? Names { get; set; }
+
+        [JsonPropertyName("codes")]
+        public CountryCodesV5? Codes { get; set; }
+
+        [JsonPropertyName("flag")]
+        public CountryFlagV5? Flag { get; set; }
+    }
+
+    public class CountryNamesV5
     {
         [JsonPropertyName("common")]
         public string Common { get; set; } = string.Empty;
-
-        [JsonPropertyName("official")]
-        public string Official { get; set; } = string.Empty;
     }
 
-    public class CountryFlags
+    public class CountryCodesV5
     {
-        [JsonPropertyName("png")]
-        public string? Png { get; set; }
+        [JsonPropertyName("alpha_2")]
+        public string? Alpha2 { get; set; }
+    }
 
-        [JsonPropertyName("svg")]
-        public string? Svg { get; set; }
+    public class CountryFlagV5
+    {
+        [JsonPropertyName("url_svg")]
+        public string? UrlSvg { get; set; }
+
+        [JsonPropertyName("url_png")]
+        public string? UrlPng { get; set; }
     }
 }

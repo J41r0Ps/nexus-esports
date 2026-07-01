@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Nexus.Infrastructure.ExternalServices.RestCountries.Models;
 
 namespace Nexus.Infrastructure.ExternalServices.RestCountries
 {
-    internal interface ICountryDataService
+    public interface ICountryDataService
     {
+        Task<List<CountryV5>> GetAllCountriesAsync();
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Nexus.Infrastructure.DbContexts;
 using Nexus.Infrastructure.ExternalServices.Rawg;
+using Nexus.Infrastructure.ExternalServices.RestCountries;
 using Nexus.Infrastructure.Seeders;
 
 namespace Nexus.API.Controllers
@@ -14,12 +15,14 @@ namespace Nexus.API.Controllers
         private readonly NexusContext _context;
         private readonly IWebHostEnvironment _env;
         private readonly IRawgService _rawg;
+        private readonly ICountryDataService _countryApi;
 
-        public SeedController(NexusContext context, IWebHostEnvironment env, IRawgService rawg)
+        public SeedController(NexusContext context, IWebHostEnvironment env, IRawgService rawg, ICountryDataService countryApi)
         {
             _context = context;
             _env = env;
             _rawg = rawg;
+            _countryApi = countryApi;
         }
 
         // Bogus "not more used"
@@ -182,6 +185,27 @@ namespace Nexus.API.Controllers
                     g.Publisher,
                     g.CoverImageUrl
                 })
+            });
+        }
+
+        [HttpPost("countries")]
+        public async Task<IActionResult> SeedCountries()
+        {
+            if (!_env.IsDevelopment()) return Forbid();
+
+            if (_context.Countries.Any())
+                return BadRequest(new { message = "Countries already seeded." });
+
+            var seeder = new CountrySeeder(_countryApi);
+            var countries = await seeder.GenerateAsync();
+
+            _context.Countries.AddRange(countries);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Countries seeded successfully with real data + flags!",
+                count = countries.Count
             });
         }
 
