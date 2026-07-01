@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Nexus.Infrastructure.DbContexts;
+using Nexus.Infrastructure.ExternalServices.Rawg;
 using Nexus.Infrastructure.Seeders;
 
 namespace Nexus.API.Controllers
@@ -12,11 +13,13 @@ namespace Nexus.API.Controllers
     {
         private readonly NexusContext _context;
         private readonly IWebHostEnvironment _env;
+        private readonly IRawgService _rawg;
 
-        public SeedController(NexusContext context, IWebHostEnvironment env)
+        public SeedController(NexusContext context, IWebHostEnvironment env, IRawgService rawg)
         {
             _context = context;
             _env = env;
+            _rawg = rawg;
         }
 
         // Bogus "not more used"
@@ -151,6 +154,35 @@ namespace Nexus.API.Controllers
                 return BadRequest(new { message = "Database already seeded!" });
 
             return Ok(new { message = "Seeding disabled — waiting for Part B" });
+        }
+
+        [HttpPost("games")]
+        public async Task<IActionResult> SeedGames()
+        {
+            if (!_env.IsDevelopment()) return Forbid();
+
+            if (_context.Games.Any())
+                return BadRequest(new { message = "Games already seeded." });
+
+            var seeder = new GameSeeder(_rawg);
+            var games = await seeder.GenerateAsync();
+
+            _context.Games.AddRange(games);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Games seeded successfully with real data from RAWG!",
+                count = games.Count,
+                games = games.Select(g => new
+                {
+                    g.Id,
+                    g.Name,
+                    Genre = g.Genre.ToString(),
+                    g.Publisher,
+                    g.CoverImageUrl
+                })
+            });
         }
 
         [HttpDelete("reset")]

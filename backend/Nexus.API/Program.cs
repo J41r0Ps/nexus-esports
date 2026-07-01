@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Nexus.Infrastructure.DbContexts;
+using Nexus.Infrastructure.ExternalServices.Rawg;
 using Nexus.Infrastructure.Services;
 using Nexus.Infrastructure.Strategies;
 
@@ -59,6 +60,7 @@ builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 builder.Services.AddScoped<IStageRepository, StageRepository>();
 builder.Services.AddScoped<IMatchRepository, MatchRepository>();
+builder.Services.AddScoped<IRawgService, RawgService>();
 
 // External APIs — HttpClient
 builder.Services.AddHttpClient();
