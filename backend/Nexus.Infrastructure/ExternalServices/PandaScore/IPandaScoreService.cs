@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Nexus.Infrastructure.ExternalServices.PandaScore.Models;
 
 namespace Nexus.Infrastructure.ExternalServices.PandaScore
 {
-    internal interface IPandaScoreService
+    public interface IPandaScoreService
     {
+        Task<List<PandaScoreTeam>> GetTeamsByGameAsync(string gameSlug, int perPage = 10);
     }
 }

@@ -25,6 +25,9 @@ namespace Nexus.Domain.Entities
         [MaxLength(200)]
         public string? CoverImageUrl { get; set; }
 
+        [MaxLength(50)]
+        public string? PandaScoreSlug { get; set; }
+
         public ICollection<Tournament> Tournaments { get; set; } = new List<Tournament>();
         public ICollection<Team> Teams { get; set; } = new List<Team>();
 

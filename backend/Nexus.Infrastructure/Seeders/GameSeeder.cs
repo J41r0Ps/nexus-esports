@@ -62,38 +62,37 @@ namespace Nexus.Infrastructure.Seeders
         public async Task<List<Game>> GenerateAsync()
         {
             // Curated esports games — name + our enum genre + fallback publisher
-            var esportsGames = new List<(string Name, GameGenre Genre, string FallbackPublisher)>
+            var esportsGames = new List<(string Name, GameGenre Genre, string FallbackPublisher, string? PandaSlug)>
             {
-                ("Counter-Strike 2",             GameGenre.FPS,           "Valve"),
-                ("League of Legends",            GameGenre.MOBA,          "Riot Games"),
-                ("Valorant",                     GameGenre.FPS,           "Riot Games"),
-                ("Dota 2",                       GameGenre.MOBA,          "Valve"),
-                ("Fortnite",                     GameGenre.BattleRoyale,  "Epic Games"),
-                ("Apex Legends",                 GameGenre.BattleRoyale,  "Electronic Arts"),
-                ("Rainbow Six Siege",            GameGenre.FPS,           "Ubisoft"),
-                ("Overwatch 2",                  GameGenre.FPS,           "Blizzard Entertainment"),
-                ("Rocket League",                GameGenre.Sports,        "Psyonix"),
-                ("StarCraft II",                 GameGenre.RTS,           "Blizzard Entertainment"),
-                ("Street Fighter 6",             GameGenre.Fighting,      "Capcom"),
-                ("Hearthstone",                  GameGenre.CardGame,      "Blizzard Entertainment"),
-                ("Call of Duty: Modern Warfare III", GameGenre.FPS,       "Activision"),
-                ("Mobile Legends: Bang Bang",    GameGenre.MOBA,          "Moonton"),
-                ("PUBG: BATTLEGROUNDS",          GameGenre.BattleRoyale,  "KRAFTON")
+                ("Counter-Strike 2",             GameGenre.FPS,          "Valve",             "csgo"),
+                ("League of Legends",            GameGenre.MOBA,         "Riot Games",        "lol"),
+                ("Valorant",                     GameGenre.FPS,          "Riot Games",        "valorant"),
+                ("Dota 2",                       GameGenre.MOBA,         "Valve",             "dota2"),
+                ("Fortnite",                     GameGenre.BattleRoyale, "Epic Games",        null),
+                ("Apex Legends",                 GameGenre.BattleRoyale, "Electronic Arts",   null),
+                ("Rainbow Six Siege",            GameGenre.FPS,          "Ubisoft",           "r6siege"),
+                ("Overwatch 2",                  GameGenre.FPS,          "Blizzard Entertainment", "ow"),
+                ("Rocket League",                GameGenre.Sports,       "Psyonix",           "rl"),
+                ("StarCraft II",                 GameGenre.RTS,          "Blizzard Entertainment", "starcraft-2"),
+                ("Street Fighter 6",             GameGenre.Fighting,     "Capcom",            null),
+                ("Hearthstone",                  GameGenre.CardGame,     "Blizzard Entertainment", null),
+                ("Call of Duty: Modern Warfare III", GameGenre.FPS,      "Activision",        "codmw"),
+                ("Mobile Legends: Bang Bang",    GameGenre.MOBA,         "Moonton",           "mlbb"),
+                ("PUBG: BATTLEGROUNDS",          GameGenre.BattleRoyale, "KRAFTON",           "pubg")
             };
-
             var games = new List<Game>();
 
-            foreach (var (name, genre, fallbackPublisher) in esportsGames)
+            foreach (var (name, genre, fallbackPublisher, slug) in esportsGames)
             {
                 // Try to enrich from RAWG
                 var rawgGame = await _rawg.SearchGameByNameAsync(name);
-
                 var publisher = rawgGame?.Publishers?.FirstOrDefault()?.Name ?? fallbackPublisher;
                 var coverUrl = rawgGame?.BackgroundImage;
 
                 games.Add(new Game(name, genre, publisher)
                 {
-                    CoverImageUrl = coverUrl
+                    CoverImageUrl = coverUrl,
+                    PandaScoreSlug = slug
                 });
 
                 // Small delay so RAWG doesn't rate-limit us (20K/month is plenty though)
