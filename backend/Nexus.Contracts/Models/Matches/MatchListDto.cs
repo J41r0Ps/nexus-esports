@@ -11,5 +11,7 @@
         public string Team2Logo { get; set; }
         public int? WinnerId { get; set; }
         public string StageName { get; set; }
+        public int Team1Id { get; set; }
+        public int Team2Id { get; set; }
     }
 }

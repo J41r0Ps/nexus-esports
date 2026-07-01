@@ -8,5 +8,7 @@
         public string Team1Name { get; set; }
         public string Team2Name { get; set; }
         public int? WinnerId { get; set; }
+        public int Team1Id { get; set; }
+        public int Team2Id { get; set; }
     }
 }

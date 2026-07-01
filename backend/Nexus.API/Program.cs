@@ -78,7 +78,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
         policy.WithOrigins("http://localhost:5173")
-              .WithHeaders("Content-Type", "Authorization")
+              .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials()           // Allow credentials for SignalR
               .WithExposedHeaders("X-Pagination")
