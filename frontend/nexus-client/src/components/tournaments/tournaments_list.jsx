@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-function TournamentCard({ tournament }) {
+function TournamentCard({ tournament, isAdmin, onEdit, onDelete }) {
     const statusConfig = {
         Upcoming: { color: 'badge-yellow', icon: 'bi-hourglass-split' },
         Ongoing: { color: 'badge-green', icon: 'bi-broadcast' },
@@ -19,7 +19,19 @@ function TournamentCard({ tournament }) {
     return (
         <Link to={`/tournaments/${tournament.id}`} className="tournament-card-link">
             <div className="tournament-card glass-card fade-in-up">
-                {/* Top stripe — status colored */}
+                {isAdmin && (
+                    <div className="admin-actions">
+                        <button className="admin-btn admin-btn-edit"
+                            onClick={(e) => { e.preventDefault(); onEdit(tournament); }}>
+                            <i className="bi bi-pencil-fill"></i>
+                        </button>
+                        <button className="admin-btn admin-btn-delete"
+                            onClick={(e) => { e.preventDefault(); onDelete(tournament); }}>
+                            <i className="bi bi-trash-fill"></i>
+                        </button>
+                    </div>
+                )}
+
                 <div className={`tournament-stripe stripe-${tournament.status?.toLowerCase()}`}></div>
 
                 <div className="tournament-card-header">
@@ -27,9 +39,7 @@ function TournamentCard({ tournament }) {
                         <i className={`bi ${status.icon} me-1`}></i>
                         {tournament.status}
                     </span>
-                    <span className="tournament-prize">
-                        {formatPrize(tournament.prizePool)}
-                    </span>
+                    <span className="tournament-prize">{formatPrize(tournament.prizePool)}</span>
                 </div>
 
                 <div className="tournament-card-body">
@@ -71,7 +81,7 @@ function TournamentCard({ tournament }) {
     );
 }
 
-function TournamentsList({ tournaments, loading }) {
+function TournamentsList({ tournaments, loading, isAdmin, onEdit, onDelete }) {
     if (loading) {
         return (
             <div className="loading-state">
@@ -94,7 +104,8 @@ function TournamentsList({ tournaments, loading }) {
     return (
         <div className="tournaments-grid">
             {tournaments.map(t => (
-                <TournamentCard key={t.id} tournament={t} />
+                <TournamentCard key={t.id} tournament={t}
+                    isAdmin={isAdmin} onEdit={onEdit} onDelete={onDelete} />
             ))}
         </div>
     );

@@ -1,13 +1,22 @@
 import { useState, useEffect } from 'react';
+import { useAuth0 } from "@auth0/auth0-react";
 import Layout from '@/layout_template';
 import PlayersList from './players_list';
 import PlayersFilter from './players_filter';
+import PlayerForm from './player_form';
 import Pagination from '@/components/ui/pagination';
+import Modal from '@/components/ui/modal';
+import ConfirmDelete from '@/components/ui/confirm_delete';
+import Toast from '@/components/ui/toast';
 import PlayersService from '@/api/players_service';
 import TeamsService from '@/api/teams_service';
 import CountriesService from '@/api/countries_service';
+import { useIsAdmin } from '@/hooks/use_is_admin';
 
 function PlayersScreen() {
+    const { getAccessTokenSilently } = useAuth0();
+    const isAdmin = useIsAdmin();
+
     const [players, setPlayers] = useState([]);
     const [teams, setTeams] = useState([]);
     const [countries, setCountries] = useState([]);
@@ -16,12 +25,19 @@ function PlayersScreen() {
     const [totalCount, setTotalCount] = useState(0);
     const [loading, setLoading] = useState(true);
 
-    const getPlayers = async (filters) => {
+    const [createOpen, setCreateOpen] = useState(false);
+    const [editing, setEditing] = useState(null);
+    const [deleting, setDeleting] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [toast, setToast] = useState(null);
+
+    const showToast = (message, type = 'success') => setToast({ message, type });
+
+    const getPlayers = async () => {
         try {
             setLoading(true);
             const result = await PlayersService.getAllPlayers(filters);
             setPlayers(result.data);
-
             const pagination = JSON.parse(result.headers["x-pagination"]);
             setPageCount(pagination.TotalPageCount);
             setTotalCount(pagination.TotalItemCount);
@@ -32,37 +48,71 @@ function PlayersScreen() {
         }
     };
 
-    const getTeams = async () => {
-        try {
-            const result = await TeamsService.getAllTeams({ pageSize: 50 });
-            setTeams(result.data);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    const getCountries = async () => {
-        try {
-            const result = await CountriesService.getAllCountries();
-            setCountries(result.data);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
     useEffect(() => {
-        getTeams();
-        getCountries();
+        TeamsService.getAllTeams({ pageSize: 50 }).then(r => setTeams(r.data));
+        CountriesService.getAllCountries().then(r => setCountries(r.data));
     }, []);
 
-    useEffect(() => { getPlayers(filters); }, [filters]);
+    useEffect(() => { getPlayers(); }, [filters]);
 
-    const handlePageChange = (newPage) => {
-        setFilters({ ...filters, pageNumber: newPage });
+    const handleCreate = async (data) => {
+        try {
+            setIsSubmitting(true);
+            const token = await getAccessTokenSilently();
+            await PlayersService.createPlayer(data, token);
+            showToast('Player created successfully!');
+            setCreateOpen(false);
+            getPlayers();
+        } catch (error) {
+            showToast(error.response?.data || 'Failed to create player', 'error');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleUpdate = async (data) => {
+        try {
+            setIsSubmitting(true);
+            const token = await getAccessTokenSilently();
+            await PlayersService.updatePlayer(editing.id, data, token);
+            showToast('Player updated successfully!');
+            setEditing(null);
+            getPlayers();
+        } catch (error) {
+            showToast(error.response?.data || 'Failed to update player', 'error');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        try {
+            setIsSubmitting(true);
+            const token = await getAccessTokenSilently();
+            await PlayersService.deletePlayer(deleting.id, token);
+            showToast('Player deleted successfully!');
+            setDeleting(null);
+            getPlayers();
+        } catch (error) {
+            showToast(error.response?.data || 'Failed to delete player', 'error');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
         <Layout title="Players" subtitle={`${totalCount} pro players from around the world`}>
+            {isAdmin && (
+                <div className="admin-toolbar fade-in-up">
+                    <span className="admin-badge">
+                        <i className="bi bi-shield-lock-fill"></i> Admin Panel
+                    </span>
+                    <button className="btn-neon-primary" onClick={() => setCreateOpen(true)}>
+                        <i className="bi bi-plus-lg me-2"></i> Add Player
+                    </button>
+                </div>
+            )}
+
             <PlayersFilter
                 filters={filters}
                 onFilterChange={setFilters}
@@ -70,13 +120,54 @@ function PlayersScreen() {
                 countries={countries}
             />
 
-            <PlayersList players={players} loading={loading} />
+            <PlayersList
+                players={players}
+                loading={loading}
+                isAdmin={isAdmin}
+                onEdit={setEditing}
+                onDelete={setDeleting}
+            />
 
             {pageCount > 1 && (
                 <Pagination
                     currentPage={filters.pageNumber}
                     totalPages={pageCount}
-                    onPageChange={handlePageChange}
+                    onPageChange={(p) => setFilters({ ...filters, pageNumber: p })}
+                />
+            )}
+
+            <Modal isOpen={createOpen} onClose={() => setCreateOpen(false)} title="Create New Player" size="lg">
+                <PlayerForm
+                    onSubmit={handleCreate}
+                    onCancel={() => setCreateOpen(false)}
+                    isSubmitting={isSubmitting}
+                />
+            </Modal>
+
+            <Modal isOpen={!!editing} onClose={() => setEditing(null)} title={`Edit Player: ${editing?.gamertag}`} size="lg">
+                {editing && (
+                    <PlayerForm
+                        initialData={editing}
+                        onSubmit={handleUpdate}
+                        onCancel={() => setEditing(null)}
+                        isSubmitting={isSubmitting}
+                    />
+                )}
+            </Modal>
+
+            <ConfirmDelete
+                isOpen={!!deleting}
+                onClose={() => setDeleting(null)}
+                onConfirm={handleDelete}
+                itemName={deleting?.gamertag}
+                isDeleting={isSubmitting}
+            />
+
+            {toast && (
+                <Toast
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={() => setToast(null)}
                 />
             )}
         </Layout>

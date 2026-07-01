@@ -1,15 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
-function PlayerCard({ player }) {
+function PlayerCard({ player, isAdmin, onEdit, onDelete }) {
     const roleColors = {
-        Fragger: 'badge-pink',
-        IGL: 'badge-violet',
-        Support: 'badge-green',
-        Sniper: 'badge-neon',
-        Lurker: 'badge-yellow',
-        Coach: 'badge-violet',
-        Analyst: 'badge-neon',
-        Substitute: 'badge-pink'
+        Fragger: 'badge-pink', IGL: 'badge-violet', Support: 'badge-green',
+        Sniper: 'badge-neon', Lurker: 'badge-yellow', Coach: 'badge-violet',
+        Analyst: 'badge-neon', Substitute: 'badge-pink'
     };
 
     const formatSalary = (salary) => {
@@ -20,6 +15,19 @@ function PlayerCard({ player }) {
     return (
         <Link to={`/players/${player.id}`} className="player-card-link">
             <div className="player-card glass-card fade-in-up">
+                {isAdmin && (
+                    <div className="admin-actions">
+                        <button className="admin-btn admin-btn-edit"
+                            onClick={(e) => { e.preventDefault(); onEdit(player); }}>
+                            <i className="bi bi-pencil-fill"></i>
+                        </button>
+                        <button className="admin-btn admin-btn-delete"
+                            onClick={(e) => { e.preventDefault(); onDelete(player); }}>
+                            <i className="bi bi-trash-fill"></i>
+                        </button>
+                    </div>
+                )}
+
                 <div className="player-card-image">
                     {player.photoUrl ? (
                         <img src={player.photoUrl} alt={player.gamertag} />
@@ -57,7 +65,7 @@ function PlayerCard({ player }) {
     );
 }
 
-function PlayersList({ players, loading }) {
+function PlayersList({ players, loading, isAdmin, onEdit, onDelete }) {
     if (loading) {
         return (
             <div className="loading-state">
@@ -80,7 +88,8 @@ function PlayersList({ players, loading }) {
     return (
         <div className="players-grid">
             {players.map(player => (
-                <PlayerCard key={player.id} player={player} />
+                <PlayerCard key={player.id} player={player}
+                    isAdmin={isAdmin} onEdit={onEdit} onDelete={onDelete} />
             ))}
         </div>
     );
