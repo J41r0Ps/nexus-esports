@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { SkeletonGrid } from '@/components/ui/skeleton';
+
 
 function TeamCard({ team, isAdmin, onEdit, onDelete }) {
     const regionColors = {
@@ -47,12 +49,7 @@ function TeamCard({ team, isAdmin, onEdit, onDelete }) {
 
 function TeamsList({ teams, loading, isAdmin, onEdit, onDelete }) {
     if (loading) {
-        return (
-            <div className="loading-state">
-                <div className="loading-spinner"></div>
-                <p>Loading teams...</p>
-            </div>
-        );
+        return <SkeletonGrid count={12} height={280} />;
     }
 
     if (teams.length === 0) {

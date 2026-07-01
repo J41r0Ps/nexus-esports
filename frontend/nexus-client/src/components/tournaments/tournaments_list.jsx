@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { SkeletonGrid } from '@/components/ui/skeleton';
 
 function TournamentCard({ tournament, isAdmin, onEdit, onDelete }) {
     const statusConfig = {
@@ -83,12 +84,7 @@ function TournamentCard({ tournament, isAdmin, onEdit, onDelete }) {
 
 function TournamentsList({ tournaments, loading, isAdmin, onEdit, onDelete }) {
     if (loading) {
-        return (
-            <div className="loading-state">
-                <div className="loading-spinner"></div>
-                <p>Loading tournaments...</p>
-            </div>
-        );
+        return <SkeletonGrid count={9} height={360} />;
     }
 
     if (tournaments.length === 0) {

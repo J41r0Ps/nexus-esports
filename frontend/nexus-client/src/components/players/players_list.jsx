@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { SkeletonGrid } from '@/components/ui/skeleton';
 
 function PlayerCard({ player, isAdmin, onEdit, onDelete }) {
     const roleColors = {
@@ -67,12 +68,7 @@ function PlayerCard({ player, isAdmin, onEdit, onDelete }) {
 
 function PlayersList({ players, loading, isAdmin, onEdit, onDelete }) {
     if (loading) {
-        return (
-            <div className="loading-state">
-                <div className="loading-spinner"></div>
-                <p>Loading players...</p>
-            </div>
-        );
+        return <SkeletonGrid count={12} height={340} />;
     }
 
     if (players.length === 0) {
