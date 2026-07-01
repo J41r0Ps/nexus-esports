@@ -2549,7 +2549,7 @@ a:hover {
     TOAST
    ============================================ */
 
-.toast {
+.nexus-toast {
   position: fixed;
   bottom: 2rem;
   right: 2rem;
@@ -2581,34 +2581,34 @@ a:hover {
   }
 }
 
-.toast-success {
+.nexus-toast-success {
   border-left: 3px solid var(--neon-green);
 }
 
-.toast-success i:first-child {
+.nexus-toast-success i:first-child {
   color: var(--neon-green);
   font-size: 1.25rem;
 }
 
-.toast-error {
+.nexus-toast-error {
   border-left: 3px solid var(--neon-pink);
 }
 
-.toast-error i:first-child {
+.nexus-toast-error i:first-child {
   color: var(--neon-pink);
   font-size: 1.25rem;
 }
 
-.toast-info {
+.nexus-toast-info {
   border-left: 3px solid var(--neon-cyan);
 }
 
-.toast-info i:first-child {
+.nexus-toast-info i:first-child {
   color: var(--neon-cyan);
   font-size: 1.25rem;
 }
 
-.toast-close {
+.nexus-toast-close {
   background: transparent;
   border: none;
   color: var(--text-muted);
@@ -2618,6 +2618,6 @@ a:hover {
   transition: color var(--transition-fast);
 }
 
-.toast-close:hover {
+.nexus-toast-close:hover {
   color: var(--text-primary);
 }

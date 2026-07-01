@@ -13,10 +13,10 @@ function Toast({ message, type = 'success', onClose }) {
     };
 
     return (
-        <div className={`toast toast-${type}`}>
+        <div className={`nexus-toast nexus-toast-${type}`}>
             <i className={`bi ${icons[type]}`}></i>
             <span>{message}</span>
-            <button className="toast-close" onClick={onClose}>
+            <button className="nexus-toast-close" onClick={onClose}>
                 <i className="bi bi-x"></i>
             </button>
         </div>
