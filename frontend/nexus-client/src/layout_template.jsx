@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth0 } from "@auth0/auth0-react";
+import { useTheme } from '@/context/theme_context';
 
 function Layout({ children, title, subtitle }) {
     const { loginWithRedirect, logout, isAuthenticated, user, error } = useAuth0();
     const [scrolled, setScrolled] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const location = useLocation();
+    const { theme, toggleTheme } = useTheme();
 
     // Detect scroll for navbar background change
     useEffect(() => {
@@ -56,6 +58,14 @@ function Layout({ children, title, subtitle }) {
                                 </Link>
                             ))}
                         </div>
+
+                        <button
+                            className="theme-toggle"
+                            onClick={toggleTheme}
+                            title={theme === 'dark' ? 'Switch to light' : 'Switch to dark'}
+                        >
+                            <i className={`bi ${theme === 'dark' ? 'bi-sun-fill' : 'bi-moon-stars-fill'}`}></i>
+                        </button>
 
                         {/* Right side — User + Login/Logout */}
                         <div className="nexus-nav-right d-none d-lg-flex">
