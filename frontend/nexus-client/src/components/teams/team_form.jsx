@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import GamesService from '@/api/games_service';
 import CountriesService from '@/api/countries_service';
+import ImageUploader from '@/components/ui/image_uploader';
 
 function TeamForm({ initialData, onSubmit, onCancel, isSubmitting }) {
     const [formData, setFormData] = useState({
@@ -152,14 +153,11 @@ function TeamForm({ initialData, onSubmit, onCancel, isSubmitting }) {
                 </div>
 
                 <div className="form-field form-field-full">
-                    <label>Logo URL</label>
-                    <input
-                        type="text"
-                        name="logoUrl"
-                        className="form-control"
-                        value={formData.logoUrl || ''}
-                        onChange={handleChange}
-                        placeholder="https://..."
+                    <ImageUploader
+                        value={formData.logoUrl}
+                        onChange={(url) => setFormData({ ...formData, logoUrl: url })}
+                        folder="teams"
+                        label="Team Logo"
                     />
                 </div>
             </div>
