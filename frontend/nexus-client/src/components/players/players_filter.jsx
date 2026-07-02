@@ -3,23 +3,16 @@ function PlayersFilter({ filters, onFilterChange, teams, countries }) {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        onFilterChange({
-            ...filters,
-            [name]: value || null,
-            pageNumber: 1
-        });
+        onFilterChange({ ...filters, [name]: value || null, pageNumber: 1 });
     };
 
-    const handleClear = () => {
-        onFilterChange({ pageNumber: 1, pageSize: 12 });
-    };
+    const handleClear = () => onFilterChange({ pageNumber: 1, pageSize: 12 });
 
     const hasActiveFilters = filters.searchQuery || filters.role || filters.teamId || filters.countryId;
 
     return (
         <div className="filter-panel glass-card fade-in-up">
             <div className="filter-row">
-                {/* Search */}
                 <div className="filter-group filter-search">
                     <i className="bi bi-search filter-icon"></i>
                     <input
@@ -32,53 +25,43 @@ function PlayersFilter({ filters, onFilterChange, teams, countries }) {
                     />
                 </div>
 
-                {/* Role */}
-                <div className="filter-group">
-                    <select
-                        name="role"
-                        className="form-select"
-                        value={filters.role || ''}
-                        onChange={handleChange}
-                    >
-                        <option value="">All Roles</option>
-                        {roles.map(r => (
-                            <option key={r} value={r}>{r}</option>
-                        ))}
-                    </select>
-                </div>
+                {/* Only show role filter if we have roles */}
+                {roles.length > 0 && (
+                    <div className="filter-group">
+                        <select name="role" className="form-select"
+                            value={filters.role || ''} onChange={handleChange}>
+                            <option value="">All Roles</option>
+                            {roles.map(r => <option key={r} value={r}>{r}</option>)}
+                        </select>
+                    </div>
+                )}
 
-                {/* Team */}
-                <div className="filter-group">
-                    <select
-                        name="teamId"
-                        className="form-select"
-                        value={filters.teamId || ''}
-                        onChange={handleChange}
-                    >
-                        <option value="">All Teams</option>
-                        {teams.map(t => (
-                            <option key={t.id} value={t.id}>[{t.tag}] {t.name}</option>
-                        ))}
-                    </select>
-                </div>
+                {/* Only show team filter if we have teams */}
+                {teams.length > 0 && (
+                    <div className="filter-group">
+                        <select name="teamId" className="form-select"
+                            value={filters.teamId || ''} onChange={handleChange}>
+                            <option value="">All Teams</option>
+                            {teams.map(t => (
+                                <option key={t.id} value={t.id}>[{t.tag}] {t.name}</option>
+                            ))}
+                        </select>
+                    </div>
+                )}
 
-                {/* Country */}
-                <div className="filter-group">
-                    <select
-                        name="countryId"
-                        className="form-select"
-                        value={filters.countryId || ''}
-                        onChange={handleChange}
-                    >
-                        {countries.map(c => (
-                            <option key={c.id} value={c.id}>
-                                {c.code} — {c.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                {/* Only show country filter if we have countries */}
+                {countries.length > 0 && (
+                    <div className="filter-group">
+                        <select name="countryId" className="form-select"
+                            value={filters.countryId || ''} onChange={handleChange}>
+                            <option value="">All Countries</option>
+                            {countries.map(c => (
+                                <option key={c.id} value={c.id}>{c.code} — {c.name}</option>
+                            ))}
+                        </select>
+                    </div>
+                )}
 
-                {/* Clear */}
                 {hasActiveFilters && (
                     <button className="btn-clear" onClick={handleClear}>
                         <i className="bi bi-x-circle"></i> Clear

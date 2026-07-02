@@ -50,7 +50,7 @@ function PlayersScreen() {
 
     useEffect(() => {
         TeamsService.getAllTeams({ pageSize: 50 }).then(r => setTeams(r.data));
-        CountriesService.getAllCountries().then(r => setCountries(r.data));
+        CountriesService.getCountriesWithPlayers().then(r => setCountries(r.data));
     }, []);
 
     useEffect(() => { getPlayers(); }, [filters]);
