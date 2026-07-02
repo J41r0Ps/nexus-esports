@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Nexus.Infrastructure.DbContexts;
+using Nexus.Infrastructure.ExternalServices.Cloudinary;
 using Nexus.Infrastructure.ExternalServices.PandaScore;
 using Nexus.Infrastructure.ExternalServices.Rawg;
 using Nexus.Infrastructure.ExternalServices.RestCountries;
@@ -65,6 +66,7 @@ builder.Services.AddScoped<IMatchRepository, MatchRepository>();
 builder.Services.AddScoped<IRawgService, RawgService>();
 builder.Services.AddScoped<ICountryDataService, CountryDataService>();
 builder.Services.AddScoped<IPandaScoreService, PandaScoreService>();
+builder.Services.AddScoped<IImageUploadService, ImageUploadService>();
 
 
 // External APIs — HttpClient

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace Nexus.Infrastructure.ExternalServices.Cloudinary
 {
-    internal interface IImageUploadService
+    public interface IImageUploadService
     {
+        Task<string?> UploadImageAsync(IFormFile file, string folder);
+        Task<bool> DeleteImageAsync(string publicId);
     }
 }

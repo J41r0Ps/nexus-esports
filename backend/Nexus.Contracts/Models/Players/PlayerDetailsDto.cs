@@ -11,6 +11,8 @@
         public string? PhotoUrl { get; set; }
         public string TeamName { get; set; }
         public string CountryName { get; set; }
+        public string CountryFlag { get; set; }
+
         public ICollection<PlayerStatDto> PlayerStats { get; set; } = new List<PlayerStatDto>();
         public ICollection<PlayerAchievementDto> Achievements { get; set; } = new List<PlayerAchievementDto>();
     }

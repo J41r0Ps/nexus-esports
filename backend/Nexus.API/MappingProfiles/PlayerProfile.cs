@@ -26,7 +26,9 @@ namespace Nexus.API.MappingProfiles
                 .ForMember(dest => dest.TeamName,
                     opt => opt.MapFrom(src => src.Team.Name))
                 .ForMember(dest => dest.CountryName,
-                    opt => opt.MapFrom(src => src.Country.Name));
+                    opt => opt.MapFrom(src => src.Country.Name))
+                .ForMember(dest => dest.CountryFlag,
+                    opt => opt.MapFrom(src => src.Country.FlagUrl));
 
             // Nested DTOs
             CreateMap<PlayerStat, PlayerStatDto>();
