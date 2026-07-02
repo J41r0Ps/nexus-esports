@@ -9,6 +9,7 @@
         public string PhotoUrl { get; set; }
         public string TeamName { get; set; }
         public string CountryName { get; set; }
+        public string CountryFlag { get; set; }
         public decimal Salary { get; set; }
     }
 }

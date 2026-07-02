@@ -57,10 +57,20 @@ namespace Nexus.Infrastructure.Seeders
                 foreach (var pp in pandaPlayers)
                 {
                     if (string.IsNullOrWhiteSpace(pp.Name)) continue;
+                    if (string.IsNullOrWhiteSpace(pp.ImageUrl)) continue;
 
-                    // Only keep players whose current team is one we seeded
-                    if (pp.CurrentTeam?.Id == null) continue;
-                    if (!teamLookup.TryGetValue(pp.CurrentTeam.Id, out var ourTeamId)) continue;
+                    int ourTeamId;
+                    if (pp.CurrentTeam?.Id != null && teamLookup.TryGetValue(pp.CurrentTeam.Id, out var linkedTeamId))
+                    {
+                        ourTeamId = linkedTeamId;
+                    }
+                    else
+                    {
+                        // Player has no current team → assign to random team of same game
+                        var teamsOfGame = teams.Where(t => t.GameId == game.Id).ToList();
+                        if (teamsOfGame.Count == 0) continue;
+                        ourTeamId = teamsOfGame[Random.Shared.Next(teamsOfGame.Count)].Id;
+                    }
 
                     if (usedGamertags.Contains(pp.Name)) continue;
                     usedGamertags.Add(pp.Name);
@@ -98,7 +108,17 @@ namespace Nexus.Infrastructure.Seeders
 
         private static PlayerRole MapRole(string? role)
         {
-            if (string.IsNullOrWhiteSpace(role)) return PlayerRole.Fragger;
+            // If PandaScore didn't give us a role, randomize a realistic one
+            if (string.IsNullOrWhiteSpace(role))
+            {
+                var randomRoles = new[]
+                {
+                    PlayerRole.Fragger, PlayerRole.IGL, PlayerRole.Support,
+                    PlayerRole.Sniper,  PlayerRole.Lurker
+                };
+                return randomRoles[Random.Shared.Next(randomRoles.Length)];
+            }
+
             role = role.ToLower();
             if (role.Contains("igl") || role.Contains("captain")) return PlayerRole.IGL;
             if (role.Contains("support") || role.Contains("healer")) return PlayerRole.Support;

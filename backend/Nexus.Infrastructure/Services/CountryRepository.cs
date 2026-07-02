@@ -19,5 +19,13 @@ namespace Nexus.Infrastructure.Services
                 .OrderBy(c => c.Name)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Country>> GetCountriesWithPlayersAsync()
+        {
+            return await _context.Countries
+                .Where(c => c.Players.Any())
+                .OrderBy(c => c.Name)
+                .ToListAsync();
+        }
     }
 }

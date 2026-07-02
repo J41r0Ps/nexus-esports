@@ -301,6 +301,25 @@ namespace Nexus.API.Controllers
             });
         }
 
+        [HttpDelete("players")]
+        public async Task<IActionResult> ClearPlayers()
+        {
+            if (!_env.IsDevelopment()) return Forbid();
+
+            // Delete dependent data first
+            _context.PlayerStats.RemoveRange(_context.PlayerStats);
+            _context.Achievements.RemoveRange(_context.Achievements);
+            _context.Players.RemoveRange(_context.Players);
+            await _context.SaveChangesAsync();
+
+            await _context.Database.ExecuteSqlRawAsync("DBCC CHECKIDENT ('PlayerStats', RESEED, 0)");
+            await _context.Database.ExecuteSqlRawAsync("DBCC CHECKIDENT ('Achievements', RESEED, 0)");
+            await _context.Database.ExecuteSqlRawAsync("DBCC CHECKIDENT ('Players', RESEED, 0)");
+
+            return Ok(new { message = "Players (and their stats/achievements) cleared, IDs reset." });
+        }
+
+
         [HttpDelete("reset")]
         public async Task<IActionResult> ResetDatabase()
         {

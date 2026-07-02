@@ -25,5 +25,12 @@ namespace Nexus.API.Controllers
             var countries = await _countryRepository.GetCountriesAsync();
             return Ok(_mapper.Map<IEnumerable<CountryListDto>>(countries));
         }
+
+        [HttpGet("with-players")]
+        public async Task<ActionResult<IEnumerable<CountryListDto>>> GetCountriesWithPlayers()
+        {
+            var countries = await _countryRepository.GetCountriesWithPlayersAsync();
+            return Ok(_mapper.Map<IEnumerable<CountryListDto>>(countries));
+        }
     }
 }
