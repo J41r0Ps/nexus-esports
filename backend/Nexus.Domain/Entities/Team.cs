@@ -27,6 +27,7 @@ namespace Nexus.Domain.Entities
 
         [Required]
         public int FoundedYear { get; set; }
+        public int? PandaScoreId { get; set; }
 
         [ForeignKey("GameId")]
         public int GameId { get; set; }

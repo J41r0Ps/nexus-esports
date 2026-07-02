@@ -266,6 +266,41 @@ namespace Nexus.API.Controllers
             });
         }
 
+        [HttpPost("players")]
+        public async Task<IActionResult> SeedPlayers()
+        {
+            if (!_env.IsDevelopment()) return Forbid();
+
+            if (!_context.Teams.Any())
+                return BadRequest("Seed teams first!");
+            if (_context.Players.Any())
+                return BadRequest("Players already seeded.");
+
+            var teams = await _context.Teams.ToListAsync();
+            var countries = await _context.Countries.ToListAsync();
+            var games = await _context.Games.ToListAsync();
+
+            var seeder = new PlayerSeeder(_pandaScore);
+            var players = await seeder.GenerateAsync(teams, countries, games);
+
+            _context.Players.AddRange(players);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Players seeded successfully with real data from PandaScore!",
+                count = players.Count,
+                sample = players.Take(10).Select(p => new
+                {
+                    p.Id,
+                    p.Gamertag,
+                    p.RealName,
+                    Role = p.Role.ToString(),
+                    p.PhotoUrl
+                })
+            });
+        }
+
         [HttpDelete("reset")]
         public async Task<IActionResult> ResetDatabase()
         {

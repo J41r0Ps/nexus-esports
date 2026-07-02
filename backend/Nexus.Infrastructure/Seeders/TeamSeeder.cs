@@ -48,7 +48,8 @@ namespace Nexus.Infrastructure.Seeders
                         FoundedYear = Random.Shared.Next(2005, 2020),
                         GameId = game.Id,
                         CountryId = countryId,
-                        OrganizationId = orgIds[Random.Shared.Next(orgIds.Count)]
+                        OrganizationId = orgIds[Random.Shared.Next(orgIds.Count)],
+                        PandaScoreId = pt.Id,
                     });
                 }
 

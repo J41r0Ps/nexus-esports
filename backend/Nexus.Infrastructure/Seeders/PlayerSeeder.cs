@@ -1,10 +1,12 @@
-﻿using Bogus;
+﻿//using Bogus;
 using Nexus.Domain.Entities;
 using Nexus.Domain.Enums;
+using Nexus.Infrastructure.ExternalServices.PandaScore;
 
 namespace Nexus.Infrastructure.Seeders
 {
-    public class PlayerSeeder
+    // Bogus
+    /*    public class PlayerSeeder
     {
         public List<Player> Generate(List<int> teamIds, List<int> countryIds)
         {
@@ -23,6 +25,89 @@ namespace Nexus.Infrastructure.Seeders
                 .RuleFor(p => p.PhotoUrl, f => $"https://i.pravatar.cc/150?img={f.Random.Int(1, 70)}");
 
             return faker.Generate(100);
+        }
+    }*/
+    public class PlayerSeeder
+    {
+        private readonly IPandaScoreService _pandaScore;
+
+        public PlayerSeeder(IPandaScoreService pandaScore)
+        {
+            _pandaScore = pandaScore;
+        }
+
+        public async Task<List<Player>> GenerateAsync(
+            List<Team> teams,
+            List<Country> countries,
+            List<Game> games)
+        {
+            var players = new List<Player>();
+            var usedGamertags = new HashSet<string>();
+
+            // Build lookup: PandaScoreId → our TeamId
+            var teamLookup = teams
+                .Where(t => t.PandaScoreId.HasValue)
+                .ToDictionary(t => t.PandaScoreId!.Value, t => t.Id);
+
+            foreach (var game in games.Where(g => !string.IsNullOrEmpty(g.PandaScoreSlug)))
+            {
+                var pandaPlayers = await _pandaScore.GetPlayersByGameAsync(game.PandaScoreSlug!, 100);
+                Console.WriteLine($"[Players] {game.Name}: fetched {pandaPlayers.Count}");
+
+                foreach (var pp in pandaPlayers)
+                {
+                    if (string.IsNullOrWhiteSpace(pp.Name)) continue;
+
+                    // Only keep players whose current team is one we seeded
+                    if (pp.CurrentTeam?.Id == null) continue;
+                    if (!teamLookup.TryGetValue(pp.CurrentTeam.Id, out var ourTeamId)) continue;
+
+                    if (usedGamertags.Contains(pp.Name)) continue;
+                    usedGamertags.Add(pp.Name);
+
+                    var country = countries.FirstOrDefault(c =>
+                        c.Code.Equals(pp.Nationality, StringComparison.OrdinalIgnoreCase));
+                    var countryId = country?.Id ?? countries[Random.Shared.Next(countries.Count)].Id;
+
+                    var realName = ($"{pp.FirstName} {pp.LastName}").Trim();
+                    if (string.IsNullOrWhiteSpace(realName)) realName = pp.Name;
+
+                    players.Add(new Player(pp.Name, realName)
+                    {
+                        Role = MapRole(pp.Role),
+                        YearOfBirth = ParseYearOfBirth(pp.Birthday),
+                        Salary = Random.Shared.Next(50_000, 500_000),
+                        PhotoUrl = pp.ImageUrl,
+                        TeamId = ourTeamId,
+                        CountryId = countryId
+                    });
+                }
+
+                await Task.Delay(200);
+            }
+
+            return players;
+        }
+
+        private static int ParseYearOfBirth(string? birthday)
+        {
+            if (DateTime.TryParse(birthday, out var dt))
+                return dt.Year;
+            return Random.Shared.Next(1995, 2005);
+        }
+
+        private static PlayerRole MapRole(string? role)
+        {
+            if (string.IsNullOrWhiteSpace(role)) return PlayerRole.Fragger;
+            role = role.ToLower();
+            if (role.Contains("igl") || role.Contains("captain")) return PlayerRole.IGL;
+            if (role.Contains("support") || role.Contains("healer")) return PlayerRole.Support;
+            if (role.Contains("awp") || role.Contains("sniper")) return PlayerRole.Sniper;
+            if (role.Contains("lurk") || role.Contains("flex")) return PlayerRole.Lurker;
+            if (role.Contains("coach")) return PlayerRole.Coach;
+            if (role.Contains("analyst")) return PlayerRole.Analyst;
+            if (role.Contains("sub") || role.Contains("substitute")) return PlayerRole.Substitute;
+            return PlayerRole.Fragger;
         }
     }
 }

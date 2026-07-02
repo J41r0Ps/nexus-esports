@@ -48,33 +48,47 @@ namespace Nexus.Infrastructure.ExternalServices.PandaScore
                 return new List<PandaScoreTeam>();
             }
         }
-
-        public async Task<List<PandaScorePlayer>> GetPlayersByTeamAsync(string gameSlug, int teamPandaScoreId)
+        public async Task<List<PandaScorePlayer>> GetPlayersByGameAsync(string gameSlug, int perPage = 100)
         {
-            var url = $"{_baseUrl}/{gameSlug}/teams/{teamPandaScoreId}/players?page[size]=100";
+            var all = new List<PandaScorePlayer>();
+            int page = 1;
 
-            try
+            while (true)
             {
-                var request = new HttpRequestMessage(HttpMethod.Get, url);
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+                var url = $"{_baseUrl}/{gameSlug}/players?page[size]={perPage}&page[number]={page}";
 
-                var response = await _http.SendAsync(request);
-                var body = await response.Content.ReadAsStringAsync();
-
-                if (!response.IsSuccessStatusCode)
+                try
                 {
-                    Console.WriteLine($"[PandaScore /{gameSlug}/teams/{teamPandaScoreId}/players] {response.StatusCode}: {body}");
-                    return new List<PandaScorePlayer>();
-                }
+                    var request = new HttpRequestMessage(HttpMethod.Get, url);
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
 
-                var players = JsonSerializer.Deserialize<List<PandaScorePlayer>>(body);
-                return players ?? new List<PandaScorePlayer>();
+                    var response = await _http.SendAsync(request);
+                    var body = await response.Content.ReadAsStringAsync();
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine($"[PandaScore /{gameSlug}/players] {response.StatusCode}: {body}");
+                        break;
+                    }
+
+                    var batch = JsonSerializer.Deserialize<List<PandaScorePlayer>>(body);
+                    if (batch == null || batch.Count == 0) break;
+
+                    all.AddRange(batch);
+                    if (batch.Count < perPage) break;   // last page
+
+                    page++;
+                    if (page > 5) break;                 // safety cap: max 500 per game
+                    await Task.Delay(200);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[PandaScore Players] Exception: {ex.Message}");
+                    break;
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[PandaScore Players] Exception: {ex.Message}");
-                return new List<PandaScorePlayer>();
-            }
+
+            return all;
         }
     }
 }
