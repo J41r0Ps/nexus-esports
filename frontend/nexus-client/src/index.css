@@ -2199,7 +2199,7 @@ a:hover {
    ============================================ */
 
 .achievements-section {
-  margin-bottom: 3rem;
+  margin-top: 3rem;
 }
 
 .achievements-grid {
@@ -3039,7 +3039,7 @@ a:hover {
   height: 140px;
   flex-shrink: 0;
   border: 2px dashed var(--border-default);
-  border-radius: var(--radius-md);
+  border-radius: var(--radiusachievements-section-md);
   overflow: hidden;
   background: var(--bg-tertiary);
   transition: border-color var(--transition-fast);
