@@ -72,7 +72,7 @@ namespace Nexus.API.Controllers
             });
         }
 
-        /*        [HttpPost("all")]
+        /*[HttpPost("all")]
         public async Task<IActionResult> SeedAll()
         {
             if (!_env.IsDevelopment()) return Forbid();
@@ -402,22 +402,22 @@ namespace Nexus.API.Controllers
                 return BadRequest("PlayerStats already seeded.");
 
             var players = await _context.Players.ToListAsync();
-            var playedMatches = await _context.Matches
-                .Where(m => m.WinnerId != null)
-                .ToListAsync();
+            var playedMatches = await _context.Matches.Where(m => m.WinnerId != null).ToListAsync();
             var registrations = await _context.TournamentRegistrations.ToListAsync();
+            var stages = await _context.Stages.ToListAsync();
 
             var seeder = new PlayerStatSeeder();
-            var stats = seeder.Generate(players, playedMatches, registrations);
+            var stats = seeder.Generate(players, playedMatches, registrations, stages);
 
             _context.PlayerStats.AddRange(stats);
             await _context.SaveChangesAsync();
 
             return Ok(new
             {
-                message = "Player stats generated — scaled by salary + win/loss!",
+                message = "Smart player stats: age = quantity, salary = quality!",
                 count = stats.Count,
-                avgPerPlayer = stats.Count / (double)players.Count
+                avgPerPlayer = stats.Count / (double)players.Count,
+                playersWithStats = stats.Select(s => s.PlayerId).Distinct().Count()
             });
         }
 
