@@ -275,7 +275,58 @@ namespace Nexus.API.Controllers
             });
         }
 
+        [HttpPost("tournaments")]
+        public async Task<IActionResult> SeedTournaments()
+        {
+            if (!_env.IsDevelopment()) return Forbid();
 
+            if (!_context.Games.Any())
+                return BadRequest("Seed games first!");
+            if (_context.Tournaments.Any())
+                return BadRequest("Tournaments already seeded.");
+
+            var games = await _context.Games.ToListAsync();
+
+            var seeder = new TournamentSeeder();
+            var tournaments = seeder.Generate(games);
+
+            _context.Tournaments.AddRange(tournaments);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Real tournaments seeded!",
+                count = tournaments.Count,
+                byStatus = tournaments.GroupBy(t => t.Status)
+                                      .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
+            });
+        }
+
+        [HttpPost("stages")]
+        public async Task<IActionResult> SeedStages()
+        {
+            if (!_env.IsDevelopment()) return Forbid();
+
+            if (!_context.Tournaments.Any())
+                return BadRequest("Seed tournaments first!");
+            if (_context.Stages.Any())
+                return BadRequest("Stages already seeded.");
+
+            var tournaments = await _context.Tournaments.ToListAsync();
+
+            var seeder = new StageSeeder();
+            var stages = seeder.Generate(tournaments);
+
+            _context.Stages.AddRange(stages);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Stages seeded! Different per tournament format.",
+                count = stages.Count,
+                avgPerTournament = stages.Count / (double)tournaments.Count
+            });
+        }
         /*        [HttpDelete("players")]
         public async Task<IActionResult> ClearPlayers()
         {
