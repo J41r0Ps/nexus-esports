@@ -85,14 +85,17 @@ else
 // Add near the other builder.Services lines
 builder.Services.AddSignalR();
 
-// CORS
+// CORS — read allowed origins from config
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? new[] { "http://localhost:5173" };
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
-        policy.WithOrigins("http://localhost:5173")
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .AllowCredentials()           // Allow credentials for SignalR
+              .AllowCredentials()
               .WithExposedHeaders("X-Pagination")
     );
 });

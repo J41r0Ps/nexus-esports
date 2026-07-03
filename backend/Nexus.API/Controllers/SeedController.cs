@@ -1,5 +1,4 @@
-﻿#if DEBUG
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Nexus.Domain.Entities;
 using Nexus.Infrastructure.DbContexts;
@@ -32,7 +31,10 @@ namespace Nexus.API.Controllers
         [HttpDelete("reset")]
         public async Task<IActionResult> ResetDatabase()
         {
-            if (!_env.IsDevelopment()) return Forbid();
+            // Allow in dev; in prod, only admins can seed
+            if (!_env.IsDevelopment() && !User.Claims.Any(c =>
+                c.Type == "https://nexus-esports.com/roles" && c.Value == "admin"))
+                return Forbid();
 
             // Delete in FK-safe order
             _context.PlayerStats.RemoveRange(_context.PlayerStats);
@@ -72,21 +74,14 @@ namespace Nexus.API.Controllers
             });
         }
 
-        /*[HttpPost("all")]
-        public async Task<IActionResult> SeedAll()
-        {
-            if (!_env.IsDevelopment()) return Forbid();
-
-            if (_context.Countries.Any())
-                return BadRequest(new { message = "Database already seeded!" });
-
-            return Ok(new { message = "Seeding disabled — waiting for Part B" });
-        }*/
 
         [HttpPost("games")]
         public async Task<IActionResult> SeedGames()
         {
-            if (!_env.IsDevelopment()) return Forbid();
+            // Allow in dev; in prod, only admins can seed
+            if (!_env.IsDevelopment() && !User.Claims.Any(c =>
+                c.Type == "https://nexus-esports.com/roles" && c.Value == "admin"))
+                return Forbid();
 
             if (_context.Games.Any())
                 return BadRequest(new { message = "Games already seeded." });
@@ -115,7 +110,10 @@ namespace Nexus.API.Controllers
         [HttpPost("countries")]
         public async Task<IActionResult> SeedCountries()
         {
-            if (!_env.IsDevelopment()) return Forbid();
+            // Allow in dev; in prod, only admins can seed
+            if (!_env.IsDevelopment() && !User.Claims.Any(c =>
+                c.Type == "https://nexus-esports.com/roles" && c.Value == "admin"))
+                return Forbid();
 
             if (_context.Countries.Any())
                 return BadRequest(new { message = "Countries already seeded." });
@@ -136,7 +134,10 @@ namespace Nexus.API.Controllers
         [HttpPost("organizations")]
         public async Task<IActionResult> SeedOrganizations()
         {
-            if (!_env.IsDevelopment()) return Forbid();
+            // Allow in dev; in prod, only admins can seed
+            if (!_env.IsDevelopment() && !User.Claims.Any(c =>
+                c.Type == "https://nexus-esports.com/roles" && c.Value == "admin"))
+                return Forbid();
 
             if (_context.Organizations.Any())
                 return BadRequest("Organizations already seeded.");
@@ -193,7 +194,10 @@ namespace Nexus.API.Controllers
         [HttpPost("players")]
         public async Task<IActionResult> SeedPlayers()
         {
-            if (!_env.IsDevelopment()) return Forbid();
+            // Allow in dev; in prod, only admins can seed
+            if (!_env.IsDevelopment() && !User.Claims.Any(c =>
+                c.Type == "https://nexus-esports.com/roles" && c.Value == "admin"))
+                return Forbid();
 
             if (!_context.Teams.Any())
                 return BadRequest("Seed teams first!");
@@ -228,7 +232,10 @@ namespace Nexus.API.Controllers
         [HttpPost("sponsors")]
         public async Task<IActionResult> SeedSponsors()
         {
-            if (!_env.IsDevelopment()) return Forbid();
+            // Allow in dev; in prod, only admins can seed
+            if (!_env.IsDevelopment() && !User.Claims.Any(c =>
+                c.Type == "https://nexus-esports.com/roles" && c.Value == "admin"))
+                return Forbid();
 
             if (_context.Sponsors.Any())
                 return BadRequest("Sponsors already seeded.");
@@ -249,7 +256,10 @@ namespace Nexus.API.Controllers
         [HttpPost("team-sponsors")]
         public async Task<IActionResult> SeedTeamSponsors()
         {
-            if (!_env.IsDevelopment()) return Forbid();
+            // Allow in dev; in prod, only admins can seed
+            if (!_env.IsDevelopment() && !User.Claims.Any(c =>
+                c.Type == "https://nexus-esports.com/roles" && c.Value == "admin"))
+                return Forbid();
 
             if (!_context.Teams.Any())
                 return BadRequest("Seed teams first!");
@@ -278,7 +288,10 @@ namespace Nexus.API.Controllers
         [HttpPost("tournaments")]
         public async Task<IActionResult> SeedTournaments()
         {
-            if (!_env.IsDevelopment()) return Forbid();
+            // Allow in dev; in prod, only admins can seed
+            if (!_env.IsDevelopment() && !User.Claims.Any(c =>
+                c.Type == "https://nexus-esports.com/roles" && c.Value == "admin"))
+                return Forbid();
 
             if (!_context.Games.Any())
                 return BadRequest("Seed games first!");
@@ -305,7 +318,10 @@ namespace Nexus.API.Controllers
         [HttpPost("stages")]
         public async Task<IActionResult> SeedStages()
         {
-            if (!_env.IsDevelopment()) return Forbid();
+            // Allow in dev; in prod, only admins can seed
+            if (!_env.IsDevelopment() && !User.Claims.Any(c =>
+                c.Type == "https://nexus-esports.com/roles" && c.Value == "admin"))
+                return Forbid();
 
             if (!_context.Tournaments.Any())
                 return BadRequest("Seed tournaments first!");
@@ -331,7 +347,10 @@ namespace Nexus.API.Controllers
         [HttpPost("registrations")]
         public async Task<IActionResult> SeedRegistrations()
         {
-            if (!_env.IsDevelopment()) return Forbid();
+            // Allow in dev; in prod, only admins can seed
+            if (!_env.IsDevelopment() && !User.Claims.Any(c =>
+                c.Type == "https://nexus-esports.com/roles" && c.Value == "admin"))
+                return Forbid();
 
             if (!_context.Tournaments.Any())
                 return BadRequest("Seed tournaments first!");
@@ -360,7 +379,10 @@ namespace Nexus.API.Controllers
         [HttpPost("matches")]
         public async Task<IActionResult> SeedMatches()
         {
-            if (!_env.IsDevelopment()) return Forbid();
+            // Allow in dev; in prod, only admins can seed
+            if (!_env.IsDevelopment() && !User.Claims.Any(c =>
+                c.Type == "https://nexus-esports.com/roles" && c.Value == "admin"))
+                return Forbid();
 
             if (!_context.Stages.Any())
                 return BadRequest("Seed stages first!");
@@ -392,7 +414,10 @@ namespace Nexus.API.Controllers
         [HttpPost("player-stats")]
         public async Task<IActionResult> SeedPlayerStats()
         {
-            if (!_env.IsDevelopment()) return Forbid();
+            // Allow in dev; in prod, only admins can seed
+            if (!_env.IsDevelopment() && !User.Claims.Any(c =>
+                c.Type == "https://nexus-esports.com/roles" && c.Value == "admin"))
+                return Forbid();
 
             if (!_context.Players.Any())
                 return BadRequest("Seed players first!");
@@ -424,7 +449,10 @@ namespace Nexus.API.Controllers
         [HttpPost("achievements")]
         public async Task<IActionResult> SeedAchievements()
         {
-            if (!_env.IsDevelopment()) return Forbid();
+            // Allow in dev; in prod, only admins can seed
+            if (!_env.IsDevelopment() && !User.Claims.Any(c =>
+                c.Type == "https://nexus-esports.com/roles" && c.Value == "admin"))
+                return Forbid();
 
             if (!_context.Players.Any())
                 return BadRequest("Seed players first!");
@@ -451,24 +479,5 @@ namespace Nexus.API.Controllers
                 avgPerPlayer = achievements.Count / (double)players.Count
             });
         }
-
-        /*        [HttpDelete("players")]
-        public async Task<IActionResult> ClearPlayers()
-        {
-            if (!_env.IsDevelopment()) return Forbid();
-
-            // Delete dependent data first
-            _context.PlayerStats.RemoveRange(_context.PlayerStats);
-            _context.Achievements.RemoveRange(_context.Achievements);
-            _context.Players.RemoveRange(_context.Players);
-            await _context.SaveChangesAsync();
-
-            await _context.Database.ExecuteSqlRawAsync("DBCC CHECKIDENT ('PlayerStats', RESEED, 0)");
-            await _context.Database.ExecuteSqlRawAsync("DBCC CHECKIDENT ('Achievements', RESEED, 0)");
-            await _context.Database.ExecuteSqlRawAsync("DBCC CHECKIDENT ('Players', RESEED, 0)");
-
-            return Ok(new { message = "Players (and their stats/achievements) cleared, IDs reset." });
-        }*/
     }
 }
-#endif
