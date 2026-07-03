@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Nexus.Domain.Entities;
 using Nexus.Infrastructure.DbContexts;
@@ -28,6 +29,7 @@ namespace Nexus.API.Controllers
             _pandaScore = pandaScore;
         }
 
+        [Authorize(Policy = "AdminOnly")] 
         [HttpDelete("reset")]
         public async Task<IActionResult> ResetDatabase()
         {
@@ -74,7 +76,7 @@ namespace Nexus.API.Controllers
             });
         }
 
-
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost("games")]
         public async Task<IActionResult> SeedGames()
         {
@@ -107,6 +109,7 @@ namespace Nexus.API.Controllers
             });
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost("countries")]
         public async Task<IActionResult> SeedCountries()
         {
@@ -131,6 +134,7 @@ namespace Nexus.API.Controllers
             });
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost("organizations")]
         public async Task<IActionResult> SeedOrganizations()
         {
@@ -151,6 +155,7 @@ namespace Nexus.API.Controllers
             return Ok(new { message = "Real esports orgs seeded!", count = orgs.Count });
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost("teams")]
         public async Task<IActionResult> SeedTeams()
         {
@@ -191,6 +196,7 @@ namespace Nexus.API.Controllers
             });
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost("players")]
         public async Task<IActionResult> SeedPlayers()
         {
@@ -229,6 +235,7 @@ namespace Nexus.API.Controllers
             });
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost("sponsors")]
         public async Task<IActionResult> SeedSponsors()
         {
@@ -253,6 +260,7 @@ namespace Nexus.API.Controllers
             });
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost("team-sponsors")]
         public async Task<IActionResult> SeedTeamSponsors()
         {
@@ -285,6 +293,7 @@ namespace Nexus.API.Controllers
             });
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost("tournaments")]
         public async Task<IActionResult> SeedTournaments()
         {
@@ -315,6 +324,7 @@ namespace Nexus.API.Controllers
             });
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost("stages")]
         public async Task<IActionResult> SeedStages()
         {
@@ -344,6 +354,7 @@ namespace Nexus.API.Controllers
             });
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost("registrations")]
         public async Task<IActionResult> SeedRegistrations()
         {
@@ -376,6 +387,7 @@ namespace Nexus.API.Controllers
             });
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost("matches")]
         public async Task<IActionResult> SeedMatches()
         {
@@ -411,6 +423,7 @@ namespace Nexus.API.Controllers
             });
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost("player-stats")]
         public async Task<IActionResult> SeedPlayerStats()
         {
@@ -446,6 +459,7 @@ namespace Nexus.API.Controllers
             });
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost("achievements")]
         public async Task<IActionResult> SeedAchievements()
         {

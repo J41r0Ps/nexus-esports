@@ -1,6 +1,4 @@
-# ===========================
 # .NET / C#
-# ===========================
 *.user
 *.suo
 *.userosscache
@@ -31,7 +29,7 @@ artifacts/
 # ASP.NET
 wwwroot/lib/
 
-# Secrets / Config (NEVER commit these)
+# Secrets / Config
 appsettings.Development.json
 appsettings.Production.json
 secrets.json
@@ -41,9 +39,7 @@ secrets.json
 # EF Core migrations backup
 *.bak
 
-# ===========================
 # React / Node
-# ===========================
 node_modules/
 dist/
 dist-ssr/
@@ -58,18 +54,19 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# ===========================
 # OS
-# ===========================
 .DS_Store
 Thumbs.db
 desktop.ini
 $RECYCLE.BIN/
 
-# ===========================
 # IDE
-# ===========================
 .vscode/
 .idea/
 *.swp
 *.swo
+
+# Publish output
+**/publish/
+**/bin/
+**/obj/
