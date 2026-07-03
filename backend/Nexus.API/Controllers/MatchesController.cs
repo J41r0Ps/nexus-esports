@@ -74,6 +74,19 @@ namespace Nexus.API.Controllers
                 .Group($"tournament-{tournamentId}")
                 .SendAsync("MatchUpdated", matchDto);
 
+            await _hubContext.Clients
+                .Group("global-matches")
+                .SendAsync("GlobalMatchUpdated", new
+                {
+                    matchDto.Id,
+                    TournamentId = tournamentId,
+                    Team1Name = matchDto.Team1?.Name,
+                    Team2Name = matchDto.Team2?.Name,
+                    WinnerName = matchDto.WinnerId == matchDto.Team1?.Id
+                        ? matchDto.Team1?.Name
+                        : matchDto.Team2?.Name
+                });
+
             return NoContent();
         }
     }
