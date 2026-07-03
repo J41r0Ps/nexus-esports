@@ -12,18 +12,28 @@ namespace Nexus.Infrastructure.Seeders
 
             foreach (var teamId in teamIds)
             {
-                var count = f.Random.Int(1, 4);
-                var picked = sponsorIds.OrderBy(_ => f.Random.Int()).Take(count).ToList();
+                // Each team gets 2–5 real sponsors
+                var sponsorCount = f.Random.Int(2, 5);
+                var picked = sponsorIds
+                    .OrderBy(_ => f.Random.Int())
+                    .Take(sponsorCount)
+                    .ToList();
 
                 foreach (var sponsorId in picked)
                 {
-                    var start = f.Date.Between(DateTime.Now.AddYears(-3), DateTime.Now.AddYears(-1));
+                    var start = f.Date.Between(
+                        DateTime.Now.AddYears(-3),
+                        DateTime.Now.AddYears(-1));
+
+                    // 70% chance the deal is still ongoing (no end date)
+                    var isOngoing = f.Random.Bool(0.7f);
+
                     teamSponsors.Add(new TeamSponsor
                     {
                         TeamId = teamId,
                         SponsorId = sponsorId,
                         StartDate = start,
-                        EndDate = f.Random.Bool() ? start.AddYears(1) : null
+                        EndDate = isOngoing ? null : start.AddYears(f.Random.Int(1, 2))
                     });
                 }
             }

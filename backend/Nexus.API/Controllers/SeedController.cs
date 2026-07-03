@@ -72,7 +72,7 @@ namespace Nexus.API.Controllers
             });
         }
 
-    /*        [HttpPost("all")]
+        /*        [HttpPost("all")]
         public async Task<IActionResult> SeedAll()
         {
             if (!_env.IsDevelopment()) return Forbid();
@@ -222,6 +222,56 @@ namespace Nexus.API.Controllers
                     Role = p.Role.ToString(),
                     p.PhotoUrl
                 })
+            });
+        }
+
+        [HttpPost("sponsors")]
+        public async Task<IActionResult> SeedSponsors()
+        {
+            if (!_env.IsDevelopment()) return Forbid();
+
+            if (_context.Sponsors.Any())
+                return BadRequest("Sponsors already seeded.");
+
+            var seeder = new SponsorSeeder();
+            var sponsors = seeder.Generate();
+
+            _context.Sponsors.AddRange(sponsors);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Real sponsors seeded!",
+                count = sponsors.Count
+            });
+        }
+
+        [HttpPost("team-sponsors")]
+        public async Task<IActionResult> SeedTeamSponsors()
+        {
+            if (!_env.IsDevelopment()) return Forbid();
+
+            if (!_context.Teams.Any())
+                return BadRequest("Seed teams first!");
+            if (!_context.Sponsors.Any())
+                return BadRequest("Seed sponsors first!");
+            if (_context.TeamSponsors.Any())
+                return BadRequest("TeamSponsors already seeded.");
+
+            var teamIds = await _context.Teams.Select(t => t.Id).ToListAsync();
+            var sponsorIds = await _context.Sponsors.Select(s => s.Id).ToListAsync();
+
+            var seeder = new TeamSponsorSeeder();
+            var links = seeder.Generate(teamIds, sponsorIds);
+
+            _context.TeamSponsors.AddRange(links);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Teams linked to real sponsors!",
+                count = links.Count,
+                averagePerTeam = links.Count / (double)teamIds.Count
             });
         }
 
