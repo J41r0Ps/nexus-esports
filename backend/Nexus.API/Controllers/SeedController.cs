@@ -327,6 +327,70 @@ namespace Nexus.API.Controllers
                 avgPerTournament = stages.Count / (double)tournaments.Count
             });
         }
+
+        [HttpPost("registrations")]
+        public async Task<IActionResult> SeedRegistrations()
+        {
+            if (!_env.IsDevelopment()) return Forbid();
+
+            if (!_context.Tournaments.Any())
+                return BadRequest("Seed tournaments first!");
+            if (!_context.Teams.Any())
+                return BadRequest("Seed teams first!");
+            if (_context.TournamentRegistrations.Any())
+                return BadRequest("Registrations already seeded.");
+
+            var tournaments = await _context.Tournaments.ToListAsync();
+            var teams = await _context.Teams.ToListAsync();
+
+            var seeder = new TournamentRegistrationSeeder();
+            var registrations = seeder.Generate(tournaments, teams);
+
+            _context.TournamentRegistrations.AddRange(registrations);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Teams registered for their matching games!",
+                count = registrations.Count,
+                avgTeamsPerTournament = registrations.Count / (double)tournaments.Count
+            });
+        }
+
+        [HttpPost("matches")]
+        public async Task<IActionResult> SeedMatches()
+        {
+            if (!_env.IsDevelopment()) return Forbid();
+
+            if (!_context.Stages.Any())
+                return BadRequest("Seed stages first!");
+            if (!_context.TournamentRegistrations.Any())
+                return BadRequest("Seed registrations first!");
+            if (_context.Matches.Any())
+                return BadRequest("Matches already seeded.");
+
+            var tournaments = await _context.Tournaments.ToListAsync();
+            var stages = await _context.Stages.ToListAsync();
+            var registrations = await _context.TournamentRegistrations.ToListAsync();
+            var games = await _context.Games.ToListAsync();
+
+            var seeder = new MatchSeeder();
+            var matches = seeder.Generate(tournaments, stages, registrations, games);
+
+            _context.Matches.AddRange(matches);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Real matchups generated across all tournaments!",
+                count = matches.Count,
+                played = matches.Count(m => m.WinnerId.HasValue),
+                upcoming = matches.Count(m => !m.WinnerId.HasValue)
+            });
+        }
+
+
+
         /*        [HttpDelete("players")]
         public async Task<IActionResult> ClearPlayers()
         {
@@ -344,7 +408,6 @@ namespace Nexus.API.Controllers
 
             return Ok(new { message = "Players (and their stats/achievements) cleared, IDs reset." });
         }*/
-
     }
 }
 #endif

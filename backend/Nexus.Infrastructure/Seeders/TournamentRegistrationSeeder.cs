@@ -6,32 +6,38 @@ namespace Nexus.Infrastructure.Seeders
     public class TournamentRegistrationSeeder
     {
         public List<TournamentRegistration> Generate(
-            List<int> teamIds,
-            List<int> tournamentIds)
+            List<Tournament> tournaments,
+            List<Team> teams)
         {
-            var registrations = new List<TournamentRegistration>();
             var f = new Faker();
+            var registrations = new List<TournamentRegistration>();
 
-            foreach (var tournamentId in tournamentIds)
+            foreach (var tournament in tournaments)
             {
-                // 6-8 teams per tournament
-                var count = f.Random.Int(6, 8);
-                var pickedTeams = teamIds
+                // Only pick teams that play THIS game
+                var eligibleTeams = teams
+                    .Where(t => t.GameId == tournament.GameId)
+                    .ToList();
+
+                if (eligibleTeams.Count < 4) continue; // need minimum teams
+
+                // 8-16 teams per tournament, depending on how many are available
+                var count = Math.Min(f.Random.Int(8, 16), eligibleTeams.Count);
+
+                var picked = eligibleTeams
                     .OrderBy(_ => f.Random.Int())
                     .Take(count)
                     .ToList();
 
-                var seed = 1;
-                foreach (var teamId in pickedTeams)
+                int seed = 1;
+                foreach (var team in picked)
                 {
                     registrations.Add(new TournamentRegistration
                     {
-                        TeamId = teamId,
-                        TournamentId = tournamentId,
+                        TeamId = team.Id,
+                        TournamentId = tournament.Id,
                         SeedNumber = seed++,
-                        RegisteredAt = f.Date.Between(
-                            DateTime.Now.AddMonths(-6),
-                            DateTime.Now.AddMonths(-1))
+                        RegisteredAt = tournament.StartDate.AddDays(-f.Random.Int(30, 90))
                     });
                 }
             }
