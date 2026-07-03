@@ -6,17 +6,16 @@ namespace Nexus.Infrastructure.Seeders
 {
     public class MatchSeeder
     {
-        // Real esports streamers/organizers per game
         private static readonly Dictionary<string, string[]> StreamChannels = new()
         {
             ["Counter-Strike 2"] = new[] { "esl_csgo", "blastpremier", "pgl_esports" },
             ["League of Legends"] = new[] { "riotgames", "lolesports", "lec" },
             ["Valorant"] = new[] { "valorant", "valorantesports", "vct" },
-            ["Dota 2"] = new[] { "dota2ti", "pgl_esports", "beyondthesummit" },
+            ["Dota 2"] = new[] { "dota2ti", "pgl_esports" },
             ["Rocket League"] = new[] { "rocketleague", "rlcs" },
             ["Overwatch 2"] = new[] { "playoverwatch", "owcs" },
             ["Rainbow Six Siege"] = new[] { "rainbow6", "blastr6" },
-            ["StarCraft II"] = new[] { "esl_sc2", "wcs" }
+            ["StarCraft II"] = new[] { "esl_sc2" }
         };
 
         public List<Match> Generate(
@@ -30,80 +29,135 @@ namespace Nexus.Infrastructure.Seeders
 
             foreach (var tournament in tournaments)
             {
-                // Registered teams for THIS tournament
-                var tournamentTeamIds = registrations
+                var registeredTeamIds = registrations
                     .Where(r => r.TournamentId == tournament.Id)
+                    .OrderBy(r => r.SeedNumber)
                     .Select(r => r.TeamId)
                     .ToList();
 
-                if (tournamentTeamIds.Count < 2) continue;
+                if (registeredTeamIds.Count < 4) continue;
 
-                // Get game for stream URLs
                 var game = games.FirstOrDefault(g => g.Id == tournament.GameId);
                 var channels = game != null && StreamChannels.TryGetValue(game.Name, out var ch)
                     ? ch
                     : new[] { "esl_esports" };
 
-                // Tournament stages sorted by order
                 var tournamentStages = stages
                     .Where(s => s.TournamentId == tournament.Id)
                     .OrderBy(s => s.Order)
                     .ToList();
 
+                if (tournamentStages.Count == 0) continue;
+
+                var totalDays = (tournament.EndDate - tournament.StartDate).TotalDays;
+
+                // ─── Winners "pipeline" — after each stage, only winners advance ───
+                var currentRoundTeams = registeredTeamIds.ToList();
+                var stageIndex = 0;
+
                 foreach (var stage in tournamentStages)
                 {
-                    // Number of matches depends on stage type
-                    var matchCount = GetMatchCountForStage(stage.StageType, tournamentTeamIds.Count);
+                    var stageMatches = new List<Match>();
 
-                    for (int i = 0; i < matchCount; i++)
+                    // Group stage = round-robin-style, doesn't eliminate — everyone plays
+                    // Later rounds = knockout (winners advance)
+                    var isGroupOrQualifier =
+                        stage.StageType == StageType.GroupStage ||
+                        stage.StageType == StageType.Qualifier;
+
+                    if (isGroupOrQualifier)
                     {
-                        // Pick 2 different teams
-                        var shuffled = tournamentTeamIds.OrderBy(_ => f.Random.Int()).ToList();
-                        var team1Id = shuffled[0];
-                        var team2Id = shuffled[1];
-
-                        // Match date: distributed across tournament duration
-                        var totalDays = (tournament.EndDate - tournament.StartDate).TotalDays;
-                        var stageProgress = (stage.Order - 1) / (double)tournamentStages.Count;
-                        var matchDate = tournament.StartDate.AddDays(stageProgress * totalDays)
-                                                              .AddHours(f.Random.Int(0, 6));
-
-                        // Determine winner based on tournament status
-                        int? winnerId = null;
-                        if (tournament.Status == TournamentStatus.Completed)
+                        // Every team plays ~2-3 matches, doesn't eliminate
+                        var groupMatchCount = Math.Min(currentRoundTeams.Count, 12);
+                        for (int i = 0; i < groupMatchCount; i++)
                         {
-                            winnerId = f.Random.Bool() ? team1Id : team2Id;
-                        }
-                        else if (tournament.Status == TournamentStatus.Ongoing
-                                 && stage.Order < tournamentStages.Count) // earlier stages done
-                        {
-                            winnerId = f.Random.Bool() ? team1Id : team2Id;
+                            var shuffled = currentRoundTeams.OrderBy(_ => f.Random.Int()).ToList();
+                            var team1Id = shuffled[0];
+                            var team2Id = shuffled[1];
+
+                            var matchDate = GetMatchDate(tournament, stageIndex, tournamentStages.Count, totalDays, f);
+                            var winnerId = DetermineWinner(tournament, stage, tournamentStages, team1Id, team2Id, f);
+
+                            stageMatches.Add(new Match(matchDate)
+                            {
+                                StageId = stage.Id,
+                                Team1Id = team1Id,
+                                Team2Id = team2Id,
+                                WinnerId = winnerId,
+                                StreamUrl = $"https://twitch.tv/{f.PickRandom(channels)}"
+                            });
                         }
 
-                        matches.Add(new Match(matchDate)
-                        {
-                            StageId = stage.Id,
-                            Team1Id = team1Id,
-                            Team2Id = team2Id,
-                            WinnerId = winnerId,
-                            StreamUrl = $"https://twitch.tv/{f.PickRandom(channels)}"
-                        });
+                        // After group stage, top 8 (or all) advance — pick top half by seed
+                        var topHalf = currentRoundTeams.Take(Math.Max(8, currentRoundTeams.Count / 2)).ToList();
+                        currentRoundTeams = topHalf;
                     }
+                    else
+                    {
+                        // Knockout: pair up teams, 1 match each, winners advance
+                        var matchCount = currentRoundTeams.Count / 2;
+                        var winners = new List<int>();
+
+                        for (int i = 0; i < matchCount; i++)
+                        {
+                            var team1Id = currentRoundTeams[i * 2];
+                            var team2Id = currentRoundTeams[i * 2 + 1];
+
+                            var matchDate = GetMatchDate(tournament, stageIndex, tournamentStages.Count, totalDays, f);
+                            var winnerId = DetermineWinner(tournament, stage, tournamentStages, team1Id, team2Id, f);
+
+                            stageMatches.Add(new Match(matchDate)
+                            {
+                                StageId = stage.Id,
+                                Team1Id = team1Id,
+                                Team2Id = team2Id,
+                                WinnerId = winnerId,
+                                StreamUrl = $"https://twitch.tv/{f.PickRandom(channels)}"
+                            });
+
+                            // Only advance if this match was actually played
+                            if (winnerId.HasValue)
+                                winners.Add(winnerId.Value);
+                            else
+                                winners.Add(f.Random.Bool() ? team1Id : team2Id); // placeholder
+                        }
+
+                        currentRoundTeams = winners;
+                    }
+
+                    matches.AddRange(stageMatches);
+                    stageIndex++;
                 }
             }
 
             return matches;
         }
 
-        private static int GetMatchCountForStage(StageType stageType, int totalTeams) => stageType switch
+        private DateTime GetMatchDate(Tournament t, int stageIdx, int totalStages, double totalDays, Faker f)
         {
-            StageType.Qualifier => Math.Min(8, totalTeams / 2),
-            StageType.GroupStage => Math.Min(12, totalTeams),
-            StageType.RoundOf16 => 8,
-            StageType.QuarterFinal => 4,
-            StageType.SemiFinal => 2,
-            StageType.GrandFinal => 1,
-            _ => 4
-        };
+            var progress = stageIdx / (double)totalStages;
+            return t.StartDate.AddDays(progress * totalDays).AddHours(f.Random.Int(0, 6));
+        }
+
+        private int? DetermineWinner(Tournament t, Stage stage, List<Stage> allStages, int team1Id, int team2Id, Faker f)
+        {
+            // Completed tournaments: all matches have winners
+            if (t.Status == TournamentStatus.Completed)
+                return f.Random.Bool() ? team1Id : team2Id;
+
+            // Upcoming: no winners yet
+            if (t.Status == TournamentStatus.Upcoming)
+                return null;
+
+            // Ongoing: group + qualifier stages are done, others depend on stage.Order
+            if (stage.StageType == StageType.GroupStage || stage.StageType == StageType.Qualifier)
+                return f.Random.Bool() ? team1Id : team2Id;
+
+            // Ongoing = only the LAST stage is still pending
+            var isLastStage = stage.Order == allStages.Count;
+            if (isLastStage) return null;
+
+            return f.Random.Bool() ? team1Id : team2Id;
+        }
     }
 }
