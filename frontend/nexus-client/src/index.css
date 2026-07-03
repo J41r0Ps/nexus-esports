@@ -3094,3 +3094,65 @@ a:hover {
     height: 200px;
   }
 }
+
+.live-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  min-width: 320px;
+  max-width: 400px;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  border: 1px solid var(--neon-green);
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 30px rgba(0, 255, 148, 0.3), var(--shadow-card);
+  z-index: 3000;
+  animation: liveSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes liveSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(50px) scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.live-toast-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.live-toast-label {
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--neon-green);
+}
+
+.live-toast-body {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.live-toast-body strong {
+  color: var(--neon-cyan);
+}
+
+.live-toast-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-sm {
+  padding: 0.4rem 0.9rem !important;
+  font-size: 0.75rem !important;
+}
