@@ -389,7 +389,68 @@ namespace Nexus.API.Controllers
             });
         }
 
+        [HttpPost("player-stats")]
+        public async Task<IActionResult> SeedPlayerStats()
+        {
+            if (!_env.IsDevelopment()) return Forbid();
 
+            if (!_context.Players.Any())
+                return BadRequest("Seed players first!");
+            if (!_context.Matches.Any())
+                return BadRequest("Seed matches first!");
+            if (_context.PlayerStats.Any())
+                return BadRequest("PlayerStats already seeded.");
+
+            var players = await _context.Players.ToListAsync();
+            var playedMatches = await _context.Matches
+                .Where(m => m.WinnerId != null)
+                .ToListAsync();
+            var registrations = await _context.TournamentRegistrations.ToListAsync();
+
+            var seeder = new PlayerStatSeeder();
+            var stats = seeder.Generate(players, playedMatches, registrations);
+
+            _context.PlayerStats.AddRange(stats);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Player stats generated — scaled by salary + win/loss!",
+                count = stats.Count,
+                avgPerPlayer = stats.Count / (double)players.Count
+            });
+        }
+
+        [HttpPost("achievements")]
+        public async Task<IActionResult> SeedAchievements()
+        {
+            if (!_env.IsDevelopment()) return Forbid();
+
+            if (!_context.Players.Any())
+                return BadRequest("Seed players first!");
+            if (!_context.Tournaments.Any())
+                return BadRequest("Seed tournaments first!");
+            if (_context.Achievements.Any())
+                return BadRequest("Achievements already seeded.");
+
+            var players = await _context.Players.ToListAsync();
+            var completedTournaments = await _context.Tournaments
+                .Where(t => t.Status == Nexus.Domain.Enums.TournamentStatus.Completed)
+                .ToListAsync();
+
+            var seeder = new AchievementSeeder();
+            var achievements = seeder.Generate(players, completedTournaments);
+
+            _context.Achievements.AddRange(achievements);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Achievements generated — scaled by age + salary!",
+                count = achievements.Count,
+                avgPerPlayer = achievements.Count / (double)players.Count
+            });
+        }
 
         /*        [HttpDelete("players")]
         public async Task<IActionResult> ClearPlayers()
