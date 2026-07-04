@@ -6,7 +6,7 @@ import ScrollToTop from '@/components/ui/scroll_to_top';
 import LiveToast from '@/components/ui/live_toast';
 
 function Layout({ children, title, subtitle }) {
-    const { loginWithRedirect, logout, isAuthenticated, user, error } = useAuth0();
+    const { loginWithRedirect, logout, isAuthenticated, user, error, getAccessTokenSilently } = useAuth0();
     const [scrolled, setScrolled] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const location = useLocation();
@@ -80,6 +80,34 @@ function Layout({ children, title, subtitle }) {
                                     </div>
                                     <span className="nexus-user-email">{user.email}</span>
                                 </div>
+                            )}
+
+                            {isAuthenticated && (
+                                <button
+                                    onClick={async () => {
+                                        try {
+                                            const token = await getAccessTokenSilently();
+                                            await navigator.clipboard.writeText(token);
+                                            alert('✅ Token copied! Paste in Swagger.');
+                                        } catch (err) {
+                                            alert('❌ ' + err.message);
+                                        }
+                                    }}
+                                    style={{
+                                        padding: '0.4rem 0.8rem',
+                                        background: 'rgba(255, 215, 0, 0.1)',
+                                        color: 'var(--neon-yellow)',
+                                        border: '1px solid rgba(255, 215, 0, 0.4)',
+                                        borderRadius: 'var(--radius-sm)',
+                                        fontFamily: 'var(--font-heading)',
+                                        fontSize: '0.75rem',
+                                        fontWeight: 600,
+                                        cursor: 'pointer'
+                                    }}
+                                    title="Copy JWT token for API testing"
+                                >
+                                    <i className="bi bi-key-fill me-1"></i> Token
+                                </button>
                             )}
 
                             {isAuthenticated ? (

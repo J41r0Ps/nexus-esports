@@ -70,3 +70,10 @@ $RECYCLE.BIN/
 **/publish/
 **/bin/
 **/obj/
+
+# HTTP test files with tokens
+**/*.http
+
+# Real .http files with tokens (keep .http.example)
+**/seed-azure.http
+**/api-calls.http
