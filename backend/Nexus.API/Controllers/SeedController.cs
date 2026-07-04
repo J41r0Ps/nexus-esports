@@ -159,7 +159,10 @@ namespace Nexus.API.Controllers
         [HttpPost("teams")]
         public async Task<IActionResult> SeedTeams()
         {
-            if (!_env.IsDevelopment()) return Forbid();
+            // Allow in dev; in prod, only admins can seed
+            if (!_env.IsDevelopment() && !User.Claims.Any(c =>
+                c.Type == "https://nexus-esports.com/roles" && c.Value == "admin"))
+                return Forbid();
 
             if (!_context.Games.Any())
                 return BadRequest("Seed games first!");
