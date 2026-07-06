@@ -13,7 +13,6 @@ function TournamentDetailScreen() {
     const [matches, setMatches] = useState([]);
     const [activeTab, setActiveTab] = useState('bracket');
     const [loading, setLoading] = useState(true);
-    const [toast, setToast] = useState(null);
 
     const getTournament = async () => {
         try {
@@ -43,6 +42,7 @@ function TournamentDetailScreen() {
 
     // SignalR — live match updates
     useMatchHub(id, (updatedMatch) => {
+        // Just update the local match state — global toast handles the notification
         setMatches(prev => prev.map(m =>
             m.id === updatedMatch.id
                 ? {
@@ -53,10 +53,6 @@ function TournamentDetailScreen() {
                 }
                 : m
         ));
-        setToast({
-            message: `Live update: ${updatedMatch.team1?.name} vs ${updatedMatch.team2?.name} — winner updated!`,
-            type: 'info'
-        });
     });
 
     if (loading) {
@@ -183,13 +179,6 @@ function TournamentDetailScreen() {
                 <TournamentTeams teams={tournament.registeredTeams} />
             )}
 
-            {toast && (
-                <Toast
-                    message={toast.message}
-                    type={toast.type}
-                    onClose={() => setToast(null)}
-                />
-            )}
         </Layout>
     );
 }
