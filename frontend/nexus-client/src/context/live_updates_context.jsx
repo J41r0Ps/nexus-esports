@@ -2,7 +2,8 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import * as signalR from '@microsoft/signalr';
 
 const LiveUpdatesContext = createContext();
-const HUB_URL = 'https://localhost:7059/hubs/matches';
+const API_URL = import.meta.env.VITE_API_URL || 'https://localhost:7059/api/';
+const HUB_URL = API_URL.replace('/api/', '/hubs/matches');
 
 export function LiveUpdatesProvider({ children }) {
     const [latestUpdate, setLatestUpdate] = useState(null);
