@@ -1,0 +1,10 @@
+**/bin
+**/obj
+**/publish
+**/.vs
+**/appsettings.Development.json
+**/appsettings.Production.json
+**/*.http
+**/.git
+**/.gitignore
+**/README.md
