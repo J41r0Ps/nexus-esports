@@ -113,8 +113,11 @@ function Layout({ children, title, subtitle }) {
                             {isAuthenticated ? (
                                 <button
                                     className="btn-neon btn-neon-violet"
-                                    onClick={() => logout({ returnTo: window.location.origin })}
-                                >
+                                    onClick={() => logout({
+                                        logoutParams: {
+                                            returnTo: window.location.origin
+                                        }
+                                    })}                                >
                                     <i className="bi bi-box-arrow-right me-1"></i>
                                     Logout
                                 </button>
@@ -157,8 +160,11 @@ function Layout({ children, title, subtitle }) {
                         {isAuthenticated ? (
                             <button
                                 className="btn-neon btn-neon-violet w-100"
-                                onClick={() => logout({ returnTo: window.location.origin })}
-                            >
+                                onClick={() => logout({
+                                    logoutParams: {
+                                        returnTo: window.location.origin
+                                    }
+                                })}                            >
                                 <i className="bi bi-box-arrow-right me-2"></i>Logout
                             </button>
                         ) : (

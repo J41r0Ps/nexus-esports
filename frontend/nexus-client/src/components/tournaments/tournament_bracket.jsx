@@ -1,6 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useIsAdmin } from '@/hooks/use_is_admin';
 import TournamentsService from '@/api/tournaments_service';
+import apiClient from '@/api/api_client';
 
 function MatchCard({ match, tournamentId, isAdmin, onWinnerSet }) {
     const hasWinner = match.winnerId != null;
@@ -79,20 +80,17 @@ function TournamentBracket({ stages, matches, tournamentId }) {
     const handleWinnerSet = async (match, side) => {
         try {
             // Fetch match details to get team IDs
-            const detailRes = await TournamentsService.getMatches(tournamentId);
+            const detailRes = await apiClient.get(`/tournaments/${tournamentId}/matches/${match.id}`);
             const fullMatch = detailRes.data.find(m => m.id === match.id);
             if (!fullMatch) return;
 
             // We need to fetch the actual detail endpoint for team IDs
-            const detail = await fetch(
-                `https://localhost:7059/api/tournaments/${tournamentId}/matches/${match.id}`
-            ).then(r => r.json());
+            const detail = detailRes.data;
 
             const winnerId = side === 'team1' ? detail.team1.id : detail.team2.id;
 
             const token = await getAccessTokenSilently();
             await TournamentsService.updateMatchWinner(tournamentId, match.id, winnerId, token);
-            // SignalR will broadcast the update automatically
         } catch (error) {
             console.log(error);
         }
