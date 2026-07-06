@@ -79,18 +79,18 @@ function TournamentBracket({ stages, matches, tournamentId }) {
 
     const handleWinnerSet = async (match, side) => {
         try {
-            // Fetch match details to get team IDs
-            const detailRes = await apiClient.get(`/tournaments/${tournamentId}/matches/${match.id}`);
-            const fullMatch = detailRes.data.find(m => m.id === match.id);
-            if (!fullMatch) return;
+            const token = await getAccessTokenSilently();
 
-            // We need to fetch the actual detail endpoint for team IDs
+            // Fetch full match detail to get team IDs
+            const detailRes = await apiClient.get(
+                `/tournaments/${tournamentId}/matches/${match.id}`
+            );
             const detail = detailRes.data;
 
             const winnerId = side === 'team1' ? detail.team1.id : detail.team2.id;
 
-            const token = await getAccessTokenSilently();
             await TournamentsService.updateMatchWinner(tournamentId, match.id, winnerId, token);
+            // SignalR will broadcast the update automatically
         } catch (error) {
             console.log(error);
         }
