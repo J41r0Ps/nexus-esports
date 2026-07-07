@@ -96,7 +96,7 @@ namespace Nexus.API.Controllers
 
             return Ok(new
             {
-                message = "Games seeded successfully with real data from RAWG!",
+                message = "Games seeded successfully with real data from RAWG! 🎮",
                 count = games.Count,
                 games = games.Select(g => new
                 {
