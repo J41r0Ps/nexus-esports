@@ -70,7 +70,7 @@ function PlayerDetailScreen() {
 
     return (
         <Layout>
-            <Link to="/players" className={backLink}>
+            <Link to="/players" viewTransition className={backLink}>
                 <i className="bi bi-arrow-left"></i> All Players
             </Link>
 

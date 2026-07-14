@@ -99,7 +99,7 @@ function TournamentDetailScreen() {
             </div>
 
             <section className="relative py-12 px-8 rounded-lg border border-border-glow mb-8 overflow-hidden bg-[linear-gradient(135deg,rgba(0,240,255,0.08),rgba(176,38,255,0.08)),var(--bg-secondary)] fade-in-up before:content-[''] before:absolute before:-top-1/2 before:-right-[10%] before:w-[400px] before:h-[400px] before:bg-[radial-gradient(circle,var(--neon-violet)_0%,transparent_70%)] before:opacity-20 before:pointer-events-none after:content-[''] after:absolute after:-bottom-1/2 after:-left-[10%] after:w-[400px] after:h-[400px] after:bg-[radial-gradient(circle,var(--neon-cyan)_0%,transparent_70%)] after:opacity-15 after:pointer-events-none">
-                <Link to="/tournaments" className="inline-flex items-center gap-2 text-text-secondary font-heading text-[0.85rem] uppercase tracking-[0.1em] no-underline mb-6 relative z-[1] transition-all duration-150 hover:text-neon-cyan hover:gap-3 hover:no-underline">
+                <Link to="/tournaments" viewTransition className="inline-flex items-center gap-2 text-text-secondary font-heading text-[0.85rem] uppercase tracking-[0.1em] no-underline mb-6 relative z-[1] transition-all duration-150 hover:text-neon-cyan hover:gap-3 hover:no-underline">
                     <i className="bi bi-arrow-left"></i> All Tournaments
                 </Link>
 

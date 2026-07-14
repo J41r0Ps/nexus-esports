@@ -19,7 +19,7 @@ function TeamCard({ team, isAdmin, onEdit, onDelete }) {
 
             <div className="flex items-center justify-between pt-6 px-6 pb-2">
                 <div className="w-[60px] h-[60px] rounded-md bg-bg-tertiary border border-border-default flex items-center justify-center overflow-hidden font-heading text-2xl font-bold text-neon-cyan shrink-0">
-                    {team.logoUrl ? <img src={team.logoUrl} alt={team.name} className="w-full h-full object-contain p-1 bg-white rounded-sm" /> : <span>{team.tag?.charAt(0)}</span>}
+                    {team.logoUrl ? <img src={team.logoUrl} alt={team.name} width="60" height="60" loading="lazy" decoding="async" className="w-full h-full object-contain p-1 bg-white rounded-sm" /> : <span>{team.tag?.charAt(0)}</span>}
                 </div>
                 <span className={`badge-neon ${regionColors[team.region] || 'badge-neon'}`}>
                     {team.region}
@@ -40,7 +40,7 @@ function TeamCard({ team, isAdmin, onEdit, onDelete }) {
                     </div>
                     <div className={metaItem}>
                         {team.countryFlag ? (
-                            <img src={team.countryFlag} alt={team.countryName} className={flagClass} />
+                            <img src={team.countryFlag} alt={team.countryName} width="24" height="18" loading="lazy" decoding="async" className={flagClass} />
                         ) : (
                             <i className={`bi bi-geo-alt-fill ${metaIcon}`}></i>
                         )}

@@ -19,6 +19,10 @@ function TournamentTeams({ teams }) {
                         <img
                             src={team.teamFlag}
                             alt={team.teamName}
+                            width="28"
+                            height="20"
+                            loading="lazy"
+                            decoding="async"
                             className="w-7 h-5 object-cover rounded-[3px] border border-border-default shrink-0"
                         />
                     )}

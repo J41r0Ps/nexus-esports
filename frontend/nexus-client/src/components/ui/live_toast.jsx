@@ -25,7 +25,7 @@ function LiveToast() {
     };
 
     return (
-        <div className="fixed bottom-8 right-8 min-w-[320px] max-w-[400px] p-5 rounded-md border border-neon-green bg-gradient-to-br from-bg-secondary to-bg-tertiary shadow-[0_0_30px_rgba(0,255,148,0.3),var(--shadow-card)] z-[3000] animate-live-in">
+        <div role="status" className="fixed bottom-4 left-4 right-4 sm:bottom-8 sm:left-auto sm:right-8 sm:min-w-[320px] sm:max-w-[400px] p-5 rounded-md border border-neon-green bg-gradient-to-br from-bg-secondary to-bg-tertiary shadow-[0_0_30px_rgba(0,255,148,0.3),var(--shadow-card)] z-[3000] animate-live-in">
             <div className="flex items-center gap-2 mb-3">
                 <span className="live-dot"></span>
                 <span className="font-heading text-[0.7rem] tracking-[0.2em] text-neon-green">LIVE MATCH UPDATE</span>

@@ -34,12 +34,16 @@ function Modal({ isOpen, onClose, title, children, size = "md" }) {
             onClick={onClose}
         >
             <div
+                role="dialog"
+                aria-modal="true"
+                aria-label={title}
                 className={`w-full ${sizes[size] || sizes.md} max-h-[90vh] overflow-y-auto bg-bg-secondary border border-border-glow rounded-lg shadow-[var(--shadow-card),0_0_40px_var(--neon-cyan-dim)] animate-[modalSlideUp_0.3s_cubic-bezier(0.4,0,0.2,1)]`}
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex items-center justify-between p-6 border-b border-border-default">
                     <h3 className="text-[1.25rem] font-semibold text-text-primary m-0">{title}</h3>
                     <button
+                        aria-label="Close dialog"
                         className="w-[34px] h-[34px] bg-transparent border border-border-default text-text-secondary rounded-sm cursor-pointer transition-all duration-150 flex items-center justify-center hover:text-neon-pink hover:border-neon-pink"
                         onClick={onClose}
                     >

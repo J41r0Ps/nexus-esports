@@ -30,7 +30,7 @@ function TournamentCard({ tournament, isAdmin, onEdit, onDelete }) {
     };
 
     return (
-        <Link to={`/tournaments/${tournament.id}`} className="block no-underline text-inherit hover:no-underline">
+        <Link to={`/tournaments/${tournament.id}`} viewTransition className="block no-underline text-inherit hover:no-underline">
             <div className="group glass-card fade-in-up relative overflow-hidden flex flex-col h-full">
                 {isAdmin && <CardAdminActions item={tournament} onEdit={onEdit} onDelete={onDelete} />}
 

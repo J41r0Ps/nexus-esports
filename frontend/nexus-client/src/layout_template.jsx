@@ -19,6 +19,7 @@ function Layout({ children, title, subtitle }) {
     const { loginWithRedirect, logout, isAuthenticated, user, error, getAccessTokenSilently } = useAuth0();
     const [scrolled, setScrolled] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [tokenCopied, setTokenCopied] = useState(false);
     const location = useLocation();
     const { theme, toggleTheme } = useTheme();
 
@@ -27,6 +28,20 @@ function Layout({ children, title, subtitle }) {
         const handleScroll = () => setScrolled(window.scrollY > 20);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    // Cursor-tracked spotlight on glass cards: one delegated listener updates
+    // --mx/--my on the hovered card; .glass-card::after renders the glow.
+    useEffect(() => {
+        const handleMove = (e) => {
+            const card = e.target.closest?.('.glass-card');
+            if (!card) return;
+            const rect = card.getBoundingClientRect();
+            card.style.setProperty('--mx', `${e.clientX - rect.left}px`);
+            card.style.setProperty('--my', `${e.clientY - rect.top}px`);
+        };
+        window.addEventListener('pointermove', handleMove, { passive: true });
+        return () => window.removeEventListener('pointermove', handleMove);
     }, []);
 
     // Close mobile menu on route change
@@ -62,7 +77,7 @@ function Layout({ children, title, subtitle }) {
                     <div className="flex items-center gap-6">
 
                         {/* Logo */}
-                        <Link to="/" className="flex items-baseline gap-[0.15rem] font-heading font-bold text-[1.4rem] tracking-[0.05em] no-underline shrink-0">
+                        <Link to="/" viewTransition className="flex items-baseline gap-[0.15rem] font-heading font-bold text-[1.4rem] tracking-[0.05em] no-underline shrink-0">
                             <span className="text-neon-cyan font-light [text-shadow:0_0_10px_var(--neon-cyan-dim)]">[</span>
                             <span className="bg-gradient-to-br from-neon-cyan to-neon-violet bg-clip-text text-transparent">NEXUS</span>
                             <span className="text-neon-cyan font-light [text-shadow:0_0_10px_var(--neon-cyan-dim)]">]</span>
@@ -77,6 +92,7 @@ function Layout({ children, title, subtitle }) {
                                     <Link
                                         key={link.path}
                                         to={link.path}
+                                        viewTransition
                                         className={`relative flex items-center gap-2 px-4 py-2 font-heading font-medium text-[0.9rem] tracking-[0.05em] uppercase no-underline transition-colors duration-200 ${active ? 'text-neon-cyan' : 'text-text-secondary hover:text-neon-cyan'}`}
                                     >
                                         <i className={`bi ${link.icon}`}></i>
@@ -108,15 +124,20 @@ function Layout({ children, title, subtitle }) {
                                         try {
                                             const token = await getAccessTokenSilently();
                                             await navigator.clipboard.writeText(token);
-                                            alert('✅ Token copied! Paste in Swagger.');
+                                            setTokenCopied(true);
+                                            setTimeout(() => setTokenCopied(false), 2000);
                                         } catch (err) {
-                                            alert('❌ ' + err.message);
+                                            console.error('Token copy failed:', err);
                                         }
                                     }}
                                     title="Copy JWT token for API testing"
-                                    className="px-3 py-2 rounded-sm bg-neon-yellow/10 text-neon-yellow border border-neon-yellow/40 font-heading text-[0.75rem] font-semibold cursor-pointer transition-all duration-200 hover:bg-neon-yellow/20"
+                                    className={`px-3 py-2 rounded-sm font-heading text-[0.75rem] font-semibold cursor-pointer transition-all duration-200 border ${tokenCopied
+                                        ? 'bg-neon-green/15 text-neon-green border-neon-green/50'
+                                        : 'bg-neon-yellow/10 text-neon-yellow border-neon-yellow/40 hover:bg-neon-yellow/20'}`}
                                 >
-                                    <i className="bi bi-key-fill mr-1"></i> Token
+                                    {tokenCopied
+                                        ? <><i className="bi bi-check-lg mr-1"></i> Copied</>
+                                        : <><i className="bi bi-key-fill mr-1"></i> Token</>}
                                 </button>
                             )}
 
@@ -152,6 +173,7 @@ function Layout({ children, title, subtitle }) {
                             <Link
                                 key={link.path}
                                 to={link.path}
+                                viewTransition
                                 className={`flex items-center gap-3 px-4 py-3 rounded-lg font-heading font-medium text-[0.9rem] uppercase no-underline border transition-all duration-200 ${isActive(link.path)
                                     ? 'text-neon-cyan border-border-glow bg-neon-cyan/[0.06]'
                                     : 'text-text-secondary border-border-default bg-bg-secondary hover:text-neon-cyan hover:border-border-glow'}`}

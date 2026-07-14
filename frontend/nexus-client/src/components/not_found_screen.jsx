@@ -11,10 +11,10 @@ function NotFoundScreen() {
                     The page you're looking for has been eliminated from the bracket.
                 </p>
                 <div className="flex gap-4 flex-wrap justify-center">
-                    <Link to="/" className="btn-neon">
+                    <Link to="/" viewTransition className="btn-neon">
                         <i className="bi bi-house-fill me-2"></i> Back to Home
                     </Link>
-                    <Link to="/tournaments" className="btn-neon btn-neon-violet">
+                    <Link to="/tournaments" viewTransition className="btn-neon btn-neon-violet">
                         <i className="bi bi-trophy-fill me-2"></i> View Tournaments
                     </Link>
                 </div>

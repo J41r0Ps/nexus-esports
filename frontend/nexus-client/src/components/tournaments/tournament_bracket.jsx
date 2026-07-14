@@ -21,7 +21,7 @@ function TeamRow({ logo, name, state }) {
     return (
         <div className={`${teamBase} ${stateClass}`}>
             <div className="flex items-center gap-[0.6rem]">
-                {logo && <img src={logo} alt={name} className="w-7 h-7 rounded-sm object-cover" />}
+                {logo && <img src={logo} alt={name} width="28" height="28" loading="lazy" decoding="async" className="w-7 h-7 rounded-sm object-cover" />}
                 <span className={`font-medium text-[0.9rem] ${isWinner ? 'text-neon-green !font-bold' : 'text-text-primary'} ${isLoser ? 'line-through decoration-[rgba(255,46,136,0.5)]' : ''}`}>
                     {name}
                 </span>

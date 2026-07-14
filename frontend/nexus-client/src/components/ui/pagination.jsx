@@ -4,6 +4,8 @@
  * target page.
  */
 function Pagination({ currentPage, totalPages, onPageChange }) {
+    if (totalPages <= 1) return null;
+
     const pages = [];
     const maxVisible = 5;
     let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
@@ -17,11 +19,12 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
     const dots = "text-text-muted px-2";
 
     return (
-        <nav className="flex justify-center items-center gap-2 my-8">
+        <nav aria-label="Pagination" className="flex flex-wrap justify-center items-center gap-2 my-8">
             <button
                 className={btn}
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage === 1}
+                aria-label="Previous page"
             >
                 <i className="bi bi-chevron-left"></i>
             </button>
@@ -38,6 +41,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
                     key={page}
                     className={`${btn} ${page === currentPage ? activeBtn : ''}`}
                     onClick={() => onPageChange(page)}
+                    aria-current={page === currentPage ? 'page' : undefined}
                 >
                     {page}
                 </button>
@@ -56,6 +60,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
                 className={btn}
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
+                aria-label="Next page"
             >
                 <i className="bi bi-chevron-right"></i>
             </button>

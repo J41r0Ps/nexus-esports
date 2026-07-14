@@ -146,6 +146,13 @@
     font-family: var(--font-heading);
     font-weight: 600;
     letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  /* Visible keyboard focus, in brand color (Preflight strips the UA default look) */
+  :focus-visible {
+    outline: 2px solid var(--neon-cyan);
+    outline-offset: 2px;
   }
 
   a {
@@ -192,7 +199,7 @@
 
   /* Glass card */
   .glass-card {
-    @apply bg-bg-glass border border-border-default rounded-md transition-all duration-[250ms];
+    @apply relative bg-bg-glass border border-border-default rounded-md transition-all duration-[250ms];
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     box-shadow: var(--shadow-card);
@@ -203,9 +210,25 @@
     box-shadow: var(--shadow-card), var(--shadow-glow-cyan);
   }
 
+  /* Cursor-tracked spotlight sheen. --mx/--my are set by a delegated
+     pointermove listener in layout_template.jsx. */
+  .glass-card::after {
+    content: '';
+    @apply absolute inset-0 rounded-[inherit] pointer-events-none opacity-0 transition-opacity duration-300;
+    background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgba(0, 240, 255, 0.07), transparent 65%);
+  }
+
+  .glass-card:hover::after {
+    @apply opacity-100;
+  }
+
+  [data-theme="light"] .glass-card::after {
+    background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgba(0, 184, 204, 0.09), transparent 65%);
+  }
+
   /* Outlined neon button (fills with gradient on hover) */
   .btn-neon {
-    @apply relative inline-flex items-center justify-center px-6 py-[0.6rem] bg-transparent text-neon-cyan border border-neon-cyan rounded-sm font-heading font-semibold tracking-[0.05em] uppercase text-[0.85rem] cursor-pointer transition-all duration-[250ms] overflow-hidden no-underline;
+    @apply relative inline-flex items-center justify-center px-6 py-[0.6rem] bg-transparent text-neon-cyan border border-neon-cyan rounded-sm font-heading font-semibold tracking-[0.05em] uppercase text-[0.85rem] cursor-pointer transition-all duration-[250ms] overflow-hidden no-underline active:scale-[0.97];
   }
 
   .btn-neon::before {
@@ -233,7 +256,7 @@
 
   /* Solid gradient primary button */
   .btn-neon-primary {
-    @apply inline-flex items-center justify-center px-7 py-[0.7rem] text-bg-primary border-0 rounded-sm font-heading font-semibold tracking-[0.05em] uppercase text-[0.85rem] cursor-pointer transition-all duration-[250ms];
+    @apply inline-flex items-center justify-center px-7 py-[0.7rem] text-bg-primary border-0 rounded-sm font-heading font-semibold tracking-[0.05em] uppercase text-[0.85rem] cursor-pointer transition-all duration-[250ms] active:scale-[0.97];
     background: var(--gradient-primary);
   }
 
@@ -248,7 +271,7 @@
 
   /* Danger button */
   .btn-danger {
-    @apply inline-flex items-center justify-center px-7 py-[0.7rem] text-white border-0 rounded-sm font-heading font-semibold tracking-[0.05em] uppercase text-[0.85rem] cursor-pointer transition-all duration-[250ms];
+    @apply inline-flex items-center justify-center px-7 py-[0.7rem] text-white border-0 rounded-sm font-heading font-semibold tracking-[0.05em] uppercase text-[0.85rem] cursor-pointer transition-all duration-[250ms] active:scale-[0.97];
     background: linear-gradient(135deg, var(--neon-pink), #ff4d6d);
   }
 
@@ -354,6 +377,53 @@
   .pulse-glow {
     animation: pulse-glow 2s ease-in-out infinite;
   }
+
+  /* Scroll-triggered reveal — paired with the <Reveal> component
+     (src/components/ui/reveal.jsx), which flips on .reveal-visible via
+     IntersectionObserver. Stagger with --reveal-delay. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: var(--reveal-delay, 0s);
+  }
+
+  .reveal-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+}
+
+/* ============================================
+    VIEW TRANSITIONS (cross-page fade/slide)
+    Progressive enhancement: applies in browsers with the View Transitions API
+    when navigating via <Link viewTransition>; ignored everywhere else.
+   ============================================ */
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: vtFadeOut 0.18s ease both;
+  }
+
+  ::view-transition-new(root) {
+    animation: vtFadeIn 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+}
+
+@keyframes vtFadeOut {
+  to { opacity: 0; }
+}
+
+@keyframes vtFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
 }
 
 /* ============================================
@@ -435,6 +505,10 @@
 @keyframes scrollBtnIn {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gradientPan {
+  to { background-position: 200% 50%; }
 }
 
 @keyframes pageFadeIn {

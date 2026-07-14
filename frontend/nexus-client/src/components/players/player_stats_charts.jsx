@@ -5,13 +5,14 @@ import {
 } from 'recharts';
 import { EmptyState } from '@/components/ui/states';
 
+// CSS variables so the charts follow light/dark theme switching like the rest of the UI.
 const COLORS = {
-    cyan: '#00f0ff',
-    violet: '#b026ff',
-    pink: '#ff2e88',
-    green: '#00ff94',
-    grid: 'rgba(148, 163, 184, 0.1)',
-    text: '#94a3b8'
+    cyan: 'var(--neon-cyan)',
+    violet: 'var(--neon-violet)',
+    pink: 'var(--neon-pink)',
+    green: 'var(--neon-green)',
+    grid: 'var(--border-default)',
+    text: 'var(--text-secondary)'
 };
 
 function CustomTooltip({ active, payload, label }) {
@@ -79,7 +80,7 @@ function PlayerStatsCharts({ stats }) {
                             <Tooltip content={<CustomTooltip />} />
                             <Legend wrapperStyle={{ fontSize: 12 }} />
                             <Line type="monotone" dataKey="Kills" stroke={COLORS.pink} strokeWidth={2} dot={{ r: 3 }} />
-                            <Line type="monotone" dataKey="Deaths" stroke="#64748b" strokeWidth={2} dot={{ r: 3 }} />
+                            <Line type="monotone" dataKey="Deaths" stroke="var(--text-muted)" strokeWidth={2} dot={{ r: 3 }} />
                             <Line type="monotone" dataKey="Assists" stroke={COLORS.cyan} strokeWidth={2} dot={{ r: 3 }} />
                         </LineChart>
                     </ResponsiveContainer>

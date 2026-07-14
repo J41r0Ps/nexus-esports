@@ -21,13 +21,13 @@ function PlayerCard({ player, isAdmin, onEdit, onDelete }) {
     };
 
     return (
-        <Link to={`/players/${player.id}`} className="block no-underline text-inherit hover:no-underline">
+        <Link to={`/players/${player.id}`} viewTransition className="block no-underline text-inherit hover:no-underline">
             <div className="group glass-card fade-in-up relative flex flex-col overflow-hidden cursor-pointer before:content-[''] before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:bg-gradient-to-r before:from-neon-violet before:to-neon-pink before:opacity-0 before:z-[2] before:transition-opacity before:duration-[250ms] group-hover:before:opacity-100">
                 {isAdmin && <CardAdminActions item={player} onEdit={onEdit} onDelete={onDelete} />}
 
                 <div className="relative w-full h-[200px] bg-bg-tertiary overflow-hidden">
                     {player.photoUrl ? (
-                        <img src={player.photoUrl} alt={player.gamertag} className="w-full h-full object-cover transition-transform duration-[250ms] group-hover:scale-105" />
+                        <img src={player.photoUrl} alt={player.gamertag} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-[250ms] group-hover:scale-105" />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center text-[4rem] text-text-muted bg-gradient-to-br from-bg-secondary to-bg-tertiary">
                             <i className="bi bi-person-fill"></i>
@@ -49,7 +49,7 @@ function PlayerCard({ player, isAdmin, onEdit, onDelete }) {
                         </div>
                         <div className={metaItem}>
                             {player.countryFlag ? (
-                                <img src={player.countryFlag} alt={player.countryName} className={flagClass} />
+                                <img src={player.countryFlag} alt={player.countryName} width="24" height="18" loading="lazy" decoding="async" className={flagClass} />
                             ) : (
                                 <i className={`bi bi-geo-alt-fill ${metaIcon}`}></i>
                             )}

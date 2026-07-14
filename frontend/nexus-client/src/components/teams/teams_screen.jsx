@@ -29,10 +29,7 @@ function TeamsScreen() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [toast, setToast] = useState(null);
 
-    const showToast = (message, type = 'success') => {
-        console.log('Toast triggered:', message, type);  // ← add this
-        setToast({ message, type });
-    };
+    const showToast = (message, type = 'success') => setToast({ message, type });
 
     const getTeams = async () => {
         try {
