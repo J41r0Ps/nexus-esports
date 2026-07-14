@@ -1,6 +1,11 @@
-import { Link } from 'react-router-dom';
 import { SkeletonGrid } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/ui/states';
+import CardAdminActions from '@/components/ui/card_admin_actions';
 
+const metaItem = "flex items-center gap-2 text-text-secondary text-[0.85rem]";
+const metaIcon = "text-neon-cyan text-[0.95rem] w-4";
+const flagClass = "w-6 h-[18px] object-cover rounded-[3px] border border-border-default shrink-0";
+const gridCls = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-14";
 
 function TeamCard({ team, isAdmin, onEdit, onDelete }) {
     const regionColors = {
@@ -9,44 +14,35 @@ function TeamCard({ team, isAdmin, onEdit, onDelete }) {
     };
 
     return (
-        <div className="team-card glass-card fade-in-up">
-            {isAdmin && (
-                <div className="admin-actions">
-                    <button className="admin-btn admin-btn-edit" onClick={(e) => { e.preventDefault(); onEdit(team); }}>
-                        <i className="bi bi-pencil-fill"></i>
-                    </button>
-                    <button className="admin-btn admin-btn-delete" onClick={(e) => { e.preventDefault(); onDelete(team); }}>
-                        <i className="bi bi-trash-fill"></i>
-                    </button>
-                </div>
-            )}
+        <div className="group glass-card fade-in-up relative flex flex-col overflow-hidden cursor-pointer before:content-[''] before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:bg-gradient-to-r before:from-neon-cyan before:to-neon-violet before:opacity-0 before:transition-opacity before:duration-[250ms] group-hover:before:opacity-100">
+            {isAdmin && <CardAdminActions item={team} onEdit={onEdit} onDelete={onDelete} />}
 
-            <div className="team-card-header">
-                <div className="team-logo">
-                    {team.logoUrl ? <img src={team.logoUrl} alt={team.name} /> : <span>{team.tag?.charAt(0)}</span>}
+            <div className="flex items-center justify-between pt-6 px-6 pb-2">
+                <div className="w-[60px] h-[60px] rounded-md bg-bg-tertiary border border-border-default flex items-center justify-center overflow-hidden font-heading text-2xl font-bold text-neon-cyan shrink-0">
+                    {team.logoUrl ? <img src={team.logoUrl} alt={team.name} className="w-full h-full object-contain p-1 bg-white rounded-sm" /> : <span>{team.tag?.charAt(0)}</span>}
                 </div>
                 <span className={`badge-neon ${regionColors[team.region] || 'badge-neon'}`}>
                     {team.region}
                 </span>
             </div>
 
-            <div className="team-card-body">
-                <h3 className="team-name">{team.name}</h3>
-                <span className="team-tag">[{team.tag}]</span>
-                <div className="team-meta">
-                    <div className="team-meta-item">
-                        <i className="bi bi-controller"></i>
+            <div className="pt-4 px-6 pb-6">
+                <h3 className="text-[1.2rem] font-semibold text-text-primary mb-1 leading-[1.3]">{team.name}</h3>
+                <span className="inline-block font-heading text-text-muted text-[0.85rem] mb-4">[{team.tag}]</span>
+                <div className="flex flex-col gap-2 pt-4 border-t border-border-default">
+                    <div className={metaItem}>
+                        <i className={`bi bi-controller ${metaIcon}`}></i>
                         <span>{team.gameName}</span>
                     </div>
-                    <div className="team-meta-item">
-                        <i className="bi bi-calendar3"></i>
+                    <div className={metaItem}>
+                        <i className={`bi bi-calendar3 ${metaIcon}`}></i>
                         <span>Est. {team.foundedYear}</span>
                     </div>
-                    <div className="team-meta-item">
+                    <div className={metaItem}>
                         {team.countryFlag ? (
-                            <img src={team.countryFlag} alt={team.countryName} className="country-flag-inline" />
+                            <img src={team.countryFlag} alt={team.countryName} className={flagClass} />
                         ) : (
-                            <i className="bi bi-geo-alt-fill"></i>
+                            <i className={`bi bi-geo-alt-fill ${metaIcon}`}></i>
                         )}
                         <span>{team.countryName}</span>
                     </div>
@@ -58,21 +54,17 @@ function TeamCard({ team, isAdmin, onEdit, onDelete }) {
 
 function TeamsList({ teams, loading, isAdmin, onEdit, onDelete }) {
     if (loading) {
-        return <SkeletonGrid count={12} height={280} />;
+        return <SkeletonGrid count={10} height={280} className={gridCls} />;
     }
 
     if (teams.length === 0) {
         return (
-            <div className="empty-state glass-card">
-                <i className="bi bi-search empty-icon"></i>
-                <h3>No teams found</h3>
-                <p>Try adjusting your filters or search query.</p>
-            </div>
+            <EmptyState icon="bi-search" title="No teams found" description="Try adjusting your filters or search query." />
         );
     }
 
     return (
-        <div className="teams-grid">
+        <div className={gridCls}>
             {teams.map(team => (
                 <TeamCard
                     key={team.id}

@@ -1,3 +1,5 @@
+const groupCls = "sm:flex-1 sm:min-w-[180px]";
+
 function TournamentsFilter({ filters, onFilterChange, games }) {
     const statuses = ['Upcoming', 'Ongoing', 'Completed', 'Cancelled'];
     const formats = ['SingleElimination', 'DoubleElimination', 'RoundRobin', 'Swiss', 'GSL'];
@@ -12,21 +14,21 @@ function TournamentsFilter({ filters, onFilterChange, games }) {
     };
 
     const handleClear = () => {
-        onFilterChange({ pageNumber: 1, pageSize: 9 });
+        onFilterChange({ pageNumber: 1, pageSize: 8 });
     };
 
     const hasActiveFilters = filters.searchQuery || filters.status || filters.format || filters.gameId;
 
     return (
-        <div className="filter-panel glass-card fade-in-up">
-            <div className="filter-row">
+        <div className="glass-card fade-in-up p-5 mb-8">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:items-center">
                 {/* Search */}
-                <div className="filter-group filter-search">
-                    <i className="bi bi-search filter-icon"></i>
+                <div className="relative sm:flex-[2] sm:min-w-[250px]">
+                    <i className="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-text-muted text-base pointer-events-none z-[2]"></i>
                     <input
                         type="text"
                         name="searchQuery"
-                        className="form-control"
+                        className="form-control !pl-11"
                         placeholder="Search by tournament name..."
                         value={filters.searchQuery || ''}
                         onChange={handleChange}
@@ -34,7 +36,7 @@ function TournamentsFilter({ filters, onFilterChange, games }) {
                 </div>
 
                 {/* Status */}
-                <div className="filter-group">
+                <div className={groupCls}>
                     <select
                         name="status"
                         className="form-select"
@@ -49,7 +51,7 @@ function TournamentsFilter({ filters, onFilterChange, games }) {
                 </div>
 
                 {/* Format */}
-                <div className="filter-group">
+                <div className={groupCls}>
                     <select
                         name="format"
                         className="form-select"
@@ -64,7 +66,7 @@ function TournamentsFilter({ filters, onFilterChange, games }) {
                 </div>
 
                 {/* Game */}
-                <div className="filter-group">
+                <div className={groupCls}>
                     <select
                         name="gameId"
                         className="form-select"

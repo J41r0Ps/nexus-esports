@@ -1,3 +1,5 @@
+const groupCls = "sm:flex-1 sm:min-w-[180px]";
+
 function TeamsFilter({ filters, onFilterChange, games }) {
     const regions = ['EU', 'NA', 'APAC', 'LATAM', 'ME', 'CIS', 'OCE'];
 
@@ -11,21 +13,21 @@ function TeamsFilter({ filters, onFilterChange, games }) {
     };
 
     const handleClear = () => {
-        onFilterChange({ pageNumber: 1, pageSize: 12 });
+        onFilterChange({ pageNumber: 1, pageSize: 10 });
     };
 
     const hasActiveFilters = filters.searchQuery || filters.region || filters.gameId;
 
     return (
-        <div className="filter-panel glass-card fade-in-up">
-            <div className="filter-row">
+        <div className="glass-card fade-in-up p-5 mb-8">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:items-center">
                 {/* Search */}
-                <div className="filter-group filter-search">
-                    <i className="bi bi-search filter-icon"></i>
+                <div className="relative sm:flex-[2] sm:min-w-[250px]">
+                    <i className="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-text-muted text-base pointer-events-none z-[2]"></i>
                     <input
                         type="text"
                         name="searchQuery"
-                        className="form-control"
+                        className="form-control !pl-11"
                         placeholder="Search by name or tag..."
                         value={filters.searchQuery || ''}
                         onChange={handleChange}
@@ -33,7 +35,7 @@ function TeamsFilter({ filters, onFilterChange, games }) {
                 </div>
 
                 {/* Region */}
-                <div className="filter-group">
+                <div className={groupCls}>
                     <select
                         name="region"
                         className="form-select"
@@ -48,7 +50,7 @@ function TeamsFilter({ filters, onFilterChange, games }) {
                 </div>
 
                 {/* Game */}
-                <div className="filter-group">
+                <div className={groupCls}>
                     <select
                         name="gameId"
                         className="form-select"

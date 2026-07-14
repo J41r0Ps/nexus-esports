@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import GamesService from '@/api/games_service';
 import CountriesService from '@/api/countries_service';
 import ImageUploader from '@/components/ui/image_uploader';
+import { FormField, FormActions } from '@/components/ui/form_field';
 
+/** Create / edit form for a team, rendered inside a modal. */
 function TeamForm({ initialData, onSubmit, onCancel, isSubmitting }) {
     const [formData, setFormData] = useState({
         name: '',
@@ -55,114 +57,66 @@ function TeamForm({ initialData, onSubmit, onCancel, isSubmitting }) {
         if (validate()) onSubmit(formData);
     };
 
+    // Adds the invalid outline to a control when its field has an error.
+    const controlClass = (field, base = 'form-control') => `${base} ${errors[field] ? 'is-invalid' : ''}`;
+
     return (
-        <form onSubmit={handleSubmit} className="admin-form">
-            <div className="form-grid">
-                <div className="form-field form-field-full">
-                    <label>Team Name *</label>
-                    <input
-                        type="text"
-                        name="name"
-                        className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-                        value={formData.name}
-                        onChange={handleChange}
-                        placeholder="e.g. Natus Vincere"
-                    />
-                    {errors.name && <span className="form-error">{errors.name}</span>}
-                </div>
+        <form onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <FormField label="Team Name *" error={errors.name} full>
+                    <input type="text" name="name" className={controlClass('name')}
+                        value={formData.name} onChange={handleChange} placeholder="e.g. Natus Vincere" />
+                </FormField>
 
-                <div className="form-field">
-                    <label>Tag *</label>
-                    <input
-                        type="text"
-                        name="tag"
-                        className={`form-control ${errors.tag ? 'is-invalid' : ''}`}
-                        value={formData.tag}
-                        onChange={handleChange}
-                        placeholder="e.g. NaVi"
-                        maxLength={10}
-                    />
-                    {errors.tag && <span className="form-error">{errors.tag}</span>}
-                </div>
+                <FormField label="Tag *" error={errors.tag}>
+                    <input type="text" name="tag" className={controlClass('tag')}
+                        value={formData.tag} onChange={handleChange} placeholder="e.g. NaVi" maxLength={10} />
+                </FormField>
 
-                <div className="form-field">
-                    <label>Region *</label>
-                    <select
-                        name="region"
-                        className="form-select"
-                        value={formData.region}
-                        onChange={handleChange}
-                    >
+                <FormField label="Region *">
+                    <select name="region" className="form-select" value={formData.region} onChange={handleChange}>
                         {regions.map(r => <option key={r} value={r}>{r}</option>)}
                     </select>
-                </div>
+                </FormField>
 
-                <div className="form-field">
-                    <label>Founded Year *</label>
-                    <input
-                        type="number"
-                        name="foundedYear"
-                        className={`form-control ${errors.foundedYear ? 'is-invalid' : ''}`}
-                        value={formData.foundedYear}
-                        onChange={handleChange}
-                        min="1990"
-                        max={new Date().getFullYear()}
-                    />
-                    {errors.foundedYear && <span className="form-error">{errors.foundedYear}</span>}
-                </div>
+                <FormField label="Founded Year *" error={errors.foundedYear}>
+                    <input type="number" name="foundedYear" className={controlClass('foundedYear')}
+                        value={formData.foundedYear} onChange={handleChange}
+                        min="1990" max={new Date().getFullYear()} />
+                </FormField>
 
-                <div className="form-field">
-                    <label>Game *</label>
-                    <select
-                        name="gameId"
-                        className={`form-select ${errors.gameId ? 'is-invalid' : ''}`}
-                        value={formData.gameId}
-                        onChange={handleChange}
-                    >
+                <FormField label="Game *" error={errors.gameId}>
+                    <select name="gameId" className={controlClass('gameId', 'form-select')}
+                        value={formData.gameId} onChange={handleChange}>
                         <option value="">Select game...</option>
                         {games.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
                     </select>
-                    {errors.gameId && <span className="form-error">{errors.gameId}</span>}
-                </div>
+                </FormField>
 
-                <div className="form-field">
-                    <label>Country *</label>
-                    <select
-                        name="countryId"
-                        className={`form-select ${errors.countryId ? 'is-invalid' : ''}`}
-                        value={formData.countryId}
-                        onChange={handleChange}
-                    >
+                <FormField label="Country *" error={errors.countryId}>
+                    <select name="countryId" className={controlClass('countryId', 'form-select')}
+                        value={formData.countryId} onChange={handleChange}>
                         <option value="">Select country...</option>
-                        {countries.map(c => (
-                            <option key={c.id} value={c.id}>{c.name}</option>
-                        ))}
+                        {countries.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
-                    {errors.countryId && <span className="form-error">{errors.countryId}</span>}
-                </div>
+                </FormField>
 
-                <div className="form-field">
-                    <label>Organization ID</label>
-                    <input
-                        type="number"
-                        name="organizationId"
-                        className="form-control"
-                        value={formData.organizationId}
-                        onChange={handleChange}
-                    />
-                </div>
+                <FormField label="Organization ID">
+                    <input type="number" name="organizationId" className="form-control"
+                        value={formData.organizationId} onChange={handleChange} />
+                </FormField>
 
-                <div className="form-field form-field-full">
+                <FormField full>
                     <ImageUploader
                         value={formData.logoUrl}
                         onChange={(url) => setFormData({ ...formData, logoUrl: url })}
                         folder="teams"
                         label="Team Logo"
                     />
-                </div>
+                </FormField>
             </div>
 
-            <div className="modal-actions">
+            <FormActions>
                 <button type="button" className="btn-neon" onClick={onCancel} disabled={isSubmitting}>
                     Cancel
                 </button>
@@ -173,7 +127,7 @@ function TeamForm({ initialData, onSubmit, onCancel, isSubmitting }) {
                         <><i className="bi bi-check-lg me-2"></i> {initialData ? 'Update' : 'Create'}</>
                     )}
                 </button>
-            </div>
+            </FormActions>
         </form>
     );
 }

@@ -3,9 +3,12 @@ import { useParams, Link } from 'react-router-dom';
 import Layout from '@/layout_template';
 import TournamentBracket from './tournament_bracket';
 import TournamentTeams from './tournament_teams';
-import Toast from '@/components/ui/toast';
 import TournamentsService from '@/api/tournaments_service';
 import { useMatchHub } from '@/hooks/use_match_hub';
+import { LoadingState, EmptyState } from '@/components/ui/states';
+
+const tabBase = "inline-flex items-center gap-2 py-[0.85rem] px-6 bg-transparent border-none text-text-secondary font-heading font-medium text-[0.9rem] tracking-[0.05em] uppercase cursor-pointer border-b-2 border-b-transparent transition-all duration-150 whitespace-nowrap hover:text-neon-cyan";
+const tabActive = "!text-neon-cyan !border-b-neon-cyan";
 
 function TournamentDetailScreen() {
     const { id } = useParams();
@@ -58,10 +61,7 @@ function TournamentDetailScreen() {
     if (loading) {
         return (
             <Layout>
-                <div className="loading-state">
-                    <div className="loading-spinner"></div>
-                    <p>Loading tournament...</p>
-                </div>
+                <LoadingState label="Loading tournament..." />
             </Layout>
         );
     }
@@ -69,11 +69,9 @@ function TournamentDetailScreen() {
     if (!tournament) {
         return (
             <Layout>
-                <div className="empty-state glass-card">
-                    <i className="bi bi-trophy empty-icon"></i>
-                    <h3>Tournament not found</h3>
-                    <Link to="/tournaments" className="btn-neon mt-3">Back to Tournaments</Link>
-                </div>
+                <EmptyState icon="bi-trophy" title="Tournament not found">
+                    <Link to="/tournaments" className="btn-neon mt-4 inline-block">Back to Tournaments</Link>
+                </EmptyState>
             </Layout>
         );
     }
@@ -95,55 +93,55 @@ function TournamentDetailScreen() {
     return (
         <Layout>
             {/* Live indicator */}
-            <div className="live-indicator">
+            <div className="inline-flex items-center gap-2 py-[0.4rem] px-4 bg-neon-green/10 border border-neon-green/30 rounded-full font-heading text-[0.75rem] font-semibold tracking-[0.15em] text-neon-green mb-4">
                 <span className="live-dot"></span>
                 <span>LIVE UPDATES ENABLED</span>
             </div>
 
-            <section className="tournament-hero fade-in-up">
-                <Link to="/tournaments" className="back-link">
+            <section className="relative py-12 px-8 rounded-lg border border-border-glow mb-8 overflow-hidden bg-[linear-gradient(135deg,rgba(0,240,255,0.08),rgba(176,38,255,0.08)),var(--bg-secondary)] fade-in-up before:content-[''] before:absolute before:-top-1/2 before:-right-[10%] before:w-[400px] before:h-[400px] before:bg-[radial-gradient(circle,var(--neon-violet)_0%,transparent_70%)] before:opacity-20 before:pointer-events-none after:content-[''] after:absolute after:-bottom-1/2 after:-left-[10%] after:w-[400px] after:h-[400px] after:bg-[radial-gradient(circle,var(--neon-cyan)_0%,transparent_70%)] after:opacity-15 after:pointer-events-none">
+                <Link to="/tournaments" className="inline-flex items-center gap-2 text-text-secondary font-heading text-[0.85rem] uppercase tracking-[0.1em] no-underline mb-6 relative z-[1] transition-all duration-150 hover:text-neon-cyan hover:gap-3 hover:no-underline">
                     <i className="bi bi-arrow-left"></i> All Tournaments
                 </Link>
 
-                <div className="tournament-hero-content">
-                    <div className="tournament-hero-meta">
+                <div className="relative z-[1]">
+                    <div className="flex items-center gap-4 mb-4 flex-wrap">
                         <span className={`badge-neon ${status.color}`}>
                             <i className={`bi ${status.icon} me-1`}></i>
                             {tournament.status}
                         </span>
-                        <span className="tournament-hero-game">
-                            <i className="bi bi-controller"></i> {tournament.gameName}
+                        <span className="inline-flex items-center gap-[0.4rem] text-text-secondary font-heading text-[0.85rem] tracking-[0.05em] uppercase">
+                            <i className="bi bi-controller text-neon-cyan"></i> {tournament.gameName}
                         </span>
                     </div>
 
-                    <h1 className="tournament-hero-title text-glow">
+                    <h1 className="text-[clamp(2rem,5vw,3.5rem)] font-bold mb-8 tracking-[-0.03em] leading-[1.1] text-glow">
                         {tournament.name}
                     </h1>
 
-                    <div className="tournament-hero-stats">
-                        <div className="hero-stat">
-                            <span className="hero-stat-label">Prize Pool</span>
-                            <span className="hero-stat-value hero-stat-prize">
+                    <div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-6">
+                        <div className="flex flex-col gap-1">
+                            <span className="font-heading text-[0.7rem] tracking-[0.15em] uppercase text-text-muted">Prize Pool</span>
+                            <span className="font-heading font-semibold text-text-primary bg-gradient-to-br from-neon-green to-neon-cyan bg-clip-text text-transparent !text-[1.6rem]">
                                 {formatPrize(tournament.prizePool)}
                             </span>
                         </div>
-                        <div className="hero-stat">
-                            <span className="hero-stat-label">Format</span>
-                            <span className="hero-stat-value">
+                        <div className="flex flex-col gap-1">
+                            <span className="font-heading text-[0.7rem] tracking-[0.15em] uppercase text-text-muted">Format</span>
+                            <span className="font-heading text-xl font-semibold text-text-primary">
                                 {tournament.format?.replace(/([A-Z])/g, ' $1').trim()}
                             </span>
                         </div>
-                        <div className="hero-stat">
-                            <span className="hero-stat-label">Start Date</span>
-                            <span className="hero-stat-value">{tournament.startDate}</span>
+                        <div className="flex flex-col gap-1">
+                            <span className="font-heading text-[0.7rem] tracking-[0.15em] uppercase text-text-muted">Start Date</span>
+                            <span className="font-heading text-xl font-semibold text-text-primary">{tournament.startDate}</span>
                         </div>
-                        <div className="hero-stat">
-                            <span className="hero-stat-label">End Date</span>
-                            <span className="hero-stat-value">{tournament.endDate}</span>
+                        <div className="flex flex-col gap-1">
+                            <span className="font-heading text-[0.7rem] tracking-[0.15em] uppercase text-text-muted">End Date</span>
+                            <span className="font-heading text-xl font-semibold text-text-primary">{tournament.endDate}</span>
                         </div>
-                        <div className="hero-stat">
-                            <span className="hero-stat-label">Teams</span>
-                            <span className="hero-stat-value">
+                        <div className="flex flex-col gap-1">
+                            <span className="font-heading text-[0.7rem] tracking-[0.15em] uppercase text-text-muted">Teams</span>
+                            <span className="font-heading text-xl font-semibold text-text-primary">
                                 {tournament.registeredTeams?.length || 0}
                             </span>
                         </div>
@@ -151,19 +149,19 @@ function TournamentDetailScreen() {
                 </div>
             </section>
 
-            <div className="tournament-tabs">
+            <div className="flex gap-2 border-b border-border-default mb-8 overflow-x-auto">
                 <button
-                    className={`tournament-tab ${activeTab === 'bracket' ? 'active' : ''}`}
+                    className={`${tabBase} ${activeTab === 'bracket' ? tabActive : ''}`}
                     onClick={() => setActiveTab('bracket')}
                 >
                     <i className="bi bi-diagram-3-fill"></i> Bracket
                 </button>
                 <button
-                    className={`tournament-tab ${activeTab === 'teams' ? 'active' : ''}`}
+                    className={`${tabBase} ${activeTab === 'teams' ? tabActive : ''}`}
                     onClick={() => setActiveTab('teams')}
                 >
                     <i className="bi bi-shield-fill"></i> Teams
-                    <span className="tab-count">{tournament.registeredTeams?.length || 0}</span>
+                    <span className={`py-[0.15rem] px-2 rounded-full text-[0.7rem] font-semibold ${activeTab === 'teams' ? 'bg-neon-cyan text-bg-primary' : 'bg-bg-tertiary'}`}>{tournament.registeredTeams?.length || 0}</span>
                 </button>
             </div>
 

@@ -5,6 +5,16 @@ import { useTheme } from '@/context/theme_context';
 import ScrollToTop from '@/components/ui/scroll_to_top';
 import LiveToast from '@/components/ui/live_toast';
 
+// Shared page width used by the navbar, header, main and footer.
+const container = "w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-10";
+
+/**
+ * App chrome wrapped around every route: the scroll-reactive navbar (auth
+ * controls, theme toggle, responsive menu), an optional page header, the main
+ * content area, the footer, and the global live-match toast + scroll-to-top.
+ *
+ * @param {{ children: React.ReactNode, title?: string, subtitle?: string }} props
+ */
 function Layout({ children, title, subtitle }) {
     const { loginWithRedirect, logout, isAuthenticated, user, error, getAccessTokenSilently } = useAuth0();
     const [scrolled, setScrolled] = useState(false);
@@ -12,7 +22,7 @@ function Layout({ children, title, subtitle }) {
     const location = useLocation();
     const { theme, toggleTheme } = useTheme();
 
-    // Detect scroll for navbar background change
+    // Detect scroll for the navbar background/padding animation
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 20);
         window.addEventListener('scroll', handleScroll);
@@ -32,53 +42,63 @@ function Layout({ children, title, subtitle }) {
 
     const isActive = (path) => location.pathname === path;
 
+    const themeToggleBtn = (
+        <button
+            onClick={toggleTheme}
+            title={theme === 'dark' ? 'Switch to light' : 'Switch to dark'}
+            className="w-10 h-10 rounded-full grid place-items-center bg-bg-secondary border border-border-default text-neon-cyan cursor-pointer text-[1.1rem] transition-all duration-300 hover:border-border-glow hover:shadow-glow-cyan hover:rotate-[18deg] shrink-0"
+        >
+            <i className={`bi ${theme === 'dark' ? 'bi-sun-fill' : 'bi-moon-stars-fill'}`}></i>
+        </button>
+    );
+
     return (
         <>
-            {/* ─────────────  NAVBAR  ───────────── */}
-            <nav className={`nexus-navbar ${scrolled ? 'scrolled' : ''}`}>
-                <div className="container">
-                    <div className="nexus-navbar-inner">
+            {/* ─────────────  NAVBAR (full-width, scroll-reactive)  ───────────── */}
+            <nav className={`sticky top-0 z-[1000] transition-all duration-300 ${scrolled
+                ? 'py-2 bg-bg-overlay backdrop-blur-xl border-b border-border-default shadow-[0_10px_40px_-15px_rgba(0,0,0,0.5)]'
+                : 'py-4 bg-transparent border-b border-transparent'}`}>
+                <div className={container}>
+                    <div className="flex items-center gap-6">
 
                         {/* Logo */}
-                        <Link className="nexus-logo" to="/">
-                            <span className="logo-bracket">[</span>
-                            <span className="logo-text">NEXUS</span>
-                            <span className="logo-bracket">]</span>
-                            <span className="logo-sub">ESPORTS</span>
+                        <Link to="/" className="flex items-baseline gap-[0.15rem] font-heading font-bold text-[1.4rem] tracking-[0.05em] no-underline shrink-0">
+                            <span className="text-neon-cyan font-light [text-shadow:0_0_10px_var(--neon-cyan-dim)]">[</span>
+                            <span className="bg-gradient-to-br from-neon-cyan to-neon-violet bg-clip-text text-transparent">NEXUS</span>
+                            <span className="text-neon-cyan font-light [text-shadow:0_0_10px_var(--neon-cyan-dim)]">]</span>
+                            <span className="hidden sm:inline text-text-muted text-[0.7rem] font-medium tracking-[0.3em] ml-2 self-center">ESPORTS</span>
                         </Link>
 
-                        {/* Desktop Nav Links */}
-                        <div className="nexus-nav-links d-none d-lg-flex">
-                            {navLinks.map(link => (
-                                <Link
-                                    key={link.path}
-                                    to={link.path}
-                                    className={`nexus-nav-link ${isActive(link.path) ? 'active' : ''}`}
-                                >
-                                    <i className={`bi ${link.icon}`}></i>
-                                    <span>{link.label}</span>
-                                </Link>
-                            ))}
+                        {/* Desktop nav links */}
+                        <div className="hidden lg:flex items-center gap-1 grow ml-6">
+                            {navLinks.map(link => {
+                                const active = isActive(link.path);
+                                return (
+                                    <Link
+                                        key={link.path}
+                                        to={link.path}
+                                        className={`relative flex items-center gap-2 px-4 py-2 font-heading font-medium text-[0.9rem] tracking-[0.05em] uppercase no-underline transition-colors duration-200 ${active ? 'text-neon-cyan' : 'text-text-secondary hover:text-neon-cyan'}`}
+                                    >
+                                        <i className={`bi ${link.icon}`}></i>
+                                        <span>{link.label}</span>
+                                        <span className={`absolute -bottom-1 left-1/2 -translate-x-1/2 h-[2px] rounded-full bg-gradient-to-r from-neon-cyan to-neon-violet shadow-[0_0_10px_var(--neon-cyan)] transition-all duration-300 ${active ? 'w-7 opacity-100' : 'w-0 opacity-0'}`}></span>
+                                    </Link>
+                                );
+                            })}
                         </div>
 
-                        <button
-                            className="theme-toggle"
-                            onClick={toggleTheme}
-                            title={theme === 'dark' ? 'Switch to light' : 'Switch to dark'}
-                        >
-                            <i className={`bi ${theme === 'dark' ? 'bi-sun-fill' : 'bi-moon-stars-fill'}`}></i>
-                        </button>
+                        {/* Right side — desktop */}
+                        <div className="hidden lg:flex items-center gap-3 ml-auto">
+                            {error && <span className="text-[#ff4d6d] text-[0.8rem]">{error.message}</span>}
 
-                        {/* Right side — User + Login/Logout */}
-                        <div className="nexus-nav-right d-none d-lg-flex">
-                            {error && <span className="nexus-error">{error.message}</span>}
+                            {themeToggleBtn}
 
                             {isAuthenticated && user && (
-                                <div className="nexus-user">
-                                    <div className="nexus-avatar">
+                                <div className="flex items-center gap-2 pl-1 pr-3 py-1 bg-bg-secondary border border-border-default rounded-full">
+                                    <div className="w-8 h-8 rounded-full grid place-items-center bg-gradient-to-br from-neon-cyan to-neon-violet text-bg-primary font-heading font-bold text-[0.85rem]">
                                         {user.email?.charAt(0).toUpperCase()}
                                     </div>
-                                    <span className="nexus-user-email">{user.email}</span>
+                                    <span className="text-text-secondary text-[0.85rem] max-w-[150px] truncate">{user.email}</span>
                                 </div>
                             )}
 
@@ -93,86 +113,61 @@ function Layout({ children, title, subtitle }) {
                                             alert('❌ ' + err.message);
                                         }
                                     }}
-                                    style={{
-                                        padding: '0.4rem 0.8rem',
-                                        background: 'rgba(255, 215, 0, 0.1)',
-                                        color: 'var(--neon-yellow)',
-                                        border: '1px solid rgba(255, 215, 0, 0.4)',
-                                        borderRadius: 'var(--radius-sm)',
-                                        fontFamily: 'var(--font-heading)',
-                                        fontSize: '0.75rem',
-                                        fontWeight: 600,
-                                        cursor: 'pointer'
-                                    }}
                                     title="Copy JWT token for API testing"
+                                    className="px-3 py-2 rounded-sm bg-neon-yellow/10 text-neon-yellow border border-neon-yellow/40 font-heading text-[0.75rem] font-semibold cursor-pointer transition-all duration-200 hover:bg-neon-yellow/20"
                                 >
-                                    <i className="bi bi-key-fill me-1"></i> Token
+                                    <i className="bi bi-key-fill mr-1"></i> Token
                                 </button>
                             )}
 
                             {isAuthenticated ? (
-                                <button
-                                    className="btn-neon btn-neon-violet"
-                                    onClick={() => logout({
-                                        logoutParams: {
-                                            returnTo: window.location.origin
-                                        }
-                                    })}                                >
-                                    <i className="bi bi-box-arrow-right me-1"></i>
-                                    Logout
+                                <button className="btn-neon btn-neon-violet" onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
+                                    <i className="bi bi-box-arrow-right mr-1"></i> Logout
                                 </button>
                             ) : (
-                                <button
-                                    className="btn-neon"
-                                    onClick={() => loginWithRedirect()}
-                                >
-                                    <i className="bi bi-box-arrow-in-right me-1"></i>
-                                    Login
+                                <button className="btn-neon" onClick={() => loginWithRedirect()}>
+                                    <i className="bi bi-box-arrow-in-right mr-1"></i> Login
                                 </button>
                             )}
                         </div>
 
-                        {/* Mobile hamburger */}
-                        <button
-                            className="nexus-burger d-lg-none"
-                            onClick={() => setMenuOpen(!menuOpen)}
-                            aria-label="Toggle menu"
-                        >
-                            <span className={menuOpen ? 'open' : ''}></span>
-                            <span className={menuOpen ? 'open' : ''}></span>
-                            <span className={menuOpen ? 'open' : ''}></span>
-                        </button>
+                        {/* Right side — mobile (theme + animated hamburger) */}
+                        <div className="flex lg:hidden items-center gap-3 ml-auto">
+                            {themeToggleBtn}
+                            <button
+                                className="relative w-7 h-[22px] shrink-0 bg-transparent border-0 cursor-pointer"
+                                onClick={() => setMenuOpen(!menuOpen)}
+                                aria-label="Toggle menu"
+                            >
+                                <span className={`absolute left-0 h-[2px] w-full bg-neon-cyan rounded-full transition-all duration-300 [box-shadow:0_0_6px_var(--neon-cyan-dim)] ${menuOpen ? 'top-1/2 -translate-y-1/2 rotate-45' : 'top-0'}`}></span>
+                                <span className={`absolute left-0 top-1/2 -translate-y-1/2 h-[2px] w-full bg-neon-cyan rounded-full transition-all duration-300 [box-shadow:0_0_6px_var(--neon-cyan-dim)] ${menuOpen ? 'opacity-0' : 'opacity-100'}`}></span>
+                                <span className={`absolute left-0 h-[2px] w-full bg-neon-cyan rounded-full transition-all duration-300 [box-shadow:0_0_6px_var(--neon-cyan-dim)] ${menuOpen ? 'bottom-1/2 translate-y-1/2 -rotate-45' : 'bottom-0'}`}></span>
+                            </button>
+                        </div>
                     </div>
 
-                    {/* Mobile menu drawer */}
-                    <div className={`nexus-mobile-menu ${menuOpen ? 'open' : ''}`}>
+                    {/* Mobile drawer */}
+                    <div className={`lg:hidden flex flex-col gap-2 overflow-hidden transition-all duration-300 ${menuOpen ? 'max-h-[520px] mt-4 pb-2 opacity-100' : 'max-h-0 mt-0 opacity-0'}`}>
                         {navLinks.map(link => (
                             <Link
                                 key={link.path}
                                 to={link.path}
-                                className={`nexus-mobile-link ${isActive(link.path) ? 'active' : ''}`}
+                                className={`flex items-center gap-3 px-4 py-3 rounded-lg font-heading font-medium text-[0.9rem] uppercase no-underline border transition-all duration-200 ${isActive(link.path)
+                                    ? 'text-neon-cyan border-border-glow bg-neon-cyan/[0.06]'
+                                    : 'text-text-secondary border-border-default bg-bg-secondary hover:text-neon-cyan hover:border-border-glow'}`}
                             >
                                 <i className={`bi ${link.icon}`}></i>
                                 {link.label}
                             </Link>
                         ))}
-                        <div className="nexus-mobile-divider"></div>
+                        <div className="h-px bg-border-default my-1"></div>
                         {isAuthenticated ? (
-                            <button
-                                className="btn-neon btn-neon-violet w-100"
-                                onClick={() => logout({
-                                    logoutParams: {
-                                        returnTo: window.location.origin
-                                    }
-                                })}                            >
-                                <i className="bi bi-box-arrow-right me-2"></i>Logout
+                            <button className="btn-neon btn-neon-violet w-full" onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
+                                <i className="bi bi-box-arrow-right mr-2"></i>Logout
                             </button>
                         ) : (
-                            <button
-                                className="btn-neon w-100"
-                                onClick={() => loginWithRedirect()}
-                            >
-                                <i className="bi bi-box-arrow-in-right me-2"></i>Login
+                            <button className="btn-neon w-full" onClick={() => loginWithRedirect()}>
+                                <i className="bi bi-box-arrow-in-right mr-2"></i>Login
                             </button>
                         )}
                     </div>
@@ -181,34 +176,36 @@ function Layout({ children, title, subtitle }) {
 
             {/* ─────────────  PAGE HEADER  ───────────── */}
             {title && (
-                <header className="nexus-page-header">
-                    <div className="container">
-                        <h1 className="nexus-page-title text-glow fade-in-up">
+                <header className="relative pt-12 pb-6">
+                    <div className={container}>
+                        <div className="flex items-center gap-3 mb-4">
+                            <span className="h-[2px] w-10 rounded-full bg-gradient-to-r from-neon-cyan to-neon-violet shadow-[0_0_10px_var(--neon-cyan)]"></span>
+                            <span className="font-heading text-[0.7rem] tracking-[0.35em] uppercase text-text-muted">NEXUS · Platform</span>
+                        </div>
+                        <h1 className="text-[clamp(2.25rem,5vw,3.5rem)] font-bold mb-2 tracking-[-0.03em] text-glow fade-in-up">
                             {title}
                         </h1>
                         {subtitle && (
-                            <p className="nexus-page-subtitle fade-in-up">{subtitle}</p>
+                            <p className="text-text-secondary text-[1.1rem] m-0 fade-in-up">{subtitle}</p>
                         )}
                     </div>
                 </header>
             )}
 
             {/* ─────────────  MAIN CONTENT  ───────────── */}
-            <main className="nexus-main container">
+            <main className={`${container} min-h-[calc(100vh-360px)] pt-2 pb-20 animate-[pageFadeIn_0.4s_cubic-bezier(0.4,0,0.2,1)]`}>
                 {children}
             </main>
 
             {/* ─────────────  FOOTER  ───────────── */}
-            <footer className="nexus-footer">
-                <div className="container">
-                    <div className="nexus-footer-inner">
-                        <span className="nexus-footer-brand">
-                            <span className="text-glow">NEXUS</span> ESPORTS PLATFORM
-                        </span>
-                        <span className="nexus-footer-copy">
-                            &copy; {new Date().getFullYear()} — Built for competitive gaming
-                        </span>
-                    </div>
+            <footer className="border-t border-border-default mt-20 py-10 bg-bg-overlay backdrop-blur-md">
+                <div className={`${container} flex flex-col sm:flex-row justify-between items-center gap-4 text-center`}>
+                    <span className="font-heading font-semibold tracking-[0.1em] text-[0.95rem]">
+                        <span className="text-glow">NEXUS</span> ESPORTS PLATFORM
+                    </span>
+                    <span className="text-text-muted text-[0.85rem]">
+                        &copy; {new Date().getFullYear()} — Built for competitive gaming
+                    </span>
                 </div>
             </footer>
             <LiveToast />

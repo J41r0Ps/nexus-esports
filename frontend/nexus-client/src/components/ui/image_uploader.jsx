@@ -2,6 +2,13 @@ import { useState, useRef } from 'react';
 import { useAuth0 } from "@auth0/auth0-react";
 import UploadService from '@/api/upload_service';
 
+/**
+ * Image picker used inside the create/edit forms. Uploads the chosen file to the
+ * given `folder` via the upload API and reports the resulting URL through
+ * `onChange`; also accepts a pasted URL as a fallback.
+ *
+ * @param {{ value: string, onChange: (url:string)=>void, folder?: string, label?: string }} props
+ */
 function ImageUploader({ value, onChange, folder = 'misc', label = 'Image' }) {
     const { getAccessTokenSilently } = useAuth0();
     const [uploading, setUploading] = useState(false);
@@ -27,24 +34,24 @@ function ImageUploader({ value, onChange, folder = 'misc', label = 'Image' }) {
     };
 
     return (
-        <div className="image-uploader">
-            <label className="uploader-label">{label}</label>
+        <div className="flex flex-col">
+            <label className="font-heading text-xs tracking-[0.1em] uppercase text-text-secondary mb-2">{label}</label>
 
-            <div className="uploader-container">
+            <div className="flex gap-6 items-start max-[600px]:flex-col">
                 {/* Preview */}
-                <div className="uploader-preview">
+                <div className="w-[140px] h-[140px] shrink-0 overflow-hidden rounded-md border-2 border-dashed border-border-default bg-bg-tertiary transition-colors duration-150 hover:border-border-glow max-[600px]:w-full max-[600px]:h-[200px]">
                     {value ? (
-                        <img src={value} alt="Preview" />
+                        <img src={value} alt="Preview" className="w-full h-full object-contain bg-white p-2" />
                     ) : (
-                        <div className="uploader-preview-empty">
-                            <i className="bi bi-image"></i>
+                        <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-text-muted text-[0.85rem]">
+                            <i className="bi bi-image text-[2rem]"></i>
                             <span>No image</span>
                         </div>
                     )}
                 </div>
 
                 {/* Actions */}
-                <div className="uploader-actions">
+                <div className="grow flex flex-col gap-3">
                     <input
                         type="file"
                         ref={fileInputRef}
@@ -79,7 +86,7 @@ function ImageUploader({ value, onChange, folder = 'misc', label = 'Image' }) {
                     {/* Manual URL input as fallback */}
                     <input
                         type="text"
-                        className="form-control uploader-url-input"
+                        className="form-control text-[0.85rem]"
                         placeholder="or paste an image URL..."
                         value={value || ''}
                         onChange={(e) => onChange(e.target.value)}

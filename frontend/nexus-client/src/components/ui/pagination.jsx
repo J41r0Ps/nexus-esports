@@ -1,3 +1,8 @@
+/**
+ * Numbered pager with prev/next arrows and a sliding window of up to 5 pages
+ * (plus first/last shortcuts and ellipses). `onPageChange` receives the 1-based
+ * target page.
+ */
 function Pagination({ currentPage, totalPages, onPageChange }) {
     const pages = [];
     const maxVisible = 5;
@@ -7,10 +12,14 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
 
     for (let i = start; i <= end; i++) pages.push(i);
 
+    const btn = "min-w-10 h-10 px-3 flex items-center justify-center rounded-sm border border-border-default bg-bg-secondary text-text-secondary font-heading font-medium cursor-pointer transition-all duration-150 hover:enabled:border-border-glow hover:enabled:text-neon-cyan disabled:opacity-40 disabled:cursor-not-allowed";
+    const activeBtn = "bg-gradient-to-br from-neon-cyan to-neon-violet !text-bg-primary !border-transparent shadow-glow-cyan";
+    const dots = "text-text-muted px-2";
+
     return (
-        <nav className="nexus-pagination">
+        <nav className="flex justify-center items-center gap-2 my-8">
             <button
-                className="page-btn"
+                className={btn}
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage === 1}
             >
@@ -19,15 +28,15 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
 
             {start > 1 && (
                 <>
-                    <button className="page-btn" onClick={() => onPageChange(1)}>1</button>
-                    {start > 2 && <span className="page-dots">…</span>}
+                    <button className={btn} onClick={() => onPageChange(1)}>1</button>
+                    {start > 2 && <span className={dots}>…</span>}
                 </>
             )}
 
             {pages.map(page => (
                 <button
                     key={page}
-                    className={`page-btn ${page === currentPage ? 'active' : ''}`}
+                    className={`${btn} ${page === currentPage ? activeBtn : ''}`}
                     onClick={() => onPageChange(page)}
                 >
                     {page}
@@ -36,15 +45,15 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
 
             {end < totalPages && (
                 <>
-                    {end < totalPages - 1 && <span className="page-dots">…</span>}
-                    <button className="page-btn" onClick={() => onPageChange(totalPages)}>
+                    {end < totalPages - 1 && <span className={dots}>…</span>}
+                    <button className={btn} onClick={() => onPageChange(totalPages)}>
                         {totalPages}
                     </button>
                 </>
             )}
 
             <button
-                className="page-btn"
+                className={btn}
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
             >

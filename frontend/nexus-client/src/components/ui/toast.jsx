@@ -1,22 +1,34 @@
 import { useEffect } from 'react';
 
+const config = {
+    success: { border: 'border-l-neon-green', icon: 'text-neon-green', bi: 'bi-check-circle-fill' },
+    error: { border: 'border-l-neon-pink', icon: 'text-neon-pink', bi: 'bi-x-circle-fill' },
+    info: { border: 'border-l-neon-cyan', icon: 'text-neon-cyan', bi: 'bi-info-circle-fill' },
+};
+
+/**
+ * Transient notification pinned bottom-right; auto-dismisses after 3.5s.
+ *
+ * @param {{ message: string, type?: 'success'|'error'|'info', onClose: ()=>void }} props
+ */
 function Toast({ message, type = 'success', onClose }) {
     useEffect(() => {
         const timer = setTimeout(onClose, 3500);
         return () => clearTimeout(timer);
     }, [onClose]);
 
-    const icons = {
-        success: 'bi-check-circle-fill',
-        error: 'bi-x-circle-fill',
-        info: 'bi-info-circle-fill'
-    };
+    const { border, icon, bi } = config[type] || config.success;
 
     return (
-        <div className={`nexus-toast nexus-toast-${type}`}>
-            <i className={`bi ${icons[type]}`}></i>
+        <div
+            className={`fixed bottom-8 right-8 flex items-center gap-3 py-4 px-5 rounded-md border border-border-default border-l-[3px] ${border} bg-bg-secondary text-text-primary text-[0.9rem] z-[3000] min-w-[300px] max-w-[400px] shadow-[var(--shadow-card)] animate-toast-in`}
+        >
+            <i className={`bi ${bi} text-xl ${icon}`}></i>
             <span>{message}</span>
-            <button className="nexus-toast-close" onClick={onClose}>
+            <button
+                className="bg-transparent border-0 text-text-muted cursor-pointer p-1 ml-auto transition-colors duration-150 hover:text-text-primary"
+                onClick={onClose}
+            >
                 <i className="bi bi-x"></i>
             </button>
         </div>

@@ -3,6 +3,7 @@ import {
     PolarAngleAxis, PolarRadiusAxis, Radar, XAxis, YAxis,
     CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
+import { EmptyState } from '@/components/ui/states';
 
 const COLORS = {
     cyan: '#00f0ff',
@@ -16,10 +17,10 @@ const COLORS = {
 function CustomTooltip({ active, payload, label }) {
     if (active && payload && payload.length) {
         return (
-            <div className="chart-tooltip">
-                <p className="chart-tooltip-label">{label}</p>
+            <div className="bg-bg-secondary border border-border-glow rounded-sm py-3 px-4 shadow-[var(--shadow-card)]">
+                <p className="font-heading font-semibold text-text-primary text-[0.85rem] mb-2 pb-2 border-b border-border-default">{label}</p>
                 {payload.map((entry, i) => (
-                    <p key={i} style={{ color: entry.color }} className="chart-tooltip-item">
+                    <p key={i} style={{ color: entry.color }} className="text-[0.85rem] my-1">
                         {entry.name}: <strong>{entry.value}</strong>
                     </p>
                 ))}
@@ -32,11 +33,7 @@ function CustomTooltip({ active, payload, label }) {
 function PlayerStatsCharts({ stats }) {
     if (!stats || stats.length === 0) {
         return (
-            <div className="empty-state glass-card">
-                <i className="bi bi-bar-chart-line empty-icon"></i>
-                <h3>No stats available</h3>
-                <p>Match statistics will appear here once the player competes.</p>
-            </div>
+            <EmptyState icon="bi-bar-chart-line" title="No stats available" description="Match statistics will appear here once the player competes." />
         );
     }
 
@@ -61,18 +58,18 @@ function PlayerStatsCharts({ stats }) {
     ];
 
     return (
-        <section className="charts-section">
-            <h2 className="section-title">
-                <i className="bi bi-graph-up" style={{ color: 'var(--neon-cyan)' }}></i>
+        <section className="mb-12">
+            <h2 className="flex items-center gap-3 text-2xl font-semibold mb-6 tracking-[-0.02em]">
+                <i className="bi bi-graph-up text-neon-cyan"></i>
                 Performance Analytics
             </h2>
 
-            <div className="charts-grid">
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(400px,1fr))] gap-6">
                 {/* Line Chart — Performance over time */}
-                <div className="chart-card glass-card">
-                    <div className="chart-header">
-                        <h3>Performance Over Matches</h3>
-                        <span className="chart-subtitle">K/D/A trend by match</span>
+                <div className="glass-card p-7">
+                    <div className="mb-5">
+                        <h3 className="text-[1.1rem] font-semibold text-text-primary mb-1">Performance Over Matches</h3>
+                        <span className="text-[0.85rem] text-text-muted">K/D/A trend by match</span>
                     </div>
                     <ResponsiveContainer width="100%" height={280}>
                         <LineChart data={matchData}>
@@ -89,10 +86,10 @@ function PlayerStatsCharts({ stats }) {
                 </div>
 
                 {/* Bar Chart — Score per match */}
-                <div className="chart-card glass-card">
-                    <div className="chart-header">
-                        <h3>Match Score</h3>
-                        <span className="chart-subtitle">Score per match</span>
+                <div className="glass-card p-7">
+                    <div className="mb-5">
+                        <h3 className="text-[1.1rem] font-semibold text-text-primary mb-1">Match Score</h3>
+                        <span className="text-[0.85rem] text-text-muted">Score per match</span>
                     </div>
                     <ResponsiveContainer width="100%" height={280}>
                         <BarChart data={matchData}>
@@ -112,10 +109,10 @@ function PlayerStatsCharts({ stats }) {
                 </div>
 
                 {/* Radar Chart — Average profile */}
-                <div className="chart-card glass-card chart-card-wide">
-                    <div className="chart-header">
-                        <h3>Player Profile</h3>
-                        <span className="chart-subtitle">Average performance across stats</span>
+                <div className="glass-card p-7 col-[1/-1]">
+                    <div className="mb-5">
+                        <h3 className="text-[1.1rem] font-semibold text-text-primary mb-1">Player Profile</h3>
+                        <span className="text-[0.85rem] text-text-muted">Average performance across stats</span>
                     </div>
                     <ResponsiveContainer width="100%" height={320}>
                         <RadarChart data={radarData}>

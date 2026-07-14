@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import TeamsService from '@/api/teams_service';
 import CountriesService from '@/api/countries_service';
 import ImageUploader from '@/components/ui/image_uploader';
+import { FormField, FormActions } from '@/components/ui/form_field';
 
+/** Create / edit form for a player, rendered inside a modal. */
 function PlayerForm({ initialData, onSubmit, onCancel, isSubmitting }) {
     const [formData, setFormData] = useState({
         gamertag: '',
@@ -55,82 +57,66 @@ function PlayerForm({ initialData, onSubmit, onCancel, isSubmitting }) {
         if (validate()) onSubmit(formData);
     };
 
+    // Adds the invalid outline to a control when its field has an error.
+    const controlClass = (field, base = 'form-control') => `${base} ${errors[field] ? 'is-invalid' : ''}`;
+
     return (
-        <form onSubmit={handleSubmit} className="admin-form">
-            <div className="form-grid">
-                <div className="form-field">
-                    <label>Gamertag *</label>
-                    <input type="text" name="gamertag"
-                        className={`form-control ${errors.gamertag ? 'is-invalid' : ''}`}
+        <form onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <FormField label="Gamertag *" error={errors.gamertag}>
+                    <input type="text" name="gamertag" className={controlClass('gamertag')}
                         value={formData.gamertag} onChange={handleChange} placeholder="e.g. s1mple" />
-                    {errors.gamertag && <span className="form-error">{errors.gamertag}</span>}
-                </div>
+                </FormField>
 
-                <div className="form-field">
-                    <label>Real Name *</label>
-                    <input type="text" name="realName"
-                        className={`form-control ${errors.realName ? 'is-invalid' : ''}`}
+                <FormField label="Real Name *" error={errors.realName}>
+                    <input type="text" name="realName" className={controlClass('realName')}
                         value={formData.realName} onChange={handleChange} placeholder="e.g. Oleksandr Kostyliev" />
-                    {errors.realName && <span className="form-error">{errors.realName}</span>}
-                </div>
+                </FormField>
 
-                <div className="form-field">
-                    <label>Role *</label>
+                <FormField label="Role *">
                     <select name="role" className="form-select" value={formData.role} onChange={handleChange}>
                         {roles.map(r => <option key={r} value={r}>{r}</option>)}
                     </select>
-                </div>
+                </FormField>
 
-                <div className="form-field">
-                    <label>Year of Birth *</label>
-                    <input type="number" name="yearOfBirth"
-                        className={`form-control ${errors.yearOfBirth ? 'is-invalid' : ''}`}
+                <FormField label="Year of Birth *" error={errors.yearOfBirth}>
+                    <input type="number" name="yearOfBirth" className={controlClass('yearOfBirth')}
                         value={formData.yearOfBirth} onChange={handleChange}
                         min="1970" max={new Date().getFullYear()} />
-                    {errors.yearOfBirth && <span className="form-error">{errors.yearOfBirth}</span>}
-                </div>
+                </FormField>
 
-                <div className="form-field">
-                    <label>Team *</label>
-                    <select name="teamId"
-                        className={`form-select ${errors.teamId ? 'is-invalid' : ''}`}
+                <FormField label="Team *" error={errors.teamId}>
+                    <select name="teamId" className={controlClass('teamId', 'form-select')}
                         value={formData.teamId} onChange={handleChange}>
                         <option value="">Select team...</option>
                         {teams.map(t => <option key={t.id} value={t.id}>[{t.tag}] {t.name}</option>)}
                     </select>
-                    {errors.teamId && <span className="form-error">{errors.teamId}</span>}
-                </div>
+                </FormField>
 
-                <div className="form-field">
-                    <label>Country *</label>
-                    <select name="countryId"
-                        className={`form-select ${errors.countryId ? 'is-invalid' : ''}`}
+                <FormField label="Country *" error={errors.countryId}>
+                    <select name="countryId" className={controlClass('countryId', 'form-select')}
                         value={formData.countryId} onChange={handleChange}>
                         <option value="">Select country...</option>
                         {countries.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
-                    {errors.countryId && <span className="form-error">{errors.countryId}</span>}
-                </div>
+                </FormField>
 
-                <div className="form-field">
-                    <label>Salary ($) *</label>
-                    <input type="number" name="salary"
-                        className={`form-control ${errors.salary ? 'is-invalid' : ''}`}
+                <FormField label="Salary ($) *" error={errors.salary}>
+                    <input type="number" name="salary" className={controlClass('salary')}
                         value={formData.salary} onChange={handleChange} min="0" step="1000" />
-                    {errors.salary && <span className="form-error">{errors.salary}</span>}
-                </div>
+                </FormField>
 
-                <div className="form-field form-field-full">
+                <FormField full>
                     <ImageUploader
                         value={formData.photoUrl}
                         onChange={(url) => setFormData({ ...formData, photoUrl: url })}
                         folder="players"
                         label="Player Photo"
                     />
-                </div>
+                </FormField>
             </div>
 
-            <div className="modal-actions">
+            <FormActions>
                 <button type="button" className="btn-neon" onClick={onCancel} disabled={isSubmitting}>Cancel</button>
                 <button type="submit" className="btn-neon-primary" disabled={isSubmitting}>
                     {isSubmitting
@@ -138,7 +124,7 @@ function PlayerForm({ initialData, onSubmit, onCancel, isSubmitting }) {
                         : <><i className="bi bi-check-lg me-2"></i> {initialData ? 'Update' : 'Create'}</>
                     }
                 </button>
-            </div>
+            </FormActions>
         </form>
     );
 }

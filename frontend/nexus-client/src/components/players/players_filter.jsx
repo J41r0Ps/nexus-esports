@@ -1,3 +1,5 @@
+const groupCls = "sm:flex-1 sm:min-w-[180px]";
+
 function PlayersFilter({ filters, onFilterChange, teams, countries }) {
     const roles = ['Fragger', 'IGL', 'Support', 'Sniper', 'Lurker', 'Coach', 'Analyst', 'Substitute'];
 
@@ -11,14 +13,14 @@ function PlayersFilter({ filters, onFilterChange, teams, countries }) {
     const hasActiveFilters = filters.searchQuery || filters.role || filters.teamId || filters.countryId;
 
     return (
-        <div className="filter-panel glass-card fade-in-up">
-            <div className="filter-row">
-                <div className="filter-group filter-search">
-                    <i className="bi bi-search filter-icon"></i>
+        <div className="glass-card fade-in-up p-5 mb-8">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:items-center">
+                <div className="relative sm:flex-[2] sm:min-w-[250px]">
+                    <i className="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-text-muted text-base pointer-events-none z-[2]"></i>
                     <input
                         type="text"
                         name="searchQuery"
-                        className="form-control"
+                        className="form-control !pl-11"
                         placeholder="Search by gamertag or real name..."
                         value={filters.searchQuery || ''}
                         onChange={handleChange}
@@ -27,7 +29,7 @@ function PlayersFilter({ filters, onFilterChange, teams, countries }) {
 
                 {/* Only show role filter if we have roles */}
                 {roles.length > 0 && (
-                    <div className="filter-group">
+                    <div className={groupCls}>
                         <select name="role" className="form-select"
                             value={filters.role || ''} onChange={handleChange}>
                             <option value="">All Roles</option>
@@ -37,7 +39,7 @@ function PlayersFilter({ filters, onFilterChange, teams, countries }) {
                 )}
 
                 {teams.length > 0 && (
-                    <div className="filter-group">
+                    <div className={groupCls}>
                         <select name="teamId" className="form-select"
                             value={filters.teamId || ''} onChange={handleChange}>
                             <option value="">All Teams</option>
@@ -49,7 +51,7 @@ function PlayersFilter({ filters, onFilterChange, teams, countries }) {
                 )}
 
                 {countries.length > 0 && (
-                    <div className="filter-group">
+                    <div className={groupCls}>
                         <select name="countryId" className="form-select"
                             value={filters.countryId || ''} onChange={handleChange}>
                             <option value="">All Countries</option>
