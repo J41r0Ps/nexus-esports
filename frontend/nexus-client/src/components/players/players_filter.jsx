@@ -36,7 +36,6 @@ function PlayersFilter({ filters, onFilterChange, teams, countries }) {
                     </div>
                 )}
 
-                {/* Only show team filter if we have teams */}
                 {teams.length > 0 && (
                     <div className="filter-group">
                         <select name="teamId" className="form-select"
@@ -49,7 +48,6 @@ function PlayersFilter({ filters, onFilterChange, teams, countries }) {
                     </div>
                 )}
 
-                {/* Only show country filter if we have countries */}
                 {countries.length > 0 && (
                     <div className="filter-group">
                         <select name="countryId" className="form-select"

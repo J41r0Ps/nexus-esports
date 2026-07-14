@@ -44,7 +44,7 @@ namespace Nexus.API.Controllers
             var totalCount = await _tournamentRepository.GetTournamentCountAsync(
                 searchQuery, status, format, gameId);
 
-            Response.Headers.Add("X-Pagination",
+            Response.Headers.Append("X-Pagination",
                 JsonSerializer.Serialize(new PaginationMetadata(totalCount, pageSize, pageNumber)));
 
             return Ok(_mapper.Map<IEnumerable<TournamentListDto>>(tournaments));

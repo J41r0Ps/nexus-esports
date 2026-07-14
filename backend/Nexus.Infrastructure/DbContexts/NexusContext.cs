@@ -46,94 +46,85 @@ namespace Nexus.Infrastructure.DbContexts
             modelBuilder.Entity<Stage>()
                 .Property(s => s.StageType).HasConversion<string>();
 
-            // Cascade fixes: Team 
+            // Team -> Country Restrict (if the country is deleted, the team is not deleted)
             modelBuilder.Entity<Team>()
                 .HasOne(t => t.Country)
-                .WithMany(c => c.Teams)
+                    .WithMany(c => c.Teams)
                 .HasForeignKey(t => t.CountryId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Cascade fixes: Player 
+                    .OnDelete(DeleteBehavior.Restrict);
+            // Player -> Team Set Null, free agents (if the team is deleted, the player becomes a free agent)
             modelBuilder.Entity<Player>()
                 .HasOne(p => p.Team)
-                .WithMany(t => t.Players)
+                    .WithMany(t => t.Players)
                 .HasForeignKey(p => p.TeamId)
-                .OnDelete(DeleteBehavior.Restrict);
-
+                    .OnDelete(DeleteBehavior.SetNull);
+            // Player -> Country Restrict (if the country is deleted, the player is not deleted)
             modelBuilder.Entity<Player>()
                 .HasOne(p => p.Country)
-                .WithMany(c => c.Players)
+                    .WithMany(c => c.Players)
                 .HasForeignKey(p => p.CountryId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Cascade fixes: Match
+                    .OnDelete(DeleteBehavior.Restrict);
+            // Match -> Team1, Team2 Restrict (if either team is deleted, the match is not deleted)
             modelBuilder.Entity<Match>()
                 .HasOne(m => m.Team1)
-                .WithMany()
+                    .WithMany()
                 .HasForeignKey(m => m.Team1Id)
-                .OnDelete(DeleteBehavior.Restrict);
-
+                    .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Match>()
                 .HasOne(m => m.Team2)
-                .WithMany()
+                    .WithMany()
                 .HasForeignKey(m => m.Team2Id)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Cascade fixes: TournamentRegistration
+                    .OnDelete(DeleteBehavior.Restrict);
+            // TournamentRegistration → Team Cascade (if the team is deleted, the registration is deleted)
             modelBuilder.Entity<TournamentRegistration>()
                 .HasOne(tr => tr.Team)
-                .WithMany(t => t.TournamentRegistrations)
+                    .WithMany(t => t.TournamentRegistrations)
                 .HasForeignKey(tr => tr.TeamId)
-                .OnDelete(DeleteBehavior.Restrict);
-
+                    .OnDelete(DeleteBehavior.Cascade);
+            // TournamentRegistration → Tournament Cascade (if the tournament is deleted, the registration is deleted)
             modelBuilder.Entity<TournamentRegistration>()
                 .HasOne(tr => tr.Tournament)
-                .WithMany(t => t.TournamentRegistrations)
+                    .WithMany(t => t.TournamentRegistrations)
                 .HasForeignKey(tr => tr.TournamentId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Cascade fixes: Achievement
+                    .OnDelete(DeleteBehavior.Cascade);
+            // Achievement → Player Cascade (if the player is deleted, the achievement is deleted)
             modelBuilder.Entity<Achievement>()
                 .HasOne(a => a.Player)
-                .WithMany(p => p.Achievements)
+                    .WithMany(p => p.Achievements)
                 .HasForeignKey(a => a.PlayerId)
-                .OnDelete(DeleteBehavior.Restrict);
-
+                    .OnDelete(DeleteBehavior.Cascade);
+            // Achievement → Tournament Restrict (if the tournament is deleted, the achievement is not deleted)
             modelBuilder.Entity<Achievement>()
                 .HasOne(a => a.Tournament)
-                .WithMany()
+                    .WithMany()
                 .HasForeignKey(a => a.TournamentId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Cascade fixes: PlayerStat
+                    .OnDelete(DeleteBehavior.Restrict);
+            // PlayerStat → Player Cascade (if the player is deleted, the stat is deleted)
             modelBuilder.Entity<PlayerStat>()
                 .HasOne(ps => ps.Player)
-                .WithMany(p => p.PlayerStats)
+                    .WithMany(p => p.PlayerStats)
                 .HasForeignKey(ps => ps.PlayerId)
-                .OnDelete(DeleteBehavior.Restrict);
-
+                    .OnDelete(DeleteBehavior.Cascade);
+            // PlayerStat → Match Restrict (if the match is deleted, the stat is not deleted)
             modelBuilder.Entity<PlayerStat>()
                 .HasOne(ps => ps.Match)
-                .WithMany(m => m.PlayerStats)
+                    .WithMany(m => m.PlayerStats)
                 .HasForeignKey(ps => ps.MatchId)
-                .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.Restrict);
 
-            // Decimal precision fixes
+            // Decimal precision for monetary values
             modelBuilder.Entity<Player>()
                 .Property(p => p.Salary)
-                .HasPrecision(18, 2);
-
+                    .HasPrecision(18, 2);
             modelBuilder.Entity<PlayerStat>()
                 .Property(ps => ps.Score)
-                .HasPrecision(18, 2);
-
+                    .HasPrecision(18, 2);
             modelBuilder.Entity<Sponsor>()
                 .Property(s => s.ContractValue)
-                .HasPrecision(18, 2);
-
+                    .HasPrecision(18, 2);
             modelBuilder.Entity<Tournament>()
                 .Property(t => t.PrizePool)
-                .HasPrecision(18, 2);
+                    .HasPrecision(18, 2);
         }
     }
 }

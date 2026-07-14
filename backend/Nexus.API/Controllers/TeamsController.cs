@@ -40,7 +40,7 @@ namespace Nexus.API.Controllers
             var totalCount = await _teamRepository.GetTeamCountAsync(
                 searchQuery, region, gameId);
 
-            Response.Headers.Add("X-Pagination",
+            Response.Headers.Append("X-Pagination",
                 JsonSerializer.Serialize(new PaginationMetadata(totalCount, pageSize, pageNumber)));
 
             return Ok(_mapper.Map<IEnumerable<TeamListDto>>(teams));
