@@ -27,6 +27,7 @@ function TeamsFilter({ filters, onFilterChange, games }) {
                     <input
                         type="text"
                         name="searchQuery"
+                        aria-label="Search teams"
                         className="form-control !pl-11"
                         placeholder="Search by name or tag..."
                         value={filters.searchQuery || ''}
@@ -38,6 +39,7 @@ function TeamsFilter({ filters, onFilterChange, games }) {
                 <div className={groupCls}>
                     <select
                         name="region"
+                        aria-label="Filter by region"
                         className="form-select"
                         value={filters.region || ''}
                         onChange={handleChange}
@@ -53,6 +55,7 @@ function TeamsFilter({ filters, onFilterChange, games }) {
                 <div className={groupCls}>
                     <select
                         name="gameId"
+                        aria-label="Filter by game"
                         className="form-select"
                         value={filters.gameId || ''}
                         onChange={handleChange}

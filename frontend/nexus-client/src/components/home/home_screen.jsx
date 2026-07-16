@@ -17,21 +17,24 @@ import GamesService from '@/api/games_service';
 
 const TECH_STACK = ['React 19', 'Vite', 'Tailwind CSS v4', '.NET Web API', 'SignalR', 'Auth0', 'Azure'];
 
+/* Decorative accents stay on the cyan/violet brand pair; green is reserved for
+   "live" semantics (SignalR card, live-dot, Ongoing badge). Asymmetric spans
+   (7/5 → 5/7) break the equal-card-grid monotony on xl. */
 const FEATURES = [
     {
-        icon: 'bi-diagram-3-fill', accent: 'cyan', title: 'Live tournament brackets',
+        icon: 'bi-diagram-3-fill', accent: 'cyan', span: 'xl:col-span-7', title: 'Live tournament brackets',
         description: 'Interactive elimination brackets for every stage. When an admin records a winner, the bracket advances instantly for everyone watching.',
     },
     {
-        icon: 'bi-people-fill', accent: 'violet', title: 'Real teams & players',
+        icon: 'bi-people-fill', accent: 'violet', span: 'xl:col-span-5', title: 'Real teams & players',
         description: 'Full rosters with player profiles and performance charts, backed by server-side search, filtering and pagination.',
     },
     {
-        icon: 'bi-shield-lock-fill', accent: 'pink', title: 'Role-based admin',
+        icon: 'bi-shield-lock-fill', accent: 'cyan', span: 'xl:col-span-5', title: 'Role-based admin',
         description: 'Auth0 secures the API with JWTs. Browsing is public; creating, editing and deleting teams, players and tournaments is admin-only.',
     },
     {
-        icon: 'bi-broadcast', accent: 'green', title: 'Real-time updates',
+        icon: 'bi-broadcast', accent: 'green', span: 'xl:col-span-7', title: 'Real-time updates',
         description: 'A SignalR feed pushes every match result site-wide, and tournament pages patch scores in place without refetching.',
     },
 ];
@@ -119,14 +122,13 @@ function HomeScreen() {
                             stats, and tournament brackets that update the moment a match ends.
                         </p>
 
-                        <div className="fade-in-up flex flex-wrap gap-4" style={{ animationDelay: '0.35s' }}>
-                            <Link to="/tournaments" viewTransition className="btn-neon">
+                        <div className="fade-in-up flex flex-wrap items-center gap-x-7 gap-y-4" style={{ animationDelay: '0.35s' }}>
+                            <Link to="/tournaments" viewTransition className="btn-neon-primary no-underline">
                                 <i className="bi bi-trophy-fill me-2"></i>
                                 Explore tournaments
                             </Link>
-                            <Link to="/teams" viewTransition className="btn-neon btn-neon-violet">
-                                <i className="bi bi-shield-fill me-2"></i>
-                                Browse teams
+                            <Link to="/teams" viewTransition className="inline-flex items-center gap-2 text-neon-cyan font-heading text-[0.85rem] font-semibold uppercase tracking-[0.1em] no-underline hover:gap-3 transition-all duration-200">
+                                Browse teams <i className="bi bi-arrow-right"></i>
                             </Link>
                         </div>
 
@@ -154,8 +156,8 @@ function HomeScreen() {
                 <div className="relative z-[1] glass-card fade-in-up mt-14 px-6 py-6 sm:px-8 grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-7" style={{ animationDelay: '0.45s' }}>
                     <StatCard icon="bi-person-fill" value={stats.players} label="Players" tone="cyan" />
                     <StatCard icon="bi-shield-fill" value={stats.teams} label="Teams" tone="violet" />
-                    <StatCard icon="bi-trophy-fill" value={stats.tournaments} label="Tournaments" tone="pink" />
-                    <StatCard icon="bi-controller" value={stats.games} label="Games" tone="green" />
+                    <StatCard icon="bi-trophy-fill" value={stats.tournaments} label="Tournaments" tone="cyan" />
+                    <StatCard icon="bi-controller" value={stats.games} label="Games" tone="violet" />
                 </div>
 
                 {/* Tech stack */}
@@ -180,9 +182,9 @@ function HomeScreen() {
                     </p>
                 </Reveal>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-                    {FEATURES.map((feature, i) => (
-                        <Reveal key={feature.title} delay={i * 0.08} className="h-full">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-6">
+                    {FEATURES.map(({ span, ...feature }, i) => (
+                        <Reveal key={feature.title} delay={i * 0.08} className={`h-full ${span}`}>
                             <FeatureCard {...feature} />
                         </Reveal>
                     ))}
@@ -223,45 +225,56 @@ function HomeScreen() {
                 </section>
             )}
 
-            {/* ─────────────  EXPLORE  ───────────── */}
-            <section className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6">
-                {[
-                    { to: '/tournaments', icon: 'bi-trophy-fill', label: 'Tournaments', count: stats.tournaments, tone: 'text-neon-cyan' },
-                    { to: '/teams', icon: 'bi-shield-fill', label: 'Teams', count: stats.teams, tone: 'text-neon-violet' },
-                    { to: '/players', icon: 'bi-person-fill', label: 'Players', count: stats.players, tone: 'text-neon-pink' },
-                ].map((tile, i) => (
-                    <Reveal key={tile.to} delay={i * 0.08}>
-                        <Link to={tile.to} viewTransition className="block no-underline text-inherit hover:no-underline">
-                            <div className="group glass-card flex items-center gap-4 p-6">
-                                <i className={`bi ${tile.icon} text-[1.6rem] ${tile.tone}`}></i>
-                                <div className="grow">
-                                    <div className="font-heading font-semibold text-text-primary text-[1.05rem]">{tile.label}</div>
-                                    <div className="text-text-secondary text-[0.85rem]">
-                                        {tile.count == null ? 'Browse all' : `${tile.count} on the platform`}
-                                    </div>
-                                </div>
-                                <i className="bi bi-arrow-right text-neon-cyan transition-transform duration-[250ms] group-hover:translate-x-1.5"></i>
-                            </div>
-                        </Link>
-                    </Reveal>
-                ))}
+            {/* ─────────────  EXPLORE  ─────────────
+                Index-style list instead of a third card grid: cards are reserved
+                for content that needs elevation; navigation rows group with
+                borders and typography. */}
+            <section className="mt-20">
+                <div className="border-t border-border-default">
+                    {[
+                        { to: '/tournaments', label: 'Tournaments', count: stats.tournaments },
+                        { to: '/teams', label: 'Teams', count: stats.teams },
+                        { to: '/players', label: 'Players', count: stats.players },
+                    ].map((row, i) => (
+                        <Reveal key={row.to} delay={i * 0.08}>
+                            <Link
+                                to={row.to}
+                                viewTransition
+                                className="group flex items-baseline gap-5 sm:gap-8 py-6 sm:py-7 px-1 border-b border-border-default no-underline text-inherit hover:no-underline transition-colors duration-200"
+                            >
+                                <span className="font-heading text-[0.8rem] text-text-muted tabular-nums shrink-0">
+                                    0{i + 1}
+                                </span>
+                                <span className="font-heading text-[clamp(1.5rem,3.5vw,2.2rem)] font-bold tracking-[-0.02em] leading-none text-text-primary transition-colors duration-200 group-hover:text-neon-cyan">
+                                    {row.label}
+                                </span>
+                                <span className="text-text-secondary text-[0.85rem] tabular-nums hidden sm:inline">
+                                    {row.count == null ? 'Browse all' : `${row.count} on the platform`}
+                                </span>
+                                <i className="bi bi-arrow-right ml-auto self-center text-[1.25rem] text-text-muted transition-all duration-[250ms] group-hover:text-neon-cyan group-hover:translate-x-2"></i>
+                            </Link>
+                        </Reveal>
+                    ))}
+                </div>
             </section>
 
             {/* ─────────────  CTA  ───────────── */}
             {!isAuthenticated && (
                 <Reveal className="mt-20 mb-4">
                     <section>
-                    <div className="glass-card py-14 px-8 text-center !border-border-glow bg-[linear-gradient(135deg,rgba(0,240,255,0.05)_0%,rgba(176,38,255,0.05)_100%)]">
-                        <h2 className="text-[clamp(1.8rem,4vw,2.4rem)] font-bold mb-3 tracking-[-0.03em]">
-                            Ready to <span className="text-glow">compete?</span>
-                        </h2>
-                        <p className="text-text-secondary text-[1.05rem] mb-8 max-w-[480px] mx-auto">
-                            Sign in to register your team for upcoming tournaments and access
-                            admin features.
-                        </p>
-                        <button className="btn-neon pulse-glow" onClick={() => loginWithRedirect()}>
-                            <i className="bi bi-rocket-takeoff-fill me-2"></i>
-                            Join NEXUS now
+                    <div className="glass-card !border-border-glow bg-[linear-gradient(135deg,rgba(0,240,255,0.05)_0%,rgba(176,38,255,0.05)_100%)] py-8 px-6 sm:py-10 sm:px-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+                        <div className="max-w-[560px]">
+                            <h2 className="text-[clamp(1.8rem,4vw,2.4rem)] font-bold mb-3 tracking-[-0.03em]">
+                                Ready to <span className="text-glow">compete?</span>
+                            </h2>
+                            <p className="text-text-secondary text-[1.05rem] m-0">
+                                Sign in to register your team for upcoming tournaments and access
+                                admin features.
+                            </p>
+                        </div>
+                        <button className="btn-neon-primary shrink-0 self-start md:self-center" onClick={() => loginWithRedirect()}>
+                            <i className="bi bi-lightning-charge-fill me-2"></i>
+                            Join NEXUS
                         </button>
                     </div>
                     </section>

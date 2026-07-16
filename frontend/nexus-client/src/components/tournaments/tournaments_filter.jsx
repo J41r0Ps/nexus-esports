@@ -1,3 +1,5 @@
+import { humanize } from '@/lib/format';
+
 const groupCls = "sm:flex-1 sm:min-w-[180px]";
 
 function TournamentsFilter({ filters, onFilterChange, games }) {
@@ -28,6 +30,7 @@ function TournamentsFilter({ filters, onFilterChange, games }) {
                     <input
                         type="text"
                         name="searchQuery"
+                        aria-label="Search tournaments"
                         className="form-control !pl-11"
                         placeholder="Search by tournament name..."
                         value={filters.searchQuery || ''}
@@ -39,6 +42,7 @@ function TournamentsFilter({ filters, onFilterChange, games }) {
                 <div className={groupCls}>
                     <select
                         name="status"
+                        aria-label="Filter by status"
                         className="form-select"
                         value={filters.status || ''}
                         onChange={handleChange}
@@ -54,13 +58,14 @@ function TournamentsFilter({ filters, onFilterChange, games }) {
                 <div className={groupCls}>
                     <select
                         name="format"
+                        aria-label="Filter by format"
                         className="form-select"
                         value={filters.format || ''}
                         onChange={handleChange}
                     >
                         <option value="">All Formats</option>
                         {formats.map(f => (
-                            <option key={f} value={f}>{f.replace(/([A-Z])/g, ' $1').trim()}</option>
+                            <option key={f} value={f}>{humanize(f)}</option>
                         ))}
                     </select>
                 </div>
@@ -69,6 +74,7 @@ function TournamentsFilter({ filters, onFilterChange, games }) {
                 <div className={groupCls}>
                     <select
                         name="gameId"
+                        aria-label="Filter by game"
                         className="form-select"
                         value={filters.gameId || ''}
                         onChange={handleChange}

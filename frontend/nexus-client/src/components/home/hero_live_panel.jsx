@@ -1,18 +1,7 @@
 import { Link } from 'react-router-dom';
 import { SkeletonLine } from '@/components/ui/skeleton';
-
-const statusConfig = {
-    Ongoing: { color: 'badge-green', label: 'Live now' },
-    Upcoming: { color: 'badge-yellow', label: 'Upcoming' },
-    Completed: { color: 'badge-violet', label: 'Completed' },
-    Cancelled: { color: 'badge-pink', label: 'Cancelled' },
-};
-
-const formatPrize = (prize) => {
-    if (prize >= 1000000) return `$${(prize / 1000000).toFixed(1)}M`;
-    if (prize >= 1000) return `$${(prize / 1000).toFixed(0)}K`;
-    return `$${prize}`;
-};
+import { statusOf } from '@/lib/tournament_status';
+import { formatMoney } from '@/lib/format';
 
 /**
  * Hero showcase panel fed by real API data: the featured tournament (ongoing
@@ -51,7 +40,7 @@ function HeroLivePanel({ tournament, teams, nextUp, latestUpdate, loading }) {
         );
     }
 
-    const status = statusConfig[tournament.status] || statusConfig.Upcoming;
+    const status = statusOf(tournament.status);
     const topSeeds = [...(teams || [])]
         .sort((a, b) => a.seedNumber - b.seedNumber)
         .slice(0, 3);
@@ -63,12 +52,12 @@ function HeroLivePanel({ tournament, teams, nextUp, latestUpdate, loading }) {
 
             <div className="p-6">
                 <div className="flex items-center justify-between gap-3 mb-4">
-                    <span className={`badge-neon ${status.color} inline-flex items-center gap-2`}>
+                    <span className={`badge-neon ${status.badge} inline-flex items-center gap-2`}>
                         {tournament.status === 'Ongoing' && <span className="live-dot"></span>}
                         {status.label}
                     </span>
                     <span className="font-heading text-[1.3rem] font-bold bg-gradient-to-br from-neon-green to-neon-cyan bg-clip-text text-transparent tracking-[-0.02em]">
-                        {formatPrize(tournament.prizePool)}
+                        {formatMoney(tournament.prizePool)}
                     </span>
                 </div>
 

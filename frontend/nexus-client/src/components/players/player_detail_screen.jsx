@@ -4,14 +4,14 @@ import Layout from '@/layout_template';
 import PlayerStatsCharts from './player_stats_charts.jsx';
 import PlayersService from '@/api/players_service';
 import { LoadingState, EmptyState } from '@/components/ui/states';
+import BackLink from '@/components/ui/back_link';
 
-const backLink = "inline-flex items-center gap-2 text-text-secondary font-heading text-[0.85rem] uppercase tracking-[0.1em] no-underline mb-6 relative z-[1] transition-all duration-150 hover:text-neon-cyan hover:gap-3 hover:no-underline";
 const detailItem = "flex items-center gap-3";
 const detailIcon = "text-xl text-neon-cyan";
 const detailLabel = "font-heading text-[0.7rem] tracking-[0.15em] uppercase text-text-muted";
 const detailValue = "font-semibold text-text-primary text-[0.95rem]";
-const summaryCard = "glass-card text-center p-7";
-const summaryValue = "font-heading text-[2.25rem] font-bold text-text-primary leading-none mb-2";
+const summaryCard = "glass-card text-center p-6 sm:p-7";
+const summaryValue = "font-heading text-[2.25rem] font-bold text-text-primary leading-none mb-2 tabular-nums";
 const summaryLabel = "font-heading text-xs tracking-[0.15em] uppercase text-text-secondary mb-2";
 const summaryAvg = "text-xs text-text-muted";
 
@@ -70,15 +70,13 @@ function PlayerDetailScreen() {
 
     return (
         <Layout>
-            <Link to="/players" viewTransition className={backLink}>
-                <i className="bi bi-arrow-left"></i> All Players
-            </Link>
+            <BackLink to="/players">All Players</BackLink>
 
             {/* ───── Profile Hero ───── */}
-            <section className="glass-card fade-in-up flex gap-10 p-10 mb-8 items-center flex-wrap">
-                <div className="shrink-0 w-[200px] h-[200px] rounded-lg overflow-hidden border-2 border-border-glow shadow-glow-cyan relative">
+            <section className="glass-card fade-in-up flex gap-6 sm:gap-10 p-6 sm:p-10 mb-8 items-center flex-wrap">
+                <div className="shrink-0 w-[140px] h-[140px] sm:w-[200px] sm:h-[200px] rounded-lg overflow-hidden border-2 border-border-glow shadow-glow-cyan relative">
                     {player.photoUrl ? (
-                        <img src={player.photoUrl} alt={player.gamertag} className="w-full h-full object-cover" />
+                        <img src={player.photoUrl} alt={player.gamertag} width="200" height="200" decoding="async" className="w-full h-full object-cover" />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center text-[5rem] text-text-muted bg-bg-tertiary">
                             <i className="bi bi-person-fill"></i>
@@ -86,7 +84,7 @@ function PlayerDetailScreen() {
                     )}
                 </div>
 
-                <div className="grow min-w-[280px]">
+                <div className="grow basis-[280px] min-w-0">
                     <span className="badge-neon badge-violet">{player.role}</span>
                     <h1 className="text-[clamp(2rem,4vw,3rem)] font-bold mt-2 mb-1 tracking-[-0.02em] text-glow">{player.gamertag}</h1>
                     <p className="text-text-secondary text-[1.1rem] italic mb-6">{player.realName}</p>
@@ -103,10 +101,8 @@ function PlayerDetailScreen() {
                             <i className={`bi bi-geo-alt-fill ${detailIcon}`}></i>
                             <div className="flex flex-col">
                                 <span className={detailLabel}>Country</span>
-                                <span>{player.countryName} {player.countryFlag ? (
-                                    <img src={player.countryFlag} alt={player.countryName} className="w-6 h-[18px] object-cover rounded-[3px] border border-border-default inline-block align-middle" />
-                                ) : (
-                                    <i className="bi bi-geo-alt-fill"></i>
+                                <span className={detailValue}>{player.countryName} {player.countryFlag && (
+                                    <img src={player.countryFlag} alt="" width="24" height="18" loading="lazy" decoding="async" className="w-6 h-[18px] object-cover rounded-[3px] border border-border-default inline-block align-middle ml-1" />
                                 )}</span>
                             </div>
                         </div>
@@ -121,8 +117,8 @@ function PlayerDetailScreen() {
                             <i className={`bi bi-cash-stack ${detailIcon}`}></i>
                             <div className="flex flex-col">
                                 <span className={detailLabel}>Salary</span>
-                                <span className={`${detailValue} !text-neon-green`}>
-                                    ${player.salary?.toLocaleString()}
+                                <span className={`${detailValue} !text-neon-green tabular-nums`}>
+                                    {player.salary == null ? '—' : `$${player.salary.toLocaleString()}`}
                                 </span>
                             </div>
                         </div>
@@ -131,9 +127,9 @@ function PlayerDetailScreen() {
             </section>
 
             {/* ───── Stats Summary ───── */}
-            <section className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-6 mb-12 fade-in-up">
+            <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12 fade-in-up">
                 <div className={summaryCard}>
-                    <i className="bi bi-crosshair2 text-[2rem] mb-3 block text-neon-pink"></i>
+                    <i className="bi bi-crosshair2 text-[2rem] mb-3 block text-neon-cyan"></i>
                     <div className={summaryValue}>{totals.kills}</div>
                     <div className={summaryLabel}>Total Kills</div>
                     <div className={summaryAvg}>{avg('kills')} avg/match</div>
@@ -145,7 +141,7 @@ function PlayerDetailScreen() {
                     <div className={summaryAvg}>{avg('deaths')} avg/match</div>
                 </div>
                 <div className={summaryCard}>
-                    <i className="bi bi-people-fill text-[2rem] mb-3 block text-neon-cyan"></i>
+                    <i className="bi bi-people-fill text-[2rem] mb-3 block text-neon-violet"></i>
                     <div className={summaryValue}>{totals.assists}</div>
                     <div className={summaryLabel}>Total Assists</div>
                     <div className={summaryAvg}>{avg('assists')} avg/match</div>
@@ -168,7 +164,7 @@ function PlayerDetailScreen() {
                         <i className="bi bi-trophy-fill text-neon-yellow"></i>
                         Achievements
                     </h2>
-                    <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
+                    <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,280px),1fr))] gap-4">
                         {player.achievements.map(a => (
                             <div key={a.id} className="glass-card flex items-center gap-4 p-5">
                                 <i className="bi bi-award-fill text-[1.75rem] text-neon-yellow [text-shadow:0_0_15px_rgba(255,215,0,0.4)]"></i>

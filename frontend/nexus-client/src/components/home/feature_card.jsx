@@ -10,7 +10,7 @@ const accents = {
  */
 function FeatureCard({ icon, title, description, accent = 'cyan' }) {
     return (
-        <div className="glass-card p-7 h-full">
+        <div className="glass-card p-6 sm:p-7 h-full">
             <div className={`inline-flex items-center justify-center w-[46px] h-[46px] rounded-sm text-[1.3rem] mb-5 ${accents[accent]}`}>
                 <i className={`bi ${icon}`}></i>
             </div>

@@ -2,43 +2,36 @@ import { Link } from 'react-router-dom';
 import { SkeletonGrid } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/states';
 import CardAdminActions from '@/components/ui/card_admin_actions';
+import { formatMoney } from '@/lib/format';
 
 const metaItem = "flex items-center gap-[0.6rem] text-text-secondary text-[0.85rem]";
-const metaIcon = "text-neon-violet text-[0.95rem] w-4";
+const metaIcon = "text-text-muted text-[0.95rem] w-4";
 const flagClass = "w-6 h-[18px] object-cover rounded-[3px] border border-border-default shrink-0";
-const gridCls = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 mb-14";
+const gridCls = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-14";
 
-function PlayerCard({ player, isAdmin, onEdit, onDelete }) {
-    const roleColors = {
-        Fragger: 'badge-pink', IGL: 'badge-violet', Support: 'badge-green',
-        Sniper: 'badge-neon', Lurker: 'badge-yellow', Coach: 'badge-violet',
-        Analyst: 'badge-neon', Substitute: 'badge-pink'
-    };
-
-    const formatSalary = (salary) => {
-        if (salary >= 1000) return `$${(salary / 1000).toFixed(0)}K`;
-        return `$${salary}`;
-    };
-
+function PlayerCard({ player, isAdmin, onEdit, onDelete, delay }) {
     return (
         <Link to={`/players/${player.id}`} viewTransition className="block no-underline text-inherit hover:no-underline">
-            <div className="group glass-card fade-in-up relative flex flex-col overflow-hidden cursor-pointer before:content-[''] before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:bg-gradient-to-r before:from-neon-violet before:to-neon-pink before:opacity-0 before:z-[2] before:transition-opacity before:duration-[250ms] group-hover:before:opacity-100">
+            <div
+                className="group glass-card fade-in-up relative flex flex-col overflow-hidden cursor-pointer before:content-[''] before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:bg-gradient-to-r before:from-neon-violet before:to-neon-pink before:opacity-0 before:z-[2] before:transition-opacity before:duration-[250ms] group-hover:before:opacity-100"
+                style={{ animationDelay: `${delay}s` }}
+            >
                 {isAdmin && <CardAdminActions item={player} onEdit={onEdit} onDelete={onDelete} />}
 
-                <div className="relative w-full h-[200px] bg-bg-tertiary overflow-hidden">
+                <div className="relative w-full aspect-[4/3] bg-bg-tertiary overflow-hidden">
                     {player.photoUrl ? (
-                        <img src={player.photoUrl} alt={player.gamertag} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-[250ms] group-hover:scale-105" />
+                        <img src={player.photoUrl} alt={player.gamertag} width="400" height="300" loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-[250ms] group-hover:scale-105" />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center text-[4rem] text-text-muted bg-gradient-to-br from-bg-secondary to-bg-tertiary">
                             <i className="bi bi-person-fill"></i>
                         </div>
                     )}
-                    <span className={`badge-neon ${roleColors[player.role] || 'badge-neon'} absolute top-3 right-3 backdrop-blur-[10px]`}>
+                    <span className="badge-neon badge-violet absolute top-3 right-3 backdrop-blur-[10px]">
                         {player.role}
                     </span>
                 </div>
 
-                <div className="pt-5 px-6 pb-6">
+                <div className="pt-5 px-5 sm:px-6 pb-6">
                     <h3 className="font-heading text-xl font-bold text-text-primary mb-1 tracking-[-0.01em]">{player.gamertag}</h3>
                     <p className="text-text-muted text-[0.85rem] mb-4 italic">{player.realName}</p>
 
@@ -57,7 +50,7 @@ function PlayerCard({ player, isAdmin, onEdit, onDelete }) {
                         </div>
                         <div className={`${metaItem} mt-1 !text-neon-green font-semibold font-heading`}>
                             <i className="bi bi-cash-stack text-[0.95rem] w-4 text-neon-green"></i>
-                            <span>{formatSalary(player.salary)}</span>
+                            <span>{formatMoney(player.salary)}</span>
                         </div>
                     </div>
                 </div>
@@ -79,8 +72,8 @@ function PlayersList({ players, loading, isAdmin, onEdit, onDelete }) {
 
     return (
         <div className={gridCls}>
-            {players.map(player => (
-                <PlayerCard key={player.id} player={player}
+            {players.map((player, i) => (
+                <PlayerCard key={player.id} player={player} delay={Math.min(i * 0.05, 0.4)}
                     isAdmin={isAdmin} onEdit={onEdit} onDelete={onDelete} />
             ))}
         </div>

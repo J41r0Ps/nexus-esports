@@ -11,7 +11,8 @@ const btn = "w-8 h-8 flex items-center justify-center rounded-sm border border-b
 
 function CardAdminActions({ item, onEdit, onDelete }) {
     return (
-        <div className="absolute top-3 left-3 flex gap-1.5 z-[3] opacity-0 transition-opacity duration-[250ms] group-hover:opacity-100">
+        // pointer-coarse: touch devices have no hover, so keep the controls visible
+        <div className="absolute top-3 left-3 flex gap-1.5 z-[3] opacity-0 pointer-coarse:opacity-100 transition-opacity duration-[250ms] group-hover:opacity-100">
             <button
                 className={`${btn} hover:text-neon-cyan hover:border-neon-cyan hover:shadow-[0_0_12px_var(--neon-cyan-dim)]`}
                 onClick={(e) => { e.preventDefault(); onEdit(item); }}

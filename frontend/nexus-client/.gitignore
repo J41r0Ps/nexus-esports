@@ -27,6 +27,9 @@ dist-ssr
 .env
 .env.local
 .env.production
-.env.development'
+.env.development
 
+# Claude Code (AI assistant) — local instructions, settings and session data
 CLAUDE.md
+.claude/
+.claude.json

@@ -77,3 +77,8 @@ $RECYCLE.BIN/
 # Real .http files with tokens (keep .http.example)
 **/seed-azure.http
 **/api-calls.http
+
+# Claude Code (AI assistant) — local instructions, settings and session data
+CLAUDE.md
+.claude/
+.claude.json

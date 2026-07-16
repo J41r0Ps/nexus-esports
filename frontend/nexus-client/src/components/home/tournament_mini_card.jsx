@@ -1,24 +1,13 @@
 import { Link } from 'react-router-dom';
-
-const statusConfig = {
-    Upcoming: { color: 'badge-yellow', stripe: 'bg-gradient-to-r from-neon-yellow to-neon-cyan' },
-    Ongoing: { color: 'badge-green', stripe: 'bg-gradient-to-r from-neon-green to-neon-cyan' },
-    Completed: { color: 'badge-violet', stripe: 'bg-gradient-to-r from-neon-violet to-neon-pink' },
-    Cancelled: { color: 'badge-pink', stripe: 'bg-gradient-to-r from-neon-pink to-[#808080]' },
-};
-
-const formatPrize = (prize) => {
-    if (prize >= 1000000) return `$${(prize / 1000000).toFixed(1)}M`;
-    if (prize >= 1000) return `$${(prize / 1000).toFixed(0)}K`;
-    return `$${prize}`;
-};
+import { statusOf } from '@/lib/tournament_status';
+import { formatMoney } from '@/lib/format';
 
 /**
  * Compact tournament card for the home page's featured grid — a lighter
  * variant of the full card in tournaments_list (no admin actions, less meta).
  */
 function TournamentMiniCard({ tournament }) {
-    const status = statusConfig[tournament.status] || statusConfig.Upcoming;
+    const status = statusOf(tournament.status);
 
     return (
         <Link to={`/tournaments/${tournament.id}`} viewTransition className="block h-full no-underline text-inherit hover:no-underline">
@@ -27,9 +16,9 @@ function TournamentMiniCard({ tournament }) {
 
                 <div className="p-6 grow">
                     <div className="flex items-center justify-between gap-3 mb-3">
-                        <span className={`badge-neon ${status.color}`}>{tournament.status}</span>
+                        <span className={`badge-neon ${status.badge}`}>{status.label}</span>
                         <span className="font-heading text-[1.2rem] font-bold bg-gradient-to-br from-neon-green to-neon-cyan bg-clip-text text-transparent tracking-[-0.02em]">
-                            {formatPrize(tournament.prizePool)}
+                            {formatMoney(tournament.prizePool)}
                         </span>
                     </div>
 

@@ -89,8 +89,12 @@
   --border-default: rgba(148, 163, 184, 0.1);
   --border-glow: rgba(0, 240, 255, 0.3);
 
+  /* Inner top-edge highlight on glass surfaces (simulates edge refraction) */
+  --glass-edge: rgba(255, 255, 255, 0.06);
+
   --gradient-bg: radial-gradient(ellipse at top, #1a1f3a 0%, var(--bg-primary) 50%);
-  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+  /* Tinted to the navy background hue rather than pure black */
+  --shadow-card: 0 8px 32px rgba(3, 7, 18, 0.5);
 
   /* Consumed directly by raw CSS in @layer components. Fonts, radii and neon
      glows live in the @theme block above (they also power Tailwind utilities). */
@@ -111,6 +115,8 @@
 
   --border-default: rgba(15, 23, 42, 0.1);
   --border-glow: rgba(0, 195, 210, 0.4);
+
+  --glass-edge: rgba(255, 255, 255, 0.85);
 
   --gradient-bg: radial-gradient(ellipse at top, #e0f2fe 0%, var(--bg-primary) 60%);
   --shadow-card: 0 8px 32px rgba(0, 30, 60, 0.08);
@@ -134,12 +140,30 @@
   body {
     margin: 0;
     padding: 0;
+    /* Decorative absolutely-positioned glows (hero blobs etc.) may extend past
+       the viewport edge; clip instead of growing a horizontal scrollbar on
+       mobile. `clip` (not `hidden`) keeps position:sticky working. */
+    overflow-x: clip;
     font-family: var(--font-body);
     background: var(--gradient-bg);
     background-attachment: fixed;
     color: var(--text-primary);
-    min-height: 100vh;
+    min-height: 100vh; /* fallback */
+    min-height: 100dvh;
     -webkit-font-smoothing: antialiased;
+  }
+
+  /* Film-grain overlay — a fixed, non-interactive SVG noise layer at very low
+     opacity that breaks digital flatness. z-index 4000 sits above modals (2000)
+     and toasts (3000) on purpose: it's a screen-wide film effect. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 4000;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -147,6 +171,11 @@
     font-weight: 600;
     letter-spacing: -0.02em;
     text-wrap: balance;
+  }
+
+  /* Avoid single-word orphans on the last line of paragraphs */
+  p {
+    text-wrap: pretty;
   }
 
   /* Visible keyboard focus, in brand color (Preflight strips the UA default look) */
@@ -197,17 +226,18 @@
     text-shadow: 0 0 40px rgba(0, 240, 255, 0.3);
   }
 
-  /* Glass card */
+  /* Glass card — the inset 1px line is the "edge refraction" highlight that
+     separates true glassmorphism from a plain translucent panel. */
   .glass-card {
     @apply relative bg-bg-glass border border-border-default rounded-md transition-all duration-[250ms];
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    box-shadow: var(--shadow-card);
+    box-shadow: var(--shadow-card), inset 0 1px 0 var(--glass-edge);
   }
 
   .glass-card:hover {
     @apply border-border-glow -translate-y-1;
-    box-shadow: var(--shadow-card), var(--shadow-glow-cyan);
+    box-shadow: var(--shadow-card), var(--shadow-glow-cyan), inset 0 1px 0 var(--glass-edge);
   }
 
   /* Cursor-tracked spotlight sheen. --mx/--my are set by a delegated
@@ -369,13 +399,47 @@
     animation: livePulse 1.5s ease-in-out infinite;
   }
 
-  /* Entrance / ambient animation helpers */
+  /* Entrance / ambient animation helpers.
+     `both` (not `forwards`) so elements with an animation-delay hold the
+     first keyframe (hidden) during the delay instead of flashing visible. */
   .fade-in-up {
-    animation: fadeInUp 0.6s ease-out forwards;
+    animation: fadeInUp 0.6s ease-out both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fade-in-up {
+      animation: none;
+    }
   }
 
   .pulse-glow {
     animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  /* Reading-progress hairline pinned to the top of the viewport, driven by the
+     CSS scroll() timeline — zero JS, and simply absent in browsers without
+     scroll-driven animation support. Tracks scroll 1:1 (direct manipulation),
+     so it is exempt from the reduced-motion rules. */
+  .scroll-progress {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    z-index: 1001; /* just above the navbar (1000) */
+    pointer-events: none;
+    transform-origin: 0 50%;
+    background: var(--gradient-primary);
+    box-shadow: 0 0 8px var(--neon-cyan-dim);
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .scroll-progress {
+      display: block;
+      animation: scrollProgress linear both;
+      animation-timeline: scroll(root);
+    }
   }
 
   /* Scroll-triggered reveal — paired with the <Reveal> component
@@ -514,6 +578,11 @@
 @keyframes pageFadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scrollProgress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 
 @keyframes glitch {

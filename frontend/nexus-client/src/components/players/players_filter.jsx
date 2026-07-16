@@ -20,6 +20,7 @@ function PlayersFilter({ filters, onFilterChange, teams, countries }) {
                     <input
                         type="text"
                         name="searchQuery"
+                        aria-label="Search players"
                         className="form-control !pl-11"
                         placeholder="Search by gamertag or real name..."
                         value={filters.searchQuery || ''}
@@ -30,7 +31,7 @@ function PlayersFilter({ filters, onFilterChange, teams, countries }) {
                 {/* Only show role filter if we have roles */}
                 {roles.length > 0 && (
                     <div className={groupCls}>
-                        <select name="role" className="form-select"
+                        <select name="role" aria-label="Filter by role" className="form-select"
                             value={filters.role || ''} onChange={handleChange}>
                             <option value="">All Roles</option>
                             {roles.map(r => <option key={r} value={r}>{r}</option>)}
@@ -40,7 +41,7 @@ function PlayersFilter({ filters, onFilterChange, teams, countries }) {
 
                 {teams.length > 0 && (
                     <div className={groupCls}>
-                        <select name="teamId" className="form-select"
+                        <select name="teamId" aria-label="Filter by team" className="form-select"
                             value={filters.teamId || ''} onChange={handleChange}>
                             <option value="">All Teams</option>
                             {teams.map(t => (
@@ -52,7 +53,7 @@ function PlayersFilter({ filters, onFilterChange, teams, countries }) {
 
                 {countries.length > 0 && (
                     <div className={groupCls}>
-                        <select name="countryId" className="form-select"
+                        <select name="countryId" aria-label="Filter by country" className="form-select"
                             value={filters.countryId || ''} onChange={handleChange}>
                             <option value="">All Countries</option>
                             {countries.map(c => (

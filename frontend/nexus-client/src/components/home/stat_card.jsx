@@ -45,7 +45,7 @@ function StatCard({ icon, value, label, tone = 'cyan' }) {
 
     return (
         <div className="flex items-center gap-4">
-            <div className={`w-12 h-12 rounded-full grid place-items-center text-[1.25rem] shrink-0 ${tones[tone]}`}>
+            <div className={`w-12 h-12 rounded-sm grid place-items-center text-[1.25rem] shrink-0 ${tones[tone]}`}>
                 <i className={`bi ${icon}`}></i>
             </div>
             <div>

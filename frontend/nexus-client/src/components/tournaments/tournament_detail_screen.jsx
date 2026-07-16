@@ -6,8 +6,11 @@ import TournamentTeams from './tournament_teams';
 import TournamentsService from '@/api/tournaments_service';
 import { useMatchHub } from '@/hooks/use_match_hub';
 import { LoadingState, EmptyState } from '@/components/ui/states';
+import BackLink from '@/components/ui/back_link';
+import { statusOf } from '@/lib/tournament_status';
+import { formatMoney, humanize } from '@/lib/format';
 
-const tabBase = "inline-flex items-center gap-2 py-[0.85rem] px-6 bg-transparent border-none text-text-secondary font-heading font-medium text-[0.9rem] tracking-[0.05em] uppercase cursor-pointer border-b-2 border-b-transparent transition-all duration-150 whitespace-nowrap hover:text-neon-cyan";
+const tabBase = "inline-flex items-center gap-2 py-[0.85rem] px-4 sm:px-6 bg-transparent border-none text-text-secondary font-heading font-medium text-[0.9rem] tracking-[0.05em] uppercase cursor-pointer border-b-2 border-b-transparent transition-all duration-150 whitespace-nowrap hover:text-neon-cyan";
 const tabActive = "!text-neon-cyan !border-b-neon-cyan";
 
 function TournamentDetailScreen() {
@@ -76,19 +79,7 @@ function TournamentDetailScreen() {
         );
     }
 
-    const statusConfig = {
-        Upcoming: { color: 'badge-yellow', icon: 'bi-hourglass-split' },
-        Ongoing: { color: 'badge-green', icon: 'bi-broadcast' },
-        Completed: { color: 'badge-violet', icon: 'bi-check-circle-fill' },
-        Cancelled: { color: 'badge-pink', icon: 'bi-x-circle-fill' }
-    };
-    const status = statusConfig[tournament.status] || statusConfig.Upcoming;
-
-    const formatPrize = (prize) => {
-        if (prize >= 1000000) return `$${(prize / 1000000).toFixed(1)}M`;
-        if (prize >= 1000) return `$${(prize / 1000).toFixed(0)}K`;
-        return `$${prize}`;
-    };
+    const status = statusOf(tournament.status);
 
     return (
         <Layout>
@@ -98,16 +89,14 @@ function TournamentDetailScreen() {
                 <span>LIVE UPDATES ENABLED</span>
             </div>
 
-            <section className="relative py-12 px-8 rounded-lg border border-border-glow mb-8 overflow-hidden bg-[linear-gradient(135deg,rgba(0,240,255,0.08),rgba(176,38,255,0.08)),var(--bg-secondary)] fade-in-up before:content-[''] before:absolute before:-top-1/2 before:-right-[10%] before:w-[400px] before:h-[400px] before:bg-[radial-gradient(circle,var(--neon-violet)_0%,transparent_70%)] before:opacity-20 before:pointer-events-none after:content-[''] after:absolute after:-bottom-1/2 after:-left-[10%] after:w-[400px] after:h-[400px] after:bg-[radial-gradient(circle,var(--neon-cyan)_0%,transparent_70%)] after:opacity-15 after:pointer-events-none">
-                <Link to="/tournaments" viewTransition className="inline-flex items-center gap-2 text-text-secondary font-heading text-[0.85rem] uppercase tracking-[0.1em] no-underline mb-6 relative z-[1] transition-all duration-150 hover:text-neon-cyan hover:gap-3 hover:no-underline">
-                    <i className="bi bi-arrow-left"></i> All Tournaments
-                </Link>
+            <section className="relative py-8 px-5 sm:py-12 sm:px-8 rounded-lg border border-border-glow mb-8 overflow-hidden bg-[linear-gradient(135deg,rgba(0,240,255,0.08),rgba(176,38,255,0.08)),var(--bg-secondary)] fade-in-up before:content-[''] before:absolute before:-top-1/2 before:-right-[10%] before:w-[400px] before:h-[400px] before:bg-[radial-gradient(circle,var(--neon-violet)_0%,transparent_70%)] before:opacity-20 before:pointer-events-none after:content-[''] after:absolute after:-bottom-1/2 after:-left-[10%] after:w-[400px] after:h-[400px] after:bg-[radial-gradient(circle,var(--neon-cyan)_0%,transparent_70%)] after:opacity-15 after:pointer-events-none">
+                <BackLink to="/tournaments">All Tournaments</BackLink>
 
                 <div className="relative z-[1]">
                     <div className="flex items-center gap-4 mb-4 flex-wrap">
-                        <span className={`badge-neon ${status.color}`}>
+                        <span className={`badge-neon ${status.badge}`}>
                             <i className={`bi ${status.icon} me-1`}></i>
-                            {tournament.status}
+                            {status.label}
                         </span>
                         <span className="inline-flex items-center gap-[0.4rem] text-text-secondary font-heading text-[0.85rem] tracking-[0.05em] uppercase">
                             <i className="bi bi-controller text-neon-cyan"></i> {tournament.gameName}
@@ -118,17 +107,17 @@ function TournamentDetailScreen() {
                         {tournament.name}
                     </h1>
 
-                    <div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-6">
+                    <div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-4 sm:gap-6">
                         <div className="flex flex-col gap-1">
                             <span className="font-heading text-[0.7rem] tracking-[0.15em] uppercase text-text-muted">Prize Pool</span>
-                            <span className="font-heading font-semibold text-text-primary bg-gradient-to-br from-neon-green to-neon-cyan bg-clip-text text-transparent !text-[1.6rem]">
-                                {formatPrize(tournament.prizePool)}
+                            <span className="font-heading font-semibold bg-gradient-to-br from-neon-green to-neon-cyan bg-clip-text text-transparent text-[1.6rem] tabular-nums">
+                                {formatMoney(tournament.prizePool)}
                             </span>
                         </div>
                         <div className="flex flex-col gap-1">
                             <span className="font-heading text-[0.7rem] tracking-[0.15em] uppercase text-text-muted">Format</span>
                             <span className="font-heading text-xl font-semibold text-text-primary">
-                                {tournament.format?.replace(/([A-Z])/g, ' $1').trim()}
+                                {humanize(tournament.format)}
                             </span>
                         </div>
                         <div className="flex flex-col gap-1">
@@ -149,14 +138,18 @@ function TournamentDetailScreen() {
                 </div>
             </section>
 
-            <div className="flex gap-2 border-b border-border-default mb-8 overflow-x-auto">
+            <div role="tablist" aria-label="Tournament sections" className="flex gap-2 border-b border-border-default mb-8 overflow-x-auto">
                 <button
+                    role="tab"
+                    aria-selected={activeTab === 'bracket'}
                     className={`${tabBase} ${activeTab === 'bracket' ? tabActive : ''}`}
                     onClick={() => setActiveTab('bracket')}
                 >
                     <i className="bi bi-diagram-3-fill"></i> Bracket
                 </button>
                 <button
+                    role="tab"
+                    aria-selected={activeTab === 'teams'}
                     className={`${tabBase} ${activeTab === 'teams' ? tabActive : ''}`}
                     onClick={() => setActiveTab('teams')}
                 >

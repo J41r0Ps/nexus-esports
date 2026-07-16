@@ -57,6 +57,22 @@ function Layout({ children, title, subtitle }) {
 
     const isActive = (path) => location.pathname === path;
 
+    // Copy a fresh JWT for API testing — used by both the desktop bar and mobile drawer.
+    const copyToken = async () => {
+        try {
+            const token = await getAccessTokenSilently();
+            await navigator.clipboard.writeText(token);
+            setTokenCopied(true);
+            setTimeout(() => setTokenCopied(false), 2000);
+        } catch (err) {
+            console.error('Token copy failed:', err);
+        }
+    };
+
+    const tokenBtnCls = (extra = '') => `px-3 py-2 rounded-sm font-heading text-[0.75rem] font-semibold cursor-pointer transition-all duration-200 border ${extra} ${tokenCopied
+        ? 'bg-neon-green/15 text-neon-green border-neon-green/50'
+        : 'bg-neon-yellow/10 text-neon-yellow border-neon-yellow/40 hover:bg-neon-yellow/20'}`;
+
     const themeToggleBtn = (
         <button
             onClick={toggleTheme}
@@ -69,6 +85,17 @@ function Layout({ children, title, subtitle }) {
 
     return (
         <>
+            {/* Reading-progress hairline (pure CSS scroll-driven animation) */}
+            <div className="scroll-progress" aria-hidden="true"></div>
+
+            {/* Keyboard-accessible skip link (visually hidden until focused) */}
+            <a
+                href="#main"
+                className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[2000] focus:px-4 focus:py-2 focus:bg-bg-secondary focus:text-neon-cyan focus:border focus:border-border-glow focus:rounded-sm font-heading text-[0.85rem] no-underline"
+            >
+                Skip to content
+            </a>
+
             {/* ─────────────  NAVBAR (full-width, scroll-reactive)  ───────────── */}
             <nav className={`sticky top-0 z-[1000] transition-all duration-300 ${scrolled
                 ? 'py-2 bg-bg-overlay backdrop-blur-xl border-b border-border-default shadow-[0_10px_40px_-15px_rgba(0,0,0,0.5)]'
@@ -120,20 +147,9 @@ function Layout({ children, title, subtitle }) {
 
                             {isAuthenticated && (
                                 <button
-                                    onClick={async () => {
-                                        try {
-                                            const token = await getAccessTokenSilently();
-                                            await navigator.clipboard.writeText(token);
-                                            setTokenCopied(true);
-                                            setTimeout(() => setTokenCopied(false), 2000);
-                                        } catch (err) {
-                                            console.error('Token copy failed:', err);
-                                        }
-                                    }}
+                                    onClick={copyToken}
                                     title="Copy JWT token for API testing"
-                                    className={`px-3 py-2 rounded-sm font-heading text-[0.75rem] font-semibold cursor-pointer transition-all duration-200 border ${tokenCopied
-                                        ? 'bg-neon-green/15 text-neon-green border-neon-green/50'
-                                        : 'bg-neon-yellow/10 text-neon-yellow border-neon-yellow/40 hover:bg-neon-yellow/20'}`}
+                                    className={tokenBtnCls()}
                                 >
                                     {tokenCopied
                                         ? <><i className="bi bi-check-lg mr-1"></i> Copied</>
@@ -155,20 +171,24 @@ function Layout({ children, title, subtitle }) {
                         {/* Right side — mobile (theme + animated hamburger) */}
                         <div className="flex lg:hidden items-center gap-3 ml-auto">
                             {themeToggleBtn}
+                            {/* 44px hit area around the 28px hamburger lines (touch target) */}
                             <button
-                                className="relative w-7 h-[22px] shrink-0 bg-transparent border-0 cursor-pointer"
+                                className="grid place-items-center w-11 h-11 -mr-2 shrink-0 bg-transparent border-0 cursor-pointer"
                                 onClick={() => setMenuOpen(!menuOpen)}
                                 aria-label="Toggle menu"
+                                aria-expanded={menuOpen}
                             >
-                                <span className={`absolute left-0 h-[2px] w-full bg-neon-cyan rounded-full transition-all duration-300 [box-shadow:0_0_6px_var(--neon-cyan-dim)] ${menuOpen ? 'top-1/2 -translate-y-1/2 rotate-45' : 'top-0'}`}></span>
-                                <span className={`absolute left-0 top-1/2 -translate-y-1/2 h-[2px] w-full bg-neon-cyan rounded-full transition-all duration-300 [box-shadow:0_0_6px_var(--neon-cyan-dim)] ${menuOpen ? 'opacity-0' : 'opacity-100'}`}></span>
-                                <span className={`absolute left-0 h-[2px] w-full bg-neon-cyan rounded-full transition-all duration-300 [box-shadow:0_0_6px_var(--neon-cyan-dim)] ${menuOpen ? 'bottom-1/2 translate-y-1/2 -rotate-45' : 'bottom-0'}`}></span>
+                                <span className="relative block w-7 h-[22px]">
+                                    <span className={`absolute left-0 h-[2px] w-full bg-neon-cyan rounded-full transition-all duration-300 [box-shadow:0_0_6px_var(--neon-cyan-dim)] ${menuOpen ? 'top-1/2 -translate-y-1/2 rotate-45' : 'top-0'}`}></span>
+                                    <span className={`absolute left-0 top-1/2 -translate-y-1/2 h-[2px] w-full bg-neon-cyan rounded-full transition-all duration-300 [box-shadow:0_0_6px_var(--neon-cyan-dim)] ${menuOpen ? 'opacity-0' : 'opacity-100'}`}></span>
+                                    <span className={`absolute left-0 h-[2px] w-full bg-neon-cyan rounded-full transition-all duration-300 [box-shadow:0_0_6px_var(--neon-cyan-dim)] ${menuOpen ? 'bottom-1/2 translate-y-1/2 -rotate-45' : 'bottom-0'}`}></span>
+                                </span>
                             </button>
                         </div>
                     </div>
 
                     {/* Mobile drawer */}
-                    <div className={`lg:hidden flex flex-col gap-2 overflow-hidden transition-all duration-300 ${menuOpen ? 'max-h-[520px] mt-4 pb-2 opacity-100' : 'max-h-0 mt-0 opacity-0'}`}>
+                    <div className={`lg:hidden flex flex-col gap-2 overflow-hidden transition-all duration-300 ${menuOpen ? 'max-h-[600px] mt-4 pb-2 opacity-100' : 'max-h-0 mt-0 opacity-0'}`}>
                         {navLinks.map(link => (
                             <Link
                                 key={link.path}
@@ -183,6 +203,24 @@ function Layout({ children, title, subtitle }) {
                             </Link>
                         ))}
                         <div className="h-px bg-border-default my-1"></div>
+                        {error && <span className="text-[#ff4d6d] text-[0.8rem] px-1">{error.message}</span>}
+                        {isAuthenticated && user && (
+                            <div className="flex items-center gap-3 px-2 py-1">
+                                <div className="w-8 h-8 shrink-0 rounded-full grid place-items-center bg-gradient-to-br from-neon-cyan to-neon-violet text-bg-primary font-heading font-bold text-[0.85rem]">
+                                    {user.email?.charAt(0).toUpperCase()}
+                                </div>
+                                <span className="text-text-secondary text-[0.85rem] truncate">{user.email}</span>
+                                <button
+                                    onClick={copyToken}
+                                    title="Copy JWT token for API testing"
+                                    className={tokenBtnCls('ml-auto shrink-0')}
+                                >
+                                    {tokenCopied
+                                        ? <><i className="bi bi-check-lg mr-1"></i> Copied</>
+                                        : <><i className="bi bi-key-fill mr-1"></i> Token</>}
+                                </button>
+                            </div>
+                        )}
                         {isAuthenticated ? (
                             <button className="btn-neon btn-neon-violet w-full" onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
                                 <i className="bi bi-box-arrow-right mr-2"></i>Logout
@@ -198,7 +236,7 @@ function Layout({ children, title, subtitle }) {
 
             {/* ─────────────  PAGE HEADER  ───────────── */}
             {title && (
-                <header className="relative pt-12 pb-6">
+                <header className="relative pt-8 sm:pt-12 pb-6">
                     <div className={container}>
                         <div className="flex items-center gap-3 mb-4">
                             <span className="h-[2px] w-10 rounded-full bg-gradient-to-r from-neon-cyan to-neon-violet shadow-[0_0_10px_var(--neon-cyan)]"></span>
@@ -208,14 +246,14 @@ function Layout({ children, title, subtitle }) {
                             {title}
                         </h1>
                         {subtitle && (
-                            <p className="text-text-secondary text-[1.1rem] m-0 fade-in-up">{subtitle}</p>
+                            <p className="text-text-secondary text-[1rem] sm:text-[1.1rem] m-0 fade-in-up">{subtitle}</p>
                         )}
                     </div>
                 </header>
             )}
 
             {/* ─────────────  MAIN CONTENT  ───────────── */}
-            <main className={`${container} min-h-[calc(100vh-360px)] pt-2 pb-20 animate-[pageFadeIn_0.4s_cubic-bezier(0.4,0,0.2,1)]`}>
+            <main id="main" className={`${container} min-h-[calc(100vh-360px)] pt-2 pb-20 animate-[pageFadeIn_0.4s_cubic-bezier(0.4,0,0.2,1)]`}>
                 {children}
             </main>
 

@@ -1,6 +1,6 @@
 import {
-    LineChart, Line, BarChart, Bar, RadarChart, PolarGrid,
-    PolarAngleAxis, PolarRadiusAxis, Radar, XAxis, YAxis,
+    LineChart, Line, BarChart, Bar, AreaChart, Area, RadarChart, PolarGrid,
+    PolarAngleAxis, PolarRadiusAxis, Radar, XAxis, YAxis, ReferenceLine,
     CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 import { EmptyState } from '@/components/ui/states';
@@ -44,7 +44,9 @@ function PlayerStatsCharts({ stats }) {
         Kills: s.kills,
         Deaths: s.deaths,
         Assists: s.assists,
-        Score: parseFloat(s.score)
+        Score: parseFloat(s.score),
+        // Efficiency: kills per death; a deathless match counts kills directly.
+        'K/D': s.deaths === 0 ? s.kills : +(s.kills / s.deaths).toFixed(2)
     }));
 
     // Radar — averages
@@ -65,9 +67,10 @@ function PlayerStatsCharts({ stats }) {
                 Performance Analytics
             </h2>
 
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(400px,1fr))] gap-6">
+            {/* min(100%,400px) so columns never force horizontal scroll on narrow phones */}
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,400px),1fr))] gap-4 sm:gap-6">
                 {/* Line Chart — Performance over time */}
-                <div className="glass-card p-7">
+                <div className="glass-card p-4 sm:p-7">
                     <div className="mb-5">
                         <h3 className="text-[1.1rem] font-semibold text-text-primary mb-1">Performance Over Matches</h3>
                         <span className="text-[0.85rem] text-text-muted">K/D/A trend by match</span>
@@ -80,14 +83,15 @@ function PlayerStatsCharts({ stats }) {
                             <Tooltip content={<CustomTooltip />} />
                             <Legend wrapperStyle={{ fontSize: 12 }} />
                             <Line type="monotone" dataKey="Kills" stroke={COLORS.pink} strokeWidth={2} dot={{ r: 3 }} />
-                            <Line type="monotone" dataKey="Deaths" stroke="var(--text-muted)" strokeWidth={2} dot={{ r: 3 }} />
+                            {/* Dashed: keeps Deaths distinguishable from Kills for red-blind viewers */}
+                            <Line type="monotone" dataKey="Deaths" stroke="var(--text-muted)" strokeWidth={2} strokeDasharray="6 4" dot={{ r: 3 }} />
                             <Line type="monotone" dataKey="Assists" stroke={COLORS.cyan} strokeWidth={2} dot={{ r: 3 }} />
                         </LineChart>
                     </ResponsiveContainer>
                 </div>
 
                 {/* Bar Chart — Score per match */}
-                <div className="glass-card p-7">
+                <div className="glass-card p-4 sm:p-7">
                     <div className="mb-5">
                         <h3 className="text-[1.1rem] font-semibold text-text-primary mb-1">Match Score</h3>
                         <span className="text-[0.85rem] text-text-muted">Score per match</span>
@@ -109,8 +113,45 @@ function PlayerStatsCharts({ stats }) {
                     </ResponsiveContainer>
                 </div>
 
+                {/* Area Chart — K/D efficiency trend. Single series (no legend needed);
+                    the dashed 1.0 reference line marks the break-even point. */}
+                <div className="glass-card p-4 sm:p-7">
+                    <div className="mb-5">
+                        <h3 className="text-[1.1rem] font-semibold text-text-primary mb-1">K/D Efficiency</h3>
+                        <span className="text-[0.85rem] text-text-muted">Kill/death ratio per match — above 1.0 is a positive match</span>
+                    </div>
+                    <ResponsiveContainer width="100%" height={280}>
+                        <AreaChart data={matchData}>
+                            <CartesianGrid stroke={COLORS.grid} strokeDasharray="3 3" />
+                            <XAxis dataKey="match" stroke={COLORS.text} fontSize={11} />
+                            <YAxis stroke={COLORS.text} fontSize={11} />
+                            <Tooltip content={<CustomTooltip />} />
+                            <ReferenceLine
+                                y={1}
+                                stroke={COLORS.text}
+                                strokeDasharray="4 4"
+                                label={{ value: '1.0', position: 'insideRight', fill: COLORS.text, fontSize: 11 }}
+                            />
+                            <Area
+                                type="monotone"
+                                dataKey="K/D"
+                                stroke={COLORS.cyan}
+                                strokeWidth={2}
+                                fill="url(#kdGradient)"
+                                dot={{ r: 3 }}
+                            />
+                            <defs>
+                                <linearGradient id="kdGradient" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stopColor={COLORS.cyan} stopOpacity={0.35} />
+                                    <stop offset="100%" stopColor={COLORS.cyan} stopOpacity={0.02} />
+                                </linearGradient>
+                            </defs>
+                        </AreaChart>
+                    </ResponsiveContainer>
+                </div>
+
                 {/* Radar Chart — Average profile */}
-                <div className="glass-card p-7 col-[1/-1]">
+                <div className="glass-card p-4 sm:p-7 col-[1/-1]">
                     <div className="mb-5">
                         <h3 className="text-[1.1rem] font-semibold text-text-primary mb-1">Player Profile</h3>
                         <span className="text-[0.85rem] text-text-muted">Average performance across stats</span>

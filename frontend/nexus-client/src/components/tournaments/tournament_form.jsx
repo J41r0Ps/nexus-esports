@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import GamesService from '@/api/games_service';
 import { FormField, FormActions } from '@/components/ui/form_field';
+import { humanize } from '@/lib/format';
 
 /** Create / edit form for a tournament, rendered inside a modal. */
 function TournamentForm({ initialData, onSubmit, onCancel, isSubmitting }) {
@@ -100,7 +101,7 @@ function TournamentForm({ initialData, onSubmit, onCancel, isSubmitting }) {
                 <FormField label="Format *">
                     <select name="format" className="form-select" value={formData.format} onChange={handleChange}>
                         {formats.map(f => (
-                            <option key={f} value={f}>{f.replace(/([A-Z])/g, ' $1').trim()}</option>
+                            <option key={f} value={f}>{humanize(f)}</option>
                         ))}
                     </select>
                 </FormField>

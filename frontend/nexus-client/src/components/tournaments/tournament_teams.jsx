@@ -10,7 +10,7 @@ function TournamentTeams({ teams }) {
     const sorted = [...teams].sort((a, b) => a.seedNumber - b.seedNumber);
 
     return (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4 mb-12 fade-in-up">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,280px),1fr))] gap-4 mb-12 fade-in-up">
             {sorted.map(team => (
                 <div key={team.teamId} className="glass-card flex items-center gap-4 p-5">
                     <div className="font-heading text-[1.75rem] font-bold text-neon-cyan min-w-[50px] text-center [text-shadow:0_0_15px_var(--neon-cyan-dim)]">#{team.seedNumber}</div>
