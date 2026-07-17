@@ -9,7 +9,7 @@
 A full-stack esports management platform: browse and manage **teams, players and tournaments**, with **live match results pushed to every connected browser in real time** — no refresh needed.
 
 | | |
-|---|---|---|
+|---|---|
 | 🌐 **Live app** | <https://lively-water-080879d03.7.azurestaticapps.net> |
 | ⚙️ **Live API + Swagger** | <https://nexus-esports-api-ja.azurewebsites.net/swagger> |
 
