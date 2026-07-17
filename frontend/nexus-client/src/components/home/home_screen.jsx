@@ -262,21 +262,21 @@ function HomeScreen() {
             {!isAuthenticated && (
                 <Reveal className="mt-20 mb-4">
                     <section>
-                    <div className="glass-card !border-border-glow bg-[linear-gradient(135deg,rgba(0,240,255,0.05)_0%,rgba(176,38,255,0.05)_100%)] py-8 px-6 sm:py-10 sm:px-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
-                        <div className="max-w-[560px]">
-                            <h2 className="text-[clamp(1.8rem,4vw,2.4rem)] font-bold mb-3 tracking-[-0.03em]">
-                                Ready to <span className="text-glow">compete?</span>
-                            </h2>
-                            <p className="text-text-secondary text-[1.05rem] m-0">
-                                Sign in to register your team for upcoming tournaments and access
-                                admin features.
-                            </p>
+                        <div className="glass-card !border-border-glow bg-[linear-gradient(135deg,rgba(0,240,255,0.05)_0%,rgba(176,38,255,0.05)_100%)] py-8 px-6 sm:py-10 sm:px-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+                            <div className="max-w-[560px]">
+                                <h2 className="text-[clamp(1.8rem,4vw,2.4rem)] font-bold mb-3 tracking-[-0.03em]">
+                                    Ready to <span className="text-glow">compete?</span>
+                                </h2>
+                                <p className="text-text-secondary text-[1.05rem] m-0">
+                                    Sign in to register your team for upcoming tournaments and access
+                                    admin features.
+                                </p>
+                            </div>
+                            <button className="btn-neon-primary shrink-0 self-start md:self-center" onClick={() => loginWithRedirect()}>
+                                <i className="bi bi-lightning-charge-fill me-2"></i>
+                                Join NEXUS
+                            </button>
                         </div>
-                        <button className="btn-neon-primary shrink-0 self-start md:self-center" onClick={() => loginWithRedirect()}>
-                            <i className="bi bi-lightning-charge-fill me-2"></i>
-                            Join NEXUS
-                        </button>
-                    </div>
                     </section>
                 </Reveal>
             )}

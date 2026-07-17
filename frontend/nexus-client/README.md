@@ -1,6 +1,47 @@
-# nexus-client — Frontend architecture & design docs
+# nexus-client — NEXUS Esports frontend
 
-The React SPA for the NEXUS Esports platform. This document explains **how the frontend is put together and why each decision was made**, so you can extend it without reverse-engineering it. For the project-wide picture (backend, deployment, API), see the [root README](../../README.md).
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?logo=tailwindcss&logoColor=white)
+![SignalR](https://img.shields.io/badge/SignalR-live_updates-blueviolet)
+
+The React 19 SPA for the **NEXUS Esports platform**: teams, players and tournaments with live match updates, an admin panel, dark/light theming and a code-split, mobile-first UI.
+
+- 🌐 **Live**: <https://lively-water-080879d03.7.azurestaticapps.net>
+- For the project-wide picture (backend, API reference, deployment): [root README](../../README.md) · [backend README](../../backend/README.md)
+
+This document explains **how the frontend is put together and why each decision was made**, so you can extend it without reverse-engineering it.
+
+## Table of contents
+
+- [Quick start](#quick-start)
+- [Commands](#commands)
+- [Environment variables](#environment-variables)
+- [Project structure](#project-structure)
+- [Architecture](#architecture)
+- [Design system](#design-system--tailwind-css-v4-css-first)
+- [Conventions](#conventions)
+- [Deployment](#deployment)
+
+## Quick start
+
+Prerequisite: [Node.js](https://nodejs.org/) 20+.
+
+```bash
+cd frontend/nexus-client
+npm install
+npm run dev            # → http://localhost:5173
+```
+
+**Zero configuration needed for local dev**: every env var has a hardcoded fallback, so with the backend running on `https://localhost:7059` the app Just Works (see [backend/README.md](../../backend/README.md) to start and seed it).
+
+To develop the frontend **against the deployed Azure API instead** (no local backend needed), create a `.env.local`:
+
+```bash
+VITE_API_URL=https://nexus-esports-api-ja.azurewebsites.net/api/
+```
+
+Browsing is fully public; admin features (create/edit/delete, recording match winners) appear after logging in via Auth0 with an account holding the `admin` role.
 
 ## Commands
 
@@ -23,6 +64,27 @@ Read via `import.meta.env.VITE_*`. **Every variable has a hardcoded local-dev fa
 | `VITE_AUTH0_DOMAIN` / `VITE_AUTH0_CLIENT_ID` / `VITE_AUTH0_AUDIENCE` | Auth0 tenant config | dev tenant values |
 
 `.env.production` overrides `VITE_API_URL` for the Azure deployment. The SignalR hub URL is **derived** from `VITE_API_URL` (replace `/api/` with `/hubs/matches`) so there's a single source of truth for "where is the backend".
+
+## Project structure
+
+```
+src/
+├── api/              # axios instance + one service per domain
+├── auth/             # Auth0 provider
+├── context/          # theme + global live-updates (SignalR) providers
+├── hooks/            # use_is_admin, use_match_hub, …
+├── lib/              # shared formatting/status logic
+├── components/
+│   ├── home/         # data-driven landing page
+│   ├── teams/        # feature folders: *_screen / *_list / *_filter / *_form
+│   ├── players/      #   + player detail with recharts analytics
+│   ├── tournaments/  #   + tournament detail with live bracket
+│   └── ui/           # shared primitives (modal, toast, pagination, …)
+├── layout_template.jsx
+├── App.jsx           # routes (code-split)
+├── main.jsx          # provider stack
+└── index.css         # the single stylesheet (Tailwind v4, CSS-first)
+```
 
 ## Architecture
 
@@ -138,3 +200,7 @@ recharts colors **must reference CSS variables** (`var(--neon-cyan)`, …), neve
 - Copy is **sentence case** ("View details"), except intentionally-uppercase brand/eyebrow labels.
 - One solid primary CTA (`btn-neon-primary`) per view; secondary actions are uppercase arrow text-links, not a second equal-weight button.
 - `npm run lint` reports a few **intentional** warnings — leave them: `exhaustive-deps` on the fetch effects (fetch-on-`filters`-change is deliberate; adding deps loops) and `only-export-components` on the two context files (standard provider+hook pattern).
+
+## Deployment
+
+Every push to `main` that touches the frontend triggers `.github/workflows/azure-static-web-apps-*.yml`, which builds this app (`app_location: /frontend/nexus-client`, `output_location: dist`) and deploys it to **Azure Static Web Apps**. `.env.production` supplies the deployed `VITE_API_URL`; the Auth0 values ship with the build. No server-side code is deployed with the frontend — the API lives on Azure App Service ([backend/README.md](../../backend/README.md)).
